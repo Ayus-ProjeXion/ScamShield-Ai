@@ -149,8 +149,10 @@ activemq-data/
 # SageMath parsed files
 *.sage.py
 
-# Environments
+# Environments & Secrets
 .env
+.env.*
+*.env
 .envrc
 .venv
 env/
@@ -221,3 +223,17 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Personal Reference & Guides (Local Only)
+Git_Beginner_Guide.pdf
+generate_git_pdf.py
+
+# Machine Learning & Audio Temporary Files
+models/*.pkl
+models/*.joblib
+*.pkl
+*.joblib
+temp_audio/
+*.wav
+*.mp3
+*.m4a
