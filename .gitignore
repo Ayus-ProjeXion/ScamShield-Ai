@@ -223,3 +223,7 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Personal Reference & Guides (Local Only)
+Git_Beginner_Guide.pdf
+generate_git_pdf.py
