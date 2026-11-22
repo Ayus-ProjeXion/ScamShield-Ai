@@ -106,7 +106,7 @@ export function ThreatScanner({
             }`}
         >
           <MessageSquare className="w-3.5 h-3.5" />
-          <span>SMS / Hinglish</span>
+          <span>SMS</span>
         </button>
 
         <button
@@ -240,7 +240,7 @@ export function ThreatScanner({
               ? "Paste email headers (From, Return-Path, DKIM) or suspicious email body here..."
               : activeTab === 'audio'
                 ? "Paste audio call transcript here or upload a .wav audio file above..."
-                : "Type or paste suspicious SMS, WhatsApp message, or Hinglish text here..."
+                : "Type or paste suspicious SMS or WhatsApp message here..."
           }
           className={`w-full bg-transparent font-sans text-sm resize-none focus:outline-none placeholder:text-zinc-500 leading-relaxed ${
             isDark ? 'text-white' : 'text-[#1C1B18]'
