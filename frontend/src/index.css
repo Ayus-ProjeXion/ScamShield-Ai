@@ -1,0 +1,37 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    color-scheme: dark;
+  }
+  html.light {
+    color-scheme: light;
+  }
+  body {
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+}
+
+/* Subtle luxury scrollbar */
+::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #27272A;
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #3F3F46;
+}
+.light ::-webkit-scrollbar-thumb {
+  background: #D4D4D8;
+}
+.light ::-webkit-scrollbar-thumb:hover {
+  background: #A1A1AA;
+}

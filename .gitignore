@@ -248,7 +248,8 @@ temp_audio/
 *.mp3
 *.m4a
 ai/data/
-data/
+/data/
+!frontend/src/data/
 *.tsv
 
 # Node & Frontend Build
