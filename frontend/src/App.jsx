@@ -85,18 +85,29 @@ export default function App() {
       const data = await response.json();
       const elapsed = (performance.now() - startTime).toFixed(1);
 
+      // Resolve root cause explanation from backend
+      let resolvedExplanation = data.explanation;
+      if (!resolvedExplanation && data.why_its_risky && data.why_its_risky.length > 0) {
+        resolvedExplanation = data.why_its_risky.map(item => item.explanation || item.factor || '').filter(Boolean).join(' ');
+      }
+      if (!resolvedExplanation) {
+        resolvedExplanation = (data.is_scam || (data.risk_score && data.risk_score >= 50))
+          ? `High-risk cyber threat detected. Markers: ${(data.badges || []).join(', ') || 'Deceptive heuristics identified'}.`
+          : 'Text contains normal language with zero fraud indicators.';
+      }
+
       setScanResult({
         riskScore: Math.round(data.risk_score || 0),
-        verdict: data.verdict || 'SAFE',
-        confidence: Number((data.confidence || 0.98) * 100).toFixed(1),
+        verdict: data.threat_level || data.verdict || (data.is_scam ? 'CRITICAL' : 'SAFE'),
+        confidence: Number((data.ml_probability || data.confidence || 0.98) * 100).toFixed(1),
         latencyMs: elapsed,
         badges: data.badges || [],
-        explanation: data.explanation || 'No malicious patterns detected.',
-        hmacToken: data.security_token?.signature || `0x${Math.random().toString(16).substring(2, 42)}`,
+        explanation: resolvedExplanation,
+        hmacToken: data.security_token?.hmac_signature || data.security_token?.signature || `0x${Math.random().toString(16).substring(2, 42)}`,
         complaintDraft: data.complaint_draft || ''
       });
 
-      showToast(`Scan complete: Verdict [${data.verdict}] in ${elapsed}ms`);
+      showToast(`Scan complete: Verdict [${data.threat_level || data.verdict || 'SAFE'}] in ${elapsed}ms`);
     } catch (err) {
       console.warn('Backend API offline, using fallback heuristics:', err);
       

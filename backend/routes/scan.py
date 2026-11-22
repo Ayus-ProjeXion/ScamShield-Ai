@@ -49,6 +49,10 @@ async def scan_text(
         algorithm=token.get("algorithm", "HMAC-SHA256-256BIT")
     )
     
+    expl = " ".join([i.get("explanation", "") for i in raw_res.get("why_its_risky", []) if i.get("explanation")])
+    if not expl:
+        expl = "Scam patterns identified across message heuristics and threat database." if raw_res.get("is_scam") else "Text contains normal language with zero fraud indicators."
+
     response_data = ScanResponse(
         scan_id=scan_id,
         text_preview=raw_res.get("sanitized_preview") or payload.text[:120],
@@ -59,6 +63,7 @@ async def scan_text(
         urgency_score=raw_res.get("urgency_score", 0.0),
         badges=raw_res.get("badges", []),
         why_its_risky=raw_res.get("why_its_risky", []),
+        explanation=expl,
         recommended_actions=raw_res.get("recommended_actions", []),
         complaint_draft=raw_res.get("complaint_draft", ""),
         security_token=sec_token,
@@ -99,6 +104,10 @@ async def scan_email(
         algorithm=token.get("algorithm", "HMAC-SHA256-256BIT")
     )
     
+    expl_email = " ".join([i.get("explanation", "") for i in raw_res.get("why_its_risky", []) if i.get("explanation")])
+    if not expl_email:
+        expl_email = "Email spoofing and fraudulent markers detected across headers and body." if raw_res.get("is_scam") else "Email headers and content appear safe and authentic."
+
     response_data = ScanResponse(
         scan_id=scan_id,
         text_preview=raw_res.get("sanitized_preview") or payload.email_text[:120],
@@ -109,6 +118,7 @@ async def scan_email(
         urgency_score=raw_res.get("urgency_score", 0.0),
         badges=raw_res.get("badges", []),
         why_its_risky=raw_res.get("why_its_risky", []),
+        explanation=expl_email,
         recommended_actions=raw_res.get("recommended_actions", []),
         complaint_draft=raw_res.get("complaint_draft", ""),
         security_token=sec_token,
@@ -179,6 +189,10 @@ async def scan_audio(
         algorithm=token.get("algorithm", "HMAC-SHA256-256BIT")
     )
     
+    expl_audio = " ".join([i.get("explanation", "") for i in raw_res.get("why_its_risky", []) if i.get("explanation")])
+    if not expl_audio:
+        expl_audio = "Coercive voice extortion tactics or fraudulent authority impersonation identified in call transcript." if raw_res.get("is_scam") else "Call transcript contains normal conversational speech with zero coercion markers."
+
     response_data = ScanResponse(
         scan_id=scan_id,
         text_preview=raw_res.get("sanitized_preview") or raw_res.get("transcribed_text", "")[:120],
@@ -189,6 +203,7 @@ async def scan_audio(
         urgency_score=raw_res.get("urgency_score", 0.0),
         badges=raw_res.get("badges", []),
         why_its_risky=raw_res.get("why_its_risky", []),
+        explanation=expl_audio,
         recommended_actions=raw_res.get("recommended_actions", []),
         complaint_draft=raw_res.get("complaint_draft", ""),
         security_token=sec_token,

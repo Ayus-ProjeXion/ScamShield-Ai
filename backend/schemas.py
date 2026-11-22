@@ -32,6 +32,7 @@ class ScanResponse(BaseModel):
     urgency_score: float
     badges: List[str]
     why_its_risky: List[Dict[str, str]]
+    explanation: Optional[str] = None
     recommended_actions: List[str]
     complaint_draft: str
     security_token: SecurityTokenSchema

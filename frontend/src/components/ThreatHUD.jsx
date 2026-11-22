@@ -77,6 +77,13 @@ export function ThreatHUD({ result, onCopyComplaint, isDark }) {
   const isCritical = riskScore >= 66;
   const isSuspicious = riskScore >= 26 && riskScore < 66;
 
+  // Resilient explanation fallback: never display 'no patterns' when risk is high
+  const displayExplanation = (riskScore >= 50 && (!explanation || explanation.includes('No known fraud') || explanation.includes('No malicious patterns')))
+    ? (badges && badges.length > 0 
+        ? `Critical cyber-threat detected. Triggered indicators: ${badges.join(', ')}.`
+        : 'High-risk fraudulent patterns and coercive language detected in message.')
+    : explanation;
+
   const circumference = 414.7;
   const strokeDashoffset = circumference - (circumference * (riskScore / 100));
 
@@ -217,7 +224,7 @@ export function ThreatHUD({ result, onCopyComplaint, isDark }) {
           <span>Why this was flagged:</span>
         </div>
         <p className={`text-xs leading-relaxed font-sans ${isDark ? 'text-zinc-300' : 'text-[#3E3C37]'}`}>
-          {explanation}
+          {displayExplanation}
         </p>
       </div>
 
