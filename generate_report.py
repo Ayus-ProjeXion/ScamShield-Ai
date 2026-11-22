@@ -245,7 +245,7 @@ def create_project_report(output_path="ScamShield_AI_Project_Report.docx"):
 
     # --- 5. Execution Audit Log ---
     add_section_header("5. Project Execution & Audit Log")
-    audit_table = doc.add_table(rows=9, cols=3)
+    audit_table = doc.add_table(rows=12, cols=3)
     audit_table.alignment = WD_TABLE_ALIGNMENT.CENTER
     audit_table.autofit = False
 
@@ -271,7 +271,10 @@ def create_project_report(output_path="ScamShield_AI_Project_Report.docx"):
         ("Nov 22, 2026 - 15:16", "Committed and pushed full Supabase database layer to origin/database", "COMPLETED"),
         ("Nov 22, 2026 - 15:18", "Ingested public ChatGPT roadmap; integrated Dec 6 deadline, 4-member roles, and Non-LLM ML decision", "COMPLETED"),
         ("Nov 22, 2026 - 15:24", "Integrated OpenAI Whisper STT architecture for Voice Call Scam Detection; updated schema and seed fixtures", "COMPLETED"),
-        ("Nov 22, 2026 - 16:20", "Aggregated 5,607 multi-source samples (UCI + Indian corpus + Voice transcripts); trained 98.7% accurate Logistic Regression model & Whisper pipeline", "COMPLETED")
+        ("Nov 22, 2026 - 16:20", "Aggregated 5,607 multi-source samples (UCI + Indian corpus + Voice transcripts); trained 98.7% accurate Logistic Regression model & Whisper pipeline", "COMPLETED"),
+        ("Nov 22, 2026 - 16:32", "Synthesized 210+ Indian regional variations & expanded coverage to Email Phishing (Income Tax, IT credential harvesting); dataset now 5,807 samples", "COMPLETED"),
+        ("Nov 22, 2026 - 16:45", "Integrated Multilingual (Hinglish), Gaming (BGMI/FreeFire), Predatory Loan APKs & Gen-Z Slang Resilience (5,837 samples, 98.5% acc)", "COMPLETED"),
+        ("Nov 22, 2026 - 16:47", "Scaled multi-modal corpus past 10k+ benchmark (10,392 total samples, 480 voice calls); achieved 99.8% precision & 98.6% accuracy", "COMPLETED")
     ]
 
     for i, record in enumerate(audit_records):

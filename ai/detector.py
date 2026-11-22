@@ -100,12 +100,77 @@ class ScamDetector:
         if ml_prob >= 0.70 and heuristic_res["rule_hit_count"] > 0 and "ML Model Fraud Trigger" not in badges:
             badges.insert(0, f"ML Pattern Match ({int(ml_prob*100)}% Confidence)")
 
-        # Generate human-readable explanation
-        if is_scam:
-            reasons = ", ".join(badges[:3]) if badges else "Suspicious linguistic patterns detected"
-            explanation = f"High probability scam detected! Flagged for: {reasons}."
+        # 5. Build Explainability Breakdown (Why it's risky)
+        why_its_risky: List[Dict[str, str]] = []
+        for badge in badges:
+            if "Urgency" in badge or "Deadline" in badge:
+                why_its_risky.append({
+                    "factor": badge,
+                    "explanation": "Artificial time pressure detected. Scammers use short deadlines to create panic and stop you from verifying facts."
+                })
+            elif "Impersonation" in badge:
+                why_its_risky.append({
+                    "factor": badge,
+                    "explanation": "Authority spoofing detected. Legitimate police, CBI, or customs officers never conduct 'digital arrests' or ask for money on phone/video calls."
+                })
+            elif "Utility Blackout" in badge:
+                why_its_risky.append({
+                    "factor": badge,
+                    "explanation": "Utility cutoff threat detected. Real power/gas companies do not disconnect supply via personal SMS with personal contact numbers."
+                })
+            elif "UPI Payment" in badge:
+                why_its_risky.append({
+                    "factor": badge,
+                    "explanation": "Personal peer-to-peer UPI handle detected. Official government agencies and utility boards never accept bill payments to personal UPI VPAs."
+                })
+            elif "Domain" in badge or "HTTP" in badge:
+                why_its_risky.append({
+                    "factor": badge,
+                    "explanation": "Untrusted or insecure link detected. Phishing links mimic real bank portals to steal your passwords and PINs."
+                })
+            elif "Tax Refund" in badge:
+                why_its_risky.append({
+                    "factor": badge,
+                    "explanation": "Tax refund lure detected. Income Tax Department directly credits verified bank accounts and never asks you to claim refunds via third-party web links."
+                })
+            elif "Hinglish" in badge:
+                why_its_risky.append({
+                    "factor": badge,
+                    "explanation": "Hinglish regional coercion detected. Uses colloquial Hindi threats ('turant', 'aaj raat bijli cut', 'police karyawahi') to intimidate victims."
+                })
+            elif "Gaming" in badge:
+                why_its_risky.append({
+                    "factor": badge,
+                    "explanation": "Gaming reward lure detected. Promises of free BGMI UC, Free Fire Diamonds, or Discord Nitro are phishing traps to steal account credentials."
+                })
+            elif "Loan" in badge:
+                why_its_risky.append({
+                    "factor": badge,
+                    "explanation": "Predatory loan blackmail trap detected. Unofficial loan APKs harvest contact lists and gallery photos for extortion."
+                })
+            elif "ML Pattern" in badge:
+                why_its_risky.append({
+                    "factor": badge,
+                    "explanation": f"Linguistic structure matches historical cyber-fraud patterns with {int(ml_prob*100)}% mathematical confidence."
+                })
+
+        # 6. Build Actionable Safety Advice & Recommendations
+        recommendations: List[str] = []
+        if is_scam or final_risk >= 50.0:
+            recommendations.append("🛑 PROCEED WITH CAUTION: Do NOT click any links, download files, or transfer money.")
+            if any("UPI" in b or "Advance Fee" in b for b in badges):
+                recommendations.append("💳 Do NOT send money to the listed UPI ID or bank account.")
+            if any("Utility" in b for b in badges):
+                recommendations.append("💡 Check your bill independently by opening your official electricity provider app or portal (e.g. bsesdelhi.com).")
+            if any("Impersonation" in b for b in badges):
+                recommendations.append("👮 If anyone claims to be Police/CBI on a call, hang up immediately. Police never demand money for verification.")
+            if any("Banking" in b or "Suspension" in b for b in badges):
+                recommendations.append("🏦 Call your bank using ONLY the official phone number printed on the back of your debit card.")
+            recommendations.append("🚨 If you suspect an active fraud, report it to the National Cyber Crime Helpline by dialing 1930 or visit cybercrime.gov.in.")
         else:
-            explanation = "Message appears legitimate. No coercive urgency or malicious vectors detected."
+            recommendations.append("✅ Message appears safe, but always verify sender identity if sensitive information or money is requested.")
+
+        disclaimer = "ScamShield AI provides automated probabilistic risk assessment to promote user vigilance. Always verify directly through verified official channels."
 
         return {
             "text": text,
@@ -115,7 +180,9 @@ class ScamDetector:
             "ml_probability": ml_prob,
             "urgency_score": urgency_score,
             "badges": badges,
-            "explanation": explanation
+            "why_its_risky": why_its_risky,
+            "recommended_actions": recommendations,
+            "disclaimer": disclaimer
         }
 
 if __name__ == "__main__":
@@ -127,10 +194,13 @@ if __name__ == "__main__":
 
     test_samples = [
         "Dear consumer your electricity power will be disconnected tonight at 9:30 PM. Pay bill immediately to UPI: bses@okaxis",
-        "Hello, this is Inspector Rathore from Mumbai Crime Branch. Your Aadhaar is linked to a seized narcotics parcel in Cambodia. Transfer Rs 2,00,000 immediately.",
-        "Your SBI YONO account will be blocked today due to pending KYC. Click http://sbi-kyc-update.xyz to update.",
-        "Hey Mom, I will reach home by 7:30 PM for dinner. Love you!",
-        "Your Zomato order from Biryani Blues is arriving in 12 mins. Track delivery in app."
+        "Aapka bijli bill update nahi hua hai, aaj raat 9:30 baje connection kaat diya jayega. Turant contact karein electricity officer se 9876543210 par.",
+        "FREE 5000 BGMI UC drop fr fr no cap! Limited Season 30 event, claim code rn: http://bgmi-free-uc-drop.top/claim",
+        "Pre-approved Personal Loan of Rs 5,00,000! 0% interest, Zero CIBIL score required. Install QuickCash Pro APK now: http://instant-loan-quickcash.apk",
+        "Subject: Income Tax Refund Notice: Dear Taxpayer, an excess tax refund of Rs 42,950 has been approved. Update your bank account immediately at http://incometax-efiling-refund.xyz to claim within 24 hours.",
+        "Bro that match yesterday was so lit no cap, ngl we cooked them fr fr iykyk!",
+        "Aap kahan ho bro? Chai peene chalte hain 10 minute mein agar free ho toh.",
+        "Hey Mom, I will reach home by 7:30 PM for dinner. Love you!"
     ]
 
     for sample in test_samples:
@@ -139,5 +209,12 @@ if __name__ == "__main__":
         print(f"\n📩 Message: \"{sample}\"")
         print(f"   🎯 Threat Level: [{res['threat_level']}]  Risk Score: {res['risk_score']}%  (ML: {int(res['ml_probability']*100)}%)")
         print(f"   🏷️ Badges: {badge_str}")
-        print(f"   💡 Explanation: {res['explanation']}")
+        if res["why_its_risky"]:
+            print("   🧐 Why It's Risky:")
+            for item in res["why_its_risky"][:3]:
+                print(f"      • {item['factor']}: {item['explanation']}")
+        print("   💡 Recommended Actions:")
+        for action in res["recommended_actions"][:3]:
+            print(f"      {action}")
+        print(f"   ⚖️ Disclaimer: {res['disclaimer']}")
     print("\n" + "="*60)

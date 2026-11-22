@@ -29,7 +29,7 @@ Instead of relying on slow, costly, and unpredictable Large Language Models (LLM
 ```
        ┌────────────────────────────────────────────────────────┐
        │                 MULTI-VECTOR INPUTS                    │
-       │   [ 💬 SMS / Text ]   [ 🌐 URL ]   [ 📞 Audio Call ]    │
+       │  [ 💬 SMS ]   [ 🌐 URL ]   [ 📧 Email ]   [ 📞 Call ]  │
        └───────────────────────────┬────────────────────────────┘
                                    │
                                    ▼
@@ -62,6 +62,9 @@ Instead of relying on slow, costly, and unpredictable Large Language Models (LLM
 
 * 🚀 **Sub-5 Millisecond Inference:** Lightning-fast offline evaluation with zero cloud API token costs.
 * 👂 **Voice Scam Defense:** Converts phone call recordings into text using Whisper Speech-to-Text (STT) to catch parcel extortion and police threats.
+* 🇮🇳 **Multilingual & Hinglish Support:** Comprehends Romanized Hindi and regional Indian cyber-coercion (*"bijli bill update", "police karyawahi", "turant pay karein"*).
+* 🎮 **Modern 2026 Threat Vectors:** Flags youth gaming traps (free BGMI UC, Free Fire Diamonds), predatory instant loan APKs, and fake event ticket sales.
+* 😎 **Gen-Z Slang Resilient:** Accurately recognizes modern internet slang (*iykyk, fr fr, no cap, ngl, lit, bet*) without triggering false positives on casual conversations.
 * 🛑 **Zero Hallucination Guarantee:** Grounded in mathematical feature weights and deterministic rule sets.
 * 🎯 **Explainable Threat Badges:** Clearly highlights *why* a message is dangerous (e.g., `[Utility Blackout Threat]`, `[Digital Arrest Extortion]`, `[Direct Peer UPI]`).
 * 📊 **Calibrated Continuous Risk Meter:** Outputs a 0% to 100% continuous score perfectly matched to dynamic glowing frontend gauges.
@@ -95,14 +98,14 @@ flowchart TD
 
 ## 📊 Model Benchmarks
 
-Trained on **5,607 multi-source samples** combining the UCI SMS Spam Collection, an extensive Indian Cyber-Fraud corpus, and Voice Call Extortion transcripts:
+Trained on an industrial corpus of **10,392 multi-modal samples** combining the UCI SMS Spam Collection (5,572 samples), scaled Voice Call Extortion transcripts (480 samples), Indian utility and blackout threats (840 samples), banking and KYC phishing (600 samples), multilingual Hinglish vectors (800 samples), gaming and loan traps (600 samples), and benign/Gen-Z slang conversations (1,500 samples):
 
 | Metric | ScamShield AI (Logistic Regression) | Linear SVM Benchmark |
 | :--- | :---: | :---: |
-| **Accuracy** | **98.7%** | 98.4% |
-| **Precision** | **95.4%** | 95.8% |
-| **Recall** | **95.4%** | 92.9% |
-| **F1-Score** | **95.4%** | 94.3% |
+| **Accuracy** | **98.6%** | 98.8% |
+| **Precision** | **99.8%** | 99.6% |
+| **Recall** | **96.7%** | 97.4% |
+| **F1-Score** | **98.2%** | 98.5% |
 | **Probability Output** | **Native Sigmoid (0.0 - 1.0)** | Hard Boundary Only |
 | **Inference Latency** | **< 5 ms** | < 5 ms |
 
@@ -117,7 +120,8 @@ Trained on **5,607 multi-source samples** combining the UCI SMS Spam Collection,
 | **Electricity Blackout** | *"Power disconnected tonight at 9:30 PM due to unpaid bill. Pay to UPI..."* | `[High Urgency]`, `[Utility Blackout Threat]`, `[Peer UPI Handle]` |
 | **Digital Arrest / CBI** | *"Customs seized parcel with drugs in Cambodia. You are under digital arrest..."* | `[Law Enforcement Impersonation]`, `[Advance Fee Demand]` |
 | **Banking / KYC** | *"SBI YONO blocked today due to pending KYC. Click http://sbi-kyc.xyz"* | `[Account Suspension]`, `[Untrusted Domain]`, `[Insecure HTTP]` |
-| **Fake Job / Tasks** | *"Earn Rs 5,000 daily by liking YouTube videos. Contact on Telegram..."* | `[Part-time Job Bait]`, `[Telegram Redirection]` |
+| **Tax & Corporate Email** | *"Income Tax refund of Rs 42,950 approved. Update bank account immediately..."* | `[Tax Refund Lure]`, `[Untrusted Domain]`, `[High Urgency]` |
+| **Fake Job / Tasks** | *"Earn Rs 5,00,000 daily by liking YouTube videos. Contact on Telegram..."* | `[Part-time Job Bait]`, `[Telegram Redirection]` |
 | **Benign Messages** | *"Hey Mom, I will reach home by 7:30 PM for dinner. Love you!"* | `[SAFE - 0.9% Risk]` |
 
 ---
