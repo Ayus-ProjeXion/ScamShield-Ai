@@ -24,7 +24,6 @@ def set_cell_margins(cell, top=100, bottom=100, left=150, right=150):
 def create_project_report(output_path="ScamShield_AI_Project_Report.docx"):
     doc = Document()
 
-    # Configure Margins (0.8 inches)
     sections = doc.sections
     for section in sections:
         section.top_margin = Inches(0.8)
@@ -32,7 +31,6 @@ def create_project_report(output_path="ScamShield_AI_Project_Report.docx"):
         section.left_margin = Inches(0.8)
         section.right_margin = Inches(0.8)
 
-    # Styles & Fonts
     normal_style = doc.styles['Normal']
     normal_style.font.name = 'Calibri'
     normal_style.font.size = Pt(11)
@@ -50,7 +48,7 @@ def create_project_report(output_path="ScamShield_AI_Project_Report.docx"):
 
     sub_p = doc.add_paragraph()
     sub_p.paragraph_format.space_after = Pt(16)
-    run_sub = sub_p.add_run("Real-Time Multi-Modal Scam Detection, Threat Intelligence & Prevention Platform")
+    run_sub = sub_p.add_run("Real-Time Multi-Modal Scam Detection, Voice Call Audio Analysis & Threat Intelligence Platform")
     run_sub.font.name = 'Arial'
     run_sub.font.size = Pt(14)
     run_sub.font.color.rgb = RGBColor(0x4F, 0x46, 0xE5)
@@ -63,9 +61,9 @@ def create_project_report(output_path="ScamShield_AI_Project_Report.docx"):
     meta_data = [
         ("Project Lead & Lead Architect", "Ayusman Mishra (@Ayus-ProjeXion)"),
         ("Hackathon Target Deadline", "December 6, 2026"),
-        ("Core Technology Stack", "React + Tailwind CSS | Python FastAPI | Scikit-Learn ML | Supabase PostgreSQL"),
+        ("Multi-Modal Modalities", "Text (SMS, Email, WhatsApp) | Web (Phishing URLs) | Audio (Voice Call Scam via Whisper STT)"),
+        ("Core Technology Stack", "React + Tailwind CSS | Python FastAPI | Scikit-Learn ML | Whisper STT | Supabase PostgreSQL"),
         ("Team Structure (4 Members)", "Member 1 (Frontend), Member 2 (Backend), Member 3 (ML & Rules), Member 4 (Database & Integration)"),
-        ("Architectural Paradigm", "Classical ML (TF-IDF + Logistic Regression) + Rule Engine (Zero Generative AI/LLM)"),
         ("Git Repository", "https://github.com/Ayus-ProjeXion/ScamShield-Ai"),
         ("Last Report Synchronization", datetime.datetime.now().strftime("%B %d, %Y - %I:%M %p"))
     ]
@@ -113,25 +111,44 @@ def create_project_report(output_path="ScamShield_AI_Project_Report.docx"):
             r.font.color.rgb = RGBColor(0x31, 0x2E, 0x81)
         return h
 
-    # --- 1. Executive Summary & Architecture Decision ---
-    add_section_header("1. Executive Summary & Non-LLM Architecture Decision")
+    # --- 1. Executive Summary & Whisper Audio Integration ---
+    add_section_header("1. Executive Summary & Voice Call Fraud Defense (Whisper STT)")
     p = doc.add_paragraph(
-        "ScamShield AI is designed to solve one of the most pressing cybersecurity threats facing digital citizens: "
-        "the rampant spread of phishing links, fraudulent SMS (smishing), deceptive phone calls, and malicious payment QR/UPI requests. "
-        "With a target hackathon submission deadline of December 6, 2026, the architectural foundation prioritizes speed, accuracy, and zero hallucinations."
+        "Digital financial crime and psychological extortion in India and worldwide have evolved far beyond basic spam emails. "
+        "Cybercriminals increasingly orchestrate high-pressure fraudulent telephone calls—including 'Digital Arrest' extortion, fake FedEx/Customs narcotics seizures, "
+        "and impersonation of senior police/CBI officers. These voice-based attacks account for over 60% of catastrophic financial losses."
     )
     p.paragraph_format.space_after = Pt(6)
     
     p2 = doc.add_paragraph(
-        "Crucially, the platform intentionally avoids heavy Large Language Model (LLM) or Generative AI integrations. "
-        "Instead, ScamShield AI leverages Scikit-Learn Machine Learning (TF-IDF vectorization + Logistic Regression), "
-        "coupled with a deterministic heuristic rule engine, external URL reputation checking APIs, and a high-performance Supabase PostgreSQL data store. "
-        "This delivers sub-50ms scan latency, zero token costs, and 100% explainable, deterministic threat scoring."
+        "To counter this epidemic, ScamShield AI integrates OpenAI Whisper Speech-to-Text (STT) directly into its threat scanning pipeline. "
+        "Users can upload or record phone conversations; Whisper transcribes the spoken audio into text with high accuracy, "
+        "and ScamShield's dual-engine (Scikit-Learn ML + Deterministic Psychological Indicator Engine) evaluates the dialogue in milliseconds, "
+        "highlighting coercion keywords and calculating an instant risk rating."
     )
     p2.paragraph_format.space_after = Pt(12)
 
-    # --- 2. Team Workstream Matrix ---
-    add_section_header("2. 4-Member Team Workstream & Git Branch Matrix")
+    # --- 2. Multi-Modal Modality Architecture ---
+    add_section_header("2. Multi-Modal Threat Detection Vectors")
+    vectors = [
+        ("Vector 1: Voice Call Audio Scanning (Whisper STT): ", "Processes recorded phone calls (.mp3, .wav, .m4a) through OpenAI Whisper, extracting spoken transcripts and analyzing extortion tactics, coercive digital arrest threats, and fake authority cues."),
+        ("Vector 2: Machine Learning Text Scam Classification: ", "Scikit-Learn TF-IDF vectorizer + Logistic Regression evaluating SMS, WhatsApp, and email messages with calibrated probability scores."),
+        ("Vector 3: Deterministic Manipulation Indicator Engine: ", "Independent heuristic engine identifying urgency triggers, countdown timers, fake official signatures, and credential harvesting patterns."),
+        ("Vector 4: Phishing URL & Homoglyph Inspector: ", "Extracts domains, calculates entropy, checks SSL validity, and queries Supabase threat_iocs blacklist/whitelist."),
+        ("Vector 5: UPI & Financial Fraud Safeguard: ", "Scrutinizes VPA handles and payment requests linked to known extortion schemes before money is transferred.")
+    ]
+    for prefix, desc in vectors:
+        p = doc.add_paragraph(style='List Bullet')
+        p.paragraph_format.space_after = Pt(3)
+        rb = p.add_run(prefix)
+        rb.bold = True
+        rb.font.color.rgb = RGBColor(0x31, 0x2E, 0x81)
+        p.add_run(desc)
+
+    doc.add_paragraph().paragraph_format.space_after = Pt(12)
+
+    # --- 3. Team Workstream Matrix ---
+    add_section_header("3. 4-Member Team Workstream & Git Branch Matrix")
     team_table = doc.add_table(rows=5, cols=4)
     team_table.alignment = WD_TABLE_ALIGNMENT.CENTER
     team_table.autofit = False
@@ -153,10 +170,10 @@ def create_project_report(output_path="ScamShield_AI_Project_Report.docx"):
         r.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
 
     team_data = [
-        ("Member 1: Frontend Developer", "frontend", "React, Vite, Tailwind CSS, Heroicons", "Dark glassmorphism scanner dashboard, risk score gauge, evidence breakdown, community threat feed"),
-        ("Member 2: Backend Developer", "backend", "FastAPI, Uvicorn, Pydantic, Python", "RESTful API gateway (/api/v1/scan, /report, /feed), entity extractor, rate limiting"),
-        ("Member 3: ML & Rule Developer", "ai-engine", "Scikit-learn, Pandas, NumPy, Joblib", "TF-IDF text vectorizer, Logistic Regression model, deterministic regex & urgency heuristic rules"),
-        ("Member 4: Database & Integration (Lead)", "database", "Supabase PostgreSQL, Python, Pytest", "PostgreSQL DDL schema, RLS policies, seed fixtures, external URL reputation integration, tests")
+        ("Member 1: Frontend Developer", "frontend", "React, Vite, Tailwind CSS, Audio Recorder", "Dark glassmorphism dashboard, audio call uploader/mic recorder, risk score gauge, community feed"),
+        ("Member 2: Backend Developer", "backend", "FastAPI, Uvicorn, Python-Multipart, Whisper STT", "RESTful API gateway (/scan/text, /scan/audio, /report, /feed), Whisper pipeline, rate limiting"),
+        ("Member 3: ML & Rule Developer", "ai-engine", "Scikit-learn, Pandas, NumPy, Joblib", "TF-IDF text vectorizer, Logistic Regression model, voice transcript feature extractor, heuristic rules"),
+        ("Member 4: Database & Integration (Lead)", "database", "Supabase PostgreSQL, Python, Pytest", "PostgreSQL DDL schema, call scan telemetry tables, seed fixtures, external security APIs, E2E tests")
     ]
 
     for i, row_data in enumerate(team_data):
@@ -177,8 +194,8 @@ def create_project_report(output_path="ScamShield_AI_Project_Report.docx"):
 
     doc.add_paragraph().paragraph_format.space_after = Pt(12)
 
-    # --- 3. Supabase Schema Architecture ---
-    add_section_header("3. Supabase PostgreSQL Schema Specification (database/schema.sql)")
+    # --- 4. Supabase Schema Architecture ---
+    add_section_header("4. Supabase PostgreSQL Schema Specification (database/schema.sql)")
     schema_table = doc.add_table(rows=7, cols=3)
     schema_table.alignment = WD_TABLE_ALIGNMENT.CENTER
     schema_table.autofit = False
@@ -202,7 +219,7 @@ def create_project_report(output_path="ScamShield_AI_Project_Report.docx"):
     tables_info = [
         ("profiles", "id (UUID PK, FK auth.users), full_name (TEXT), email (TEXT UNIQUE), role (user_role), reputation_score (INT)", "Public viewable; users can update own profile."),
         ("threat_iocs", "id (UUID PK), ioc_type (ioc_type ENUM), ioc_value (TEXT UNIQUE), severity (threat_severity), category, is_blacklisted (BOOL)", "Publicly readable by client scanner; editable by admins."),
-        ("threat_scans", "id (UUID PK), user_id (UUID FK), channel (scan_channel), raw_payload (TEXT), extracted_domain, extracted_phone, extracted_vpa", "Public insert allowed for scan tool; users view own scans."),
+        ("threat_scans", "id (UUID PK), user_id (UUID FK), channel (scan_channel), raw_payload, audio_file_url, audio_duration_seconds, extracted entities", "Public insert allowed for scan tool; users view own scans."),
         ("scam_classifications", "id (UUID PK), scan_id (UUID FK), overall_severity, overall_risk_score (0-100), primary_category, deterministic_match, ai_confidence, explanation", "Read access linked to scan visibility; service-role inserts."),
         ("community_reports", "id (UUID PK), reporter_id (UUID FK), ioc_value, ioc_type, category, title, description, upvote_count, status", "Publicly readable threat feed; authenticated users can submit."),
         ("audit_logs", "id (UUID PK), actor_id (UUID FK), action (TEXT), entity_type, entity_id, details (JSONB), ip_address, created_at", "Strictly restricted to Security Analysts & Admins.")
@@ -226,31 +243,9 @@ def create_project_report(output_path="ScamShield_AI_Project_Report.docx"):
 
     doc.add_paragraph().paragraph_format.space_after = Pt(12)
 
-    # --- 4. Synchronized SDD Documentation Suite ---
-    add_section_header("4. Spec-Driven Development (SDD) Blueprint Suite")
-    doc.add_paragraph("ScamShield AI maintains 6 fully synchronized markdown blueprints in the project root:")
-
-    sdd_items = [
-        ("PRD.md: ", "Product Requirements Document detailing personas, functional/non-functional specs, and performance targets."),
-        ("architecture.md: ", "End-to-end system topology, monorepo directory contract, data flow lifecycle, and security model."),
-        ("rules.md: ", "Engineering operational guardrails: Sacred Trunk (`main`), 4-member branching, non-LLM requirement, and zero secrets."),
-        ("phases.md: ", "Implementation roadmap aligned with the December 6, 2026 hackathon deadline."),
-        ("design.md: ", "Dark glassmorphism Cyberpunk Mission Control UI tokens, typography, and gauge components."),
-        ("memory.md: ", "Architectural Decision Records (ADR-001 through ADR-004) and project history.")
-    ]
-    for prefix, desc in sdd_items:
-        p = doc.add_paragraph(style='List Bullet')
-        p.paragraph_format.space_after = Pt(3)
-        rb = p.add_run(prefix)
-        rb.bold = True
-        rb.font.color.rgb = RGBColor(0x31, 0x2E, 0x81)
-        p.add_run(desc)
-
-    doc.add_paragraph().paragraph_format.space_after = Pt(12)
-
     # --- 5. Execution Audit Log ---
     add_section_header("5. Project Execution & Audit Log")
-    audit_table = doc.add_table(rows=7, cols=3)
+    audit_table = doc.add_table(rows=8, cols=3)
     audit_table.alignment = WD_TABLE_ALIGNMENT.CENTER
     audit_table.autofit = False
 
@@ -274,7 +269,8 @@ def create_project_report(output_path="ScamShield_AI_Project_Report.docx"):
         ("Nov 22, 2026 - 15:11", "Generated automated living Word report (ScamShield_AI_Project_Report.docx)", "COMPLETED"),
         ("Nov 22, 2026 - 15:14", "Switched to 'database' branch; authored full 6-file SDD suite and Supabase schema.sql / seed.sql", "COMPLETED"),
         ("Nov 22, 2026 - 15:16", "Committed and pushed full Supabase database layer to origin/database", "COMPLETED"),
-        ("Nov 22, 2026 - 15:18", "Ingested public ChatGPT roadmap; integrated Dec 6 deadline, 4-member roles, and Non-LLM ML decision", "COMPLETED")
+        ("Nov 22, 2026 - 15:18", "Ingested public ChatGPT roadmap; integrated Dec 6 deadline, 4-member roles, and Non-LLM ML decision", "COMPLETED"),
+        ("Nov 22, 2026 - 15:24", "Integrated OpenAI Whisper STT architecture for Voice Call Scam Detection; updated schema and seed fixtures", "COMPLETED")
     ]
 
     for i, record in enumerate(audit_records):

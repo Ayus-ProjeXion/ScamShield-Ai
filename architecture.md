@@ -3,93 +3,88 @@
 **Project:** ScamShield AI  
 **Author & Lead Architect:** Ayusman Mishra ([@Ayus-ProjeXion](https://github.com/Ayus-ProjeXion))  
 **Target Deadline:** December 6, 2026  
-**Version:** 1.1.0  
+**Version:** 1.2.0  
 
 ---
 
 ## 1. High-Level Architecture Topology
 
 ```
-+-------------------------------------------------------------------------+
-|                    React Frontend Client (Vite + Tailwind)              |
-|        - Multi-Channel Scan Input (SMS, URL, Email, Call Transcript)    |
-|        - Dynamic Threat Severity Meter (Safe, Moderate, Critical)       |
-|        - Explainable Evidence Breakdown & Community Threat Feed         |
-+------------------------------------+------------------------------------+
-                                     |
-                                HTTPS REST
-                                     v
-+------------------------------------+------------------------------------+
-|                      FastAPI Backend Gateway (app/main.py)              |
-|        - Input Sanitization & Entity Extraction (URLs, Phones, VPAs)    |
-|        - Orchestration Service: Rule Engine + ML Model Pipeline        |
-+-------------------+-------------------------------+---------------------+
-                    |                               |
-     Deterministic  |                  Vectorized   |
-     Lookup         v                  Inference    v
-+-------------------+---------------+   +-----------+---------------------+
-|        Deterministic Rule Engine  |   |    Scikit-Learn ML Service      |
-|  - Threat IOC Lookup (Supabase)   |   | - TF-IDF Feature Extraction     |
-|  - Domain Entropy & Homoglyphs    |   | - Logistic Regression Classifier|
-|  - Regex Threat Heuristics        |   | - Calibrated Scam Probability   |
-+-------------------+---------------+   +-----------+---------------------+
-                    \                               /
-                     \       Weighted Score        /
-                      v      Consolidation        v
-+-------------------------------------------------------------------------+
-|                  Database Layer (Supabase PostgreSQL)                   |
-|  - profiles                      - threat_scans                         |
-|  - scam_classifications          - threat_iocs (Blacklist / Whitelist)  |
-|  - community_reports             - audit_logs                           |
-|  - Row-Level Security (RLS)      - High-Speed B-Tree / GIN Indexes      |
-+-------------------------------------------------------------------------+
++-----------------------------------------------------------------------------------+
+|                        React Frontend Client (Vite + Tailwind)                    |
+|  - Text Scanner Tab (SMS, Email, WhatsApp)                                        |
+|  - URL Scanner Tab (Homoglyphs, Lookalike domains)                                |
+|  - Voice Call Scanner Tab (Audio File Upload / Mic Recording for Whisper STT)     |
+|  - Dynamic Threat Severity Meter (Safe, Moderate, Critical)                       |
+|  - Evidence Breakdown & Live Community Threat Feed                                |
++-----------------------------------------+-----------------------------------------+
+                                          |
+                                     HTTPS REST
+                                          v
++-----------------------------------------+-----------------------------------------+
+|                          FastAPI Backend API Gateway                              |
+|  - Input Validation & Normalization         - Rate Limiting & Proxy Protection    |
+|  - Audio Ingestion & File Preprocessing     - Pipeline Orchestration              |
++-------------------+---------------------+--------------------+--------------------+
+                    |                     |                    |
+        Audio Call  |       Deterministic |         Vectorized |
+        Payload     v       Lookup        v         Inference  v
++-------------------+---+ +---------------+----+ +-------------+--------------------+
+|   Whisper STT Engine  | | Rule Heuristics    | |  Scikit-Learn ML Service        |
+| - OpenAI Whisper STT  | | - Blacklist IOCs   | | - TF-IDF Vectorizer             |
+| - Audio Transcription | | - RegEx Urgency    | | - Logistic Regression Classifier |
+| - Speech Timestamps   | | - Homoglyph Check  | | - Calibrated Scam Probability    |
++-------------------+---+ +---------------+----+ +-------------+--------------------+
+                    \                     |                    /
+                     \                    |                   /
+                      v                   v                  v
++-----------------------------------------------------------------------------------+
+|                     Threat Consolidation & Explanation Engine                     |
+|  - Computes Unified Risk Score (0 - 100)                                          |
+|  - Identifies Triggered Evidence Chips & Psychological Manipulation Cues         |
++-----------------------------------------+-----------------------------------------+
+                                          |
+                                          v
++-----------------------------------------------------------------------------------+
+|                      Database Layer (Supabase PostgreSQL)                         |
+|  - profiles                         - threat_scans (Text & Audio Call Transcripts)|
+|  - scam_classifications             - threat_iocs (Blacklist / Whitelist)         |
+|  - community_reports                - audit_logs                                  |
+|  - Row-Level Security (RLS)         - High-Speed B-Tree / GIN Indexes             |
++-----------------------------------------------------------------------------------+
 ```
 
 ---
 
-## 2. Directory Structure Contract
+## 2. Voice Call Scam Analysis Flow (Whisper Pipeline)
 
-```text
-ScamShield-Ai/
-├── frontend/
-│   ├── src/
-│   │   ├── components/
-│   │   │   ├── ThreatScanner.jsx
-│   │   │   ├── RiskGauge.jsx
-│   │   │   ├── ThreatFeed.jsx
-│   │   │   └── EvidenceCard.jsx
-│   │   ├── App.jsx
-│   │   ├── index.css
-│   │   └── main.jsx
-│   ├── vite.config.js
-│   └── package.json
-├── backend/
-│   ├── app/
-│   │   ├── __init__.py
-│   │   ├── main.py
-│   │   ├── routes/
-│   │   │   ├── scan.py
-│   │   │   ├── reports.py
-│   │   │   └── health.py
-│   │   ├── services/
-│   │   │   ├── rule_engine.py
-│   │   │   ├── ml_classifier.py
-│   │   │   ├── external_api.py
-│   │   │   └── supabase_client.py
-│   │   ├── models/
-│   │   │   └── ml_model.pkl
-│   │   └── schemas/
-│   │       ├── scan_schema.py
-│   │       └── report_schema.py
-│   └── requirements.txt
-├── database/
-│   ├── schema.sql
-│   └── seed.sql
-├── PRD.md
-├── architecture.md
-├── rules.md
-├── phases.md
-├── design.md
-├── memory.md
-└── ScamShield_AI_Project_Report.docx
+```
+[User Uploads Call Audio (.mp3/.wav)]
+               │
+               ▼
+[POST /api/v1/scan/audio (FastAPI)]
+               │
+               ▼
+[OpenAI Whisper Engine (STT)]
+               │
+               ├──▶ Transcribes audio to text dialogue
+               └──▶ Extracts speech duration & key phrases
+               │
+               ▼
+[ScamShield Analysis Pipeline]
+               │
+               ├──▶ Heuristic Rule Engine: Detects "CBI", "Customs", "Digital Arrest", "OTP"
+               └──▶ Scikit-Learn Model: Predicts fraud likelihood from transcript
+               │
+               ▼
+[Supabase Storage & Logging]
+               │
+               ├──▶ Writes scan record to public.threat_scans (channel='CALL')
+               └──▶ Writes classification & evidence to public.scam_classifications
+               │
+               ▼
+[Frontend Response]
+  - Full Transcript with flagged manipulation phrases
+  - Overall Threat Gauge (e.g. 94% Critical Scam)
+  - Defensive Guidance ("Hang up immediately. Government agencies never demand money over phone.")
 ```

@@ -94,7 +94,7 @@ CREATE TABLE IF NOT EXISTS public.threat_iocs (
     updated_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );
 
--- TABLE: threat_scans (Incoming Telemetry & Scan Requests)
+-- TABLE: threat_scans (Incoming Telemetry & Scan Requests: Text, URL, & Audio Call Transcripts)
 CREATE TABLE IF NOT EXISTS public.threat_scans (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     user_id UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
@@ -104,6 +104,8 @@ CREATE TABLE IF NOT EXISTS public.threat_scans (
     extracted_domain TEXT,
     extracted_phone TEXT,
     extracted_vpa TEXT,
+    audio_file_url TEXT,
+    audio_duration_seconds INTEGER,
     client_ip_hash TEXT,
     created_at TIMESTAMPTZ DEFAULT NOW() NOT NULL
 );

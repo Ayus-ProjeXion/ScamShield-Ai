@@ -28,11 +28,12 @@ VALUES
 ON CONFLICT (ioc_value) DO NOTHING;
 
 -- 2. Seed Mock Telemetry Scans
-INSERT INTO public.threat_scans (id, channel, raw_payload, extracted_url, extracted_domain, extracted_phone, extracted_vpa)
+INSERT INTO public.threat_scans (id, channel, raw_payload, extracted_url, extracted_domain, extracted_phone, extracted_vpa, audio_file_url, audio_duration_seconds)
 VALUES
-    ('c1111111-1111-1111-1111-111111111111', 'SMS', 'Dear Customer, your electricity power will be disconnected tonight at 9:30 PM due to unpaid bill. Immediately contact our officer at +919876543210 or update KYC at http://sbi-kyc-verification-login.com', 'http://sbi-kyc-verification-login.com', 'sbi-kyc-verification-login.com', '+919876543210', NULL),
-    ('c2222222-2222-2222-2222-222222222222', 'URL', 'https://onlinesbi.sbi/portal/login', 'https://onlinesbi.sbi/portal/login', 'onlinesbi.sbi', NULL, NULL),
-    ('c3333333-3333-3333-3333-333333333333', 'QR_CODE', 'upi://pay?pa=custom.duty.clearance@ybl&pn=CustomsClearance&am=4999', NULL, NULL, NULL, 'custom.duty.clearance@ybl')
+    ('c1111111-1111-1111-1111-111111111111', 'SMS', 'Dear Customer, your electricity power will be disconnected tonight at 9:30 PM due to unpaid bill. Immediately contact our officer at +919876543210 or update KYC at http://sbi-kyc-verification-login.com', 'http://sbi-kyc-verification-login.com', 'sbi-kyc-verification-login.com', '+919876543210', NULL, NULL, NULL),
+    ('c2222222-2222-2222-2222-222222222222', 'URL', 'https://onlinesbi.sbi/portal/login', 'https://onlinesbi.sbi/portal/login', 'onlinesbi.sbi', NULL, NULL, NULL, NULL),
+    ('c3333333-3333-3333-3333-333333333333', 'QR_CODE', 'upi://pay?pa=custom.duty.clearance@ybl&pn=CustomsClearance&am=4999', NULL, NULL, NULL, 'custom.duty.clearance@ybl', NULL, NULL),
+    ('c4444444-4444-4444-4444-444444444444', 'CALL', '[Whisper Audio Transcript]: Hello, this is Inspector Rathore from Mumbai Crime Branch Narcotics Wing. A parcel booked under your Aadhaar card containing 500 grams of contraband has been seized at customs. A digital arrest warrant is issued. Do not disconnect this line. Transfer 50,000 rupees security deposit to custom.duty.clearance@ybl immediately to avoid immediate physical arrest.', NULL, NULL, '+918765432109', 'custom.duty.clearance@ybl', 'https://scamshield-audio.s3.amazonaws.com/samples/fedex_extortion_call.mp3', 74)
 ON CONFLICT (id) DO NOTHING;
 
 -- 3. Seed Classifications for Mock Scans
@@ -40,7 +41,8 @@ INSERT INTO public.scam_classifications (scan_id, overall_severity, overall_risk
 VALUES
     ('c1111111-1111-1111-1111-111111111111', 'CRITICAL', 98.50, 'PHISHING_URL', true, 0.99, 'Urgent electricity disconnection scam combined with blacklisted fake SBI banking domain. Multiple fraud markers triggered.', '["Known Phishing Domain", "Blacklisted Smishing Caller", "Extreme Urgency Framing", "Utility Disconnection Threat"]'::jsonb, 42),
     ('c2222222-2222-2222-2222-222222222222', 'SAFE', 2.00, 'PHISHING_URL', true, 0.01, 'Domain verified against official government and banking whitelist registry. Secure SSL and valid DNS records confirmed.', '["Official Whitelisted Domain", "Valid EV SSL Certificate", "No Deceptive Heuristics"]'::jsonb, 18),
-    ('c3333333-3333-3333-3333-333333333333', 'CRITICAL', 95.00, 'UPI_PAYMENT_FRAUD', true, 0.97, 'Flagged UPI handle linked to ongoing fake customs duty extortion campaign. Direct funds transfer request with fraud history.', '["Blacklisted VPA Handle", "Extortion Keyword Match", "Impersonation of Customs Authority"]'::jsonb, 35)
+    ('c3333333-3333-3333-3333-333333333333', 'CRITICAL', 95.00, 'UPI_PAYMENT_FRAUD', true, 0.97, 'Flagged UPI handle linked to ongoing fake customs duty extortion campaign. Direct funds transfer request with fraud history.', '["Blacklisted VPA Handle", "Extortion Keyword Match", "Impersonation of Customs Authority"]'::jsonb, 35),
+    ('c4444444-4444-4444-4444-444444444444', 'CRITICAL', 99.20, 'IMPERSONATION', true, 0.98, 'Voice call transcript parsed by Whisper revealed classic "Digital Arrest" extortion tactics, false police authority impersonation, and coercive financial transfer demands.', '["Whisper Audio Transcribed", "Police/Crime Branch Impersonation", "Digital Arrest Threat", "Contraband Parcel Extortion", "Blacklisted VPA Handle"]'::jsonb, 128)
 ON CONFLICT (id) DO NOTHING;
 
 -- 4. Seed Initial Community Reports

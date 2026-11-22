@@ -26,16 +26,16 @@
 
 ### ADR-002: Exclude Generative AI / LLMs in Favor of Classical ML + Rule Engine
 * **Decision:** Reject Generative AI (LLMs) in favor of Scikit-Learn (TF-IDF + Logistic Regression) coupled with deterministic rule engines.
-* **Rationale:**
-  1. *Speed:* Real-time response time $< 50\text{ ms}$ vs $> 2000\text{ ms}$ for cloud LLMs.
-  2. *Deterministic Trust:* In fraud prevention, hallucinations destroy user trust.
-  3. *Cost & Resilience:* Eliminates API rate limits, paywalls, and offline degradation.
-  4. *Deadline:* Allows team to finalize a rock-solid, production-grade MVP before December 6, 2026.
+* **Rationale:** Eliminates latency, cost, and hallucination risks; ensures predictable performance under judging conditions.
 
-### ADR-003: Unified Monorepo with Clean Layer Separation
+### ADR-003: OpenAI Whisper Integration for Voice Call Scam Detection
+* **Decision:** Incorporate OpenAI Whisper Speech-to-Text (STT) into the backend to transcribe phone call audio recordings before downstream NLP and manipulation classification.
+* **Rationale:** Fraudulent calls (FedEx parcel extortion, fake police/CBI calls, electricity cut threats) represent over 60% of financial losses in India. Adding audio call scam detection transforms ScamShield AI from a text-only tool into a comprehensive multi-modal defense system.
+
+### ADR-004: Unified Monorepo with Clean Layer Separation
 * **Decision:** House `frontend/`, `backend/`, and `database/` in a single Git repository under feature branches.
-* **Rationale:** Facilitates cross-team integration tests and simplified deployment.
+* **Rationale:** Simplifies local testing, cross-member integration, and cloud deployment.
 
-### ADR-004: Automated Living Project Report (.docx)
+### ADR-005: Automated Living Project Report (.docx)
 * **Decision:** Automatically update and maintain `ScamShield_AI_Project_Report.docx` via `generate_report.py` at every milestone.
-* **Rationale:** The team always has a ready-to-submit project report with complete technical specifications and audit logs.
+* **Rationale:** The team always has a ready-to-submit project report with complete technical specifications and audit logs without manual assembly.
