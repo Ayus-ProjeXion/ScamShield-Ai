@@ -88,8 +88,11 @@ async def scan_email(
 ):
     start_time = time.perf_counter()
     client_id = payload.client_id or "email_client"
+    raw_email_str = payload.email_text or payload.raw_email or ""
+    if not raw_email_str.strip():
+        raise HTTPException(status_code=422, detail="email_text or raw_email is required")
     
-    raw_res = detector.analyze_email(payload.email_text, client_id=client_id)
+    raw_res = detector.analyze_email(raw_email_str, client_id=client_id)
     duration_ms = round((time.perf_counter() - start_time) * 1000, 2)
     
     scan_id = str(uuid.uuid4())
@@ -110,7 +113,7 @@ async def scan_email(
 
     response_data = ScanResponse(
         scan_id=scan_id,
-        text_preview=raw_res.get("sanitized_preview") or payload.email_text[:120],
+        text_preview=raw_res.get("sanitized_preview") or raw_email_str[:120],
         threat_level=raw_res["threat_level"],
         risk_score=raw_res["risk_score"],
         is_scam=raw_res["is_scam"],

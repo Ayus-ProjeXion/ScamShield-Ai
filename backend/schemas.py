@@ -12,7 +12,8 @@ class TextScanRequest(BaseModel):
     channel: Optional[str] = Field("SMS", description="Communication channel: SMS, WHATSAPP, TELEGRAM, URL")
 
 class EmailScanRequest(BaseModel):
-    email_text: str = Field(..., min_length=1, max_length=20000, description="Full RFC email text including From, Subject, and Body")
+    email_text: Optional[str] = Field(None, description="Full RFC email text including From, Subject, and Body")
+    raw_email: Optional[str] = Field(None, description="Alias for email_text")
     client_id: Optional[str] = Field("email_client", description="Client identifier for rate-limiting")
 
 class SecurityTokenSchema(BaseModel):

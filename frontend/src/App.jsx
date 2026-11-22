@@ -59,7 +59,7 @@ export default function App() {
 
       if (activeTab === 'email') {
         endpoint = `${API_BASE_URL}/api/v1/scan/email`;
-        bodyData = JSON.stringify({ raw_email: inputText });
+        bodyData = JSON.stringify({ email_text: inputText, raw_email: inputText });
         headers['Content-Type'] = 'application/json';
       } else if (activeTab === 'audio' && audioFile) {
         endpoint = `${API_BASE_URL}/api/v1/scan/audio`;
@@ -68,7 +68,10 @@ export default function App() {
         bodyData = formData;
       } else {
         endpoint = `${API_BASE_URL}/api/v1/scan/text`;
-        bodyData = JSON.stringify({ text: inputText, channel: 'sms' });
+        bodyData = JSON.stringify({
+          text: inputText,
+          channel: activeTab === 'audio' ? 'VOICE' : (activeTab === 'email' ? 'EMAIL' : 'SMS')
+        });
         headers['Content-Type'] = 'application/json';
       }
 
