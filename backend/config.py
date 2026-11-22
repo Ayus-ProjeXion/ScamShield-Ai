@@ -14,14 +14,13 @@ class Settings:
     SUPABASE_KEY: str = os.getenv("SUPABASE_KEY", "mock-anon-key")
     SUPABASE_SERVICE_ROLE_KEY: str = os.getenv("SUPABASE_SERVICE_ROLE_KEY", "mock-service-role-key")
     
-    # Security & CORS
+    # Security & CORS (Hardened: No wildcard credentials)
     SECRET_KEY: str = os.getenv("SECRET_KEY", "scamshield-super-secret-hmac-key-2026")
     ALLOWED_ORIGINS: List[str] = [
-        "http://localhost:3000",
-        "http://localhost:5173",
-        "http://127.0.0.1:3000",
-        "http://127.0.0.1:5173",
-        "*"
+        origin.strip() for origin in os.getenv(
+            "ALLOWED_ORIGINS",
+            "http://localhost:3000,http://localhost:5173,http://127.0.0.1:3000,http://127.0.0.1:5173"
+        ).split(",") if origin.strip()
     ]
     
     # Rate Limiting & Cooldown

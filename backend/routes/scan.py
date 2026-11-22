@@ -2,8 +2,9 @@ import os
 import time
 import tempfile
 import uuid
+import asyncio
 import datetime
-from fastapi import APIRouter, HTTPException, UploadFile, File, Form, Depends
+from fastapi import APIRouter, HTTPException, UploadFile, File, Form, Depends, BackgroundTasks
 from typing import Optional
 
 from backend.schemas import (
@@ -26,6 +27,7 @@ def get_detector() -> ScamDetector:
 @router.post("/text", response_model=ScanResponse, summary="Scan SMS, WhatsApp, or Text Message")
 async def scan_text(
     payload: TextScanRequest,
+    background_tasks: BackgroundTasks,
     detector: ScamDetector = Depends(get_detector)
 ):
     start_time = time.perf_counter()
@@ -67,13 +69,16 @@ async def scan_text(
         created_at=now_str
     )
     
-    # Persist in database
-    await db.save_scan(response_data.model_dump())
+    # Instant in-memory registration for immediate zero-latency retrieval
+    db.scans[scan_id] = response_data.model_dump()
+    # Asynchronously synchronize with Supabase in background
+    background_tasks.add_task(db.save_scan, response_data.model_dump())
     return response_data
 
 @router.post("/email", response_model=ScanResponse, summary="Scan RFC Email Headers & Body")
 async def scan_email(
     payload: EmailScanRequest,
+    background_tasks: BackgroundTasks,
     detector: ScamDetector = Depends(get_detector)
 ):
     start_time = time.perf_counter()
@@ -115,28 +120,45 @@ async def scan_email(
         created_at=now_str
     )
     
-    await db.save_scan(response_data.model_dump())
+    db.scans[scan_id] = response_data.model_dump()
+    background_tasks.add_task(db.save_scan, response_data.model_dump())
     return response_data
 
 @router.post("/audio", response_model=ScanResponse, summary="Upload & Transcribe Voice Call Audio (.wav, .mp3)")
 async def scan_audio(
     file: UploadFile = File(..., description="Audio recording of phone call (.wav, .mp3, .m4a)"),
     client_id: Optional[str] = Form("audio_client"),
+    background_tasks: BackgroundTasks = None,
     detector: ScamDetector = Depends(get_detector)
 ):
     start_time = time.perf_counter()
-    file_ext = os.path.splitext(file.filename)[1].lower() if file.filename else ".wav"
+    file_ext = os.path.splitext(file.filename)[1].lower() if file.filename else ""
     if file_ext not in [".wav", ".mp3", ".m4a", ".ogg"]:
-        file_ext = ".wav"
+        raise HTTPException(
+            status_code=400,
+            detail=f"Unsupported audio format '{file_ext}'. Allowed formats: .wav, .mp3, .m4a, .ogg"
+        )
         
-    # Write uploaded audio to temporary file for Whisper processing
+    content = await file.read()
+    # 15MB DoS File Size Guard
+    if len(content) > 15 * 1024 * 1024:
+        raise HTTPException(
+            status_code=413,
+            detail="Audio file exceeds 15MB maximum size threshold."
+        )
+        
     with tempfile.NamedTemporaryFile(suffix=file_ext, delete=False) as tmp_file:
-        content = await file.read()
         tmp_file.write(content)
         tmp_audio_path = tmp_file.name
         
     try:
-        raw_res = detector.analyze_audio(tmp_audio_path, client_id=client_id or "audio_client")
+        # Run speech recognition in thread with 25s timeout to prevent thread deadlock
+        raw_res = await asyncio.wait_for(
+            asyncio.to_thread(detector.analyze_audio, tmp_audio_path, client_id or "audio_client"),
+            timeout=25.0
+        )
+    except asyncio.TimeoutError:
+        raise HTTPException(status_code=504, detail="Audio transcription timed out after 25s.")
     finally:
         if os.path.exists(tmp_audio_path):
             try:
@@ -182,7 +204,11 @@ async def scan_audio(
         created_at=now_str
     )
     
-    await db.save_scan(response_data.model_dump())
+    db.scans[scan_id] = response_data.model_dump()
+    if background_tasks:
+        background_tasks.add_task(db.save_scan, response_data.model_dump())
+    else:
+        await db.save_scan(response_data.model_dump())
     return response_data
 
 @router.get("/{scan_id}", summary="Retrieve Scan Details & Incident Report")

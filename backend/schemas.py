@@ -100,5 +100,9 @@ class HealthResponse(BaseModel):
     model_loaded: bool
     ml_confidence_sample: float
     avg_inference_latency_ms: float
+    p50_latency_ms: Optional[float] = None
+    p95_latency_ms: Optional[float] = None
+    p99_latency_ms: Optional[float] = None
+    circuit_breaker_status: Optional[str] = "CLOSED_NORMAL"
     database_connected: bool
     timestamp: str

@@ -1,8 +1,12 @@
 import os
+import time
 import uuid
+import logging
 import datetime
 from typing import Dict, Any, List, Optional
 from backend.config import settings
+
+logger = logging.getLogger("DatabaseManager")
 
 # Pre-seeded in-memory store mirroring database/seed.sql
 INITIAL_IOCS = [
@@ -118,10 +122,36 @@ class DatabaseManager:
         self.is_connected = False
         self._init_client()
         
+        # Resilient Circuit Breaker (Trips after 3 consecutive errors; 30s cooldown)
+        self.consecutive_failures = 0
+        self.failure_threshold = 3
+        self.cooldown_seconds = 30.0
+        self.circuit_open_until = 0.0
+        
         # Local mock storage
         self.scans: Dict[str, Dict[str, Any]] = {}
         self.reports: List[Dict[str, Any]] = list(INITIAL_REPORTS)
         self.iocs: List[Dict[str, Any]] = list(INITIAL_IOCS)
+
+    def _can_attempt_remote(self) -> bool:
+        if not self.is_connected or not self.supabase:
+            return False
+        now = time.time()
+        if now < self.circuit_open_until:
+            return False
+        return True
+
+    def _record_success(self):
+        self.consecutive_failures = 0
+
+    def _record_failure(self, err: Exception):
+        self.consecutive_failures += 1
+        if self.consecutive_failures >= self.failure_threshold:
+            self.circuit_open_until = time.time() + self.cooldown_seconds
+            logger.warning(
+                f"Circuit breaker tripped: {self.consecutive_failures} consecutive Supabase errors. "
+                f"Failing fast to local memory for {self.cooldown_seconds}s. Error: {err}"
+            )
 
     def _init_client(self):
         if settings.SUPABASE_URL and not settings.SUPABASE_URL.startswith("https://mock"):
@@ -139,11 +169,11 @@ class DatabaseManager:
         scan_data["scan_id"] = scan_id
         scan_data["created_at"] = datetime.datetime.now(datetime.timezone.utc).isoformat()
         
-        # In-memory store
+        # In-memory store (instantaneous lookup)
         self.scans[scan_id] = scan_data
         
-        # If connected to live Supabase, persist asynchronously
-        if self.is_connected and self.supabase:
+        # If circuit allows, persist to live Supabase
+        if self._can_attempt_remote():
             try:
                 self.supabase.table("threat_scans").insert({
                     "id": scan_id,
@@ -151,8 +181,9 @@ class DatabaseManager:
                     "raw_payload": scan_data.get("text_preview", ""),
                     "created_at": scan_data["created_at"]
                 }).execute()
-            except Exception:
-                pass
+                self._record_success()
+            except Exception as e:
+                self._record_failure(e)
                 
         return scan_id
 
@@ -160,13 +191,14 @@ class DatabaseManager:
         if scan_id in self.scans:
             return self.scans[scan_id]
             
-        if self.is_connected and self.supabase:
+        if self._can_attempt_remote():
             try:
                 res = self.supabase.table("threat_scans").select("*").eq("id", scan_id).execute()
                 if res.data:
+                    self._record_success()
                     return res.data[0]
-            except Exception:
-                pass
+            except Exception as e:
+                self._record_failure(e)
         return None
 
     async def save_report(self, report_dict: Dict[str, Any]) -> Dict[str, Any]:
@@ -185,12 +217,13 @@ class DatabaseManager:
             "created_at": now_str
         }
         
-        # Live Supabase sync
-        if self.is_connected and self.supabase:
+        # Live Supabase sync with circuit breaker
+        if self._can_attempt_remote():
             try:
                 self.supabase.table("community_reports").insert(db_payload).execute()
-            except Exception:
-                pass
+                self._record_success()
+            except Exception as e:
+                self._record_failure(e)
                 
         record = {
             **db_payload,
@@ -200,13 +233,14 @@ class DatabaseManager:
         return record
 
     async def get_reports(self, limit: int = 50) -> List[Dict[str, Any]]:
-        if self.is_connected and self.supabase:
+        if self._can_attempt_remote():
             try:
                 res = self.supabase.table("community_reports").select("*").order("created_at", desc=True).limit(limit).execute()
                 if res.data:
+                    self._record_success()
                     return res.data
-            except Exception:
-                pass
+            except Exception as e:
+                self._record_failure(e)
         return self.reports[:limit]
 
     async def get_threat_feed(self, limit: int = 50, category: Optional[str] = None) -> List[Dict[str, Any]]:
@@ -214,16 +248,17 @@ class DatabaseManager:
         if category:
             items = [i for i in items if i.get("category") == category]
             
-        if self.is_connected and self.supabase:
+        if self._can_attempt_remote():
             try:
                 q = self.supabase.table("threat_iocs").select("*").order("created_at", desc=True).limit(limit)
                 if category:
                     q = q.eq("category", category)
                 res = q.execute()
                 if res.data:
+                    self._record_success()
                     return res.data
-            except Exception:
-                pass
+            except Exception as e:
+                self._record_failure(e)
         return items[:limit]
 
 db = DatabaseManager()

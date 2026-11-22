@@ -1,4 +1,5 @@
 import time
+import uuid
 import logging
 from contextlib import asynccontextmanager
 from fastapi import FastAPI, Request
@@ -49,13 +50,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Performance Timing & Logging Middleware
+# Performance Timing, Correlation ID & Observability Middleware
 @app.middleware("http")
-async def add_process_time_header(request: Request, call_next):
+async def add_observability_headers(request: Request, call_next):
+    correlation_id = request.headers.get("X-Correlation-ID") or str(uuid.uuid4())
     start_time = time.perf_counter()
     response = await call_next(request)
     process_time = round((time.perf_counter() - start_time) * 1000, 2)
     response.headers["X-Process-Time-Ms"] = str(process_time)
+    response.headers["X-Correlation-ID"] = correlation_id
     response.headers["X-Engine"] = "ScamShield-Dual-Core-ML"
     return response
 

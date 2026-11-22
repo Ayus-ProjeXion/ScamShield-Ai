@@ -270,7 +270,8 @@ def create_project_report(output_path="ScamShield_AI_Project_Report.docx"):
         ("Nov 22, 2026 - 19:01", "Enterprise Security Audit & Hardening: Fixed webmail bank false positive, added Credit Card PII masking, ReDoS 10k-char bounding, HMAC verification roundtrip; 219/219 tests pass", "COMPLETED"),
         ("Nov 22, 2026 - 19:20", "FastAPI Backend Gateway Microservice (Phase 2): Built 12-endpoint REST service (/scan/text, /scan/email, /scan/audio, /report, /feed, /health), Supabase client with offline fallback, CORS & HMAC; 12/12 API tests pass", "COMPLETED"),
         ("Nov 22, 2026 - 20:35", "Frontend Mission Control & 3-Way Luxury Theme Suite (Phase 4): Built 3-way theme system: 1) Midnight Orange (Vetra 60-30-10), 2) Cyber Violet & Golden Yellow (Claude AI SEO 60% Cosmic, 30% Violet, 10% Gold), 3) Soothing Matte Sand (zero-glare daylight); verified 0-error build", "COMPLETED"),
-        ("Nov 22, 2026 - 21:18", "Supabase Cloud Database Production Hookup: Connected live instance (https://vukhprygkiloxkclrbbm.supabase.co), verified schema DDL, RLS security policies, threat_iocs & community_reports read/write; 12/12 live API tests pass", "COMPLETED")
+        ("Nov 22, 2026 - 21:18", "Supabase Cloud Database Production Hookup: Connected live instance (https://vukhprygkiloxkclrbbm.supabase.co), verified schema DDL, RLS security policies, threat_iocs & community_reports read/write; 12/12 live API tests pass", "COMPLETED"),
+        ("Nov 22, 2026 - 21:36", "Architectural & Safety Hardening Suite: Hardened CORS (no wildcard credentials), Supabase circuit breaker, background async telemetry persistence, audio 15MB DoS bounds & timeout, Edge Cache-Control headers, P50/P95/P99 latency metrics, requirements.txt, Docker & CI/CD pipeline", "COMPLETED")
     ]
 
     audit_table = doc.add_table(rows=len(audit_records) + 1, cols=3)
