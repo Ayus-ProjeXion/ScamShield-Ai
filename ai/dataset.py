@@ -8,6 +8,11 @@ from typing import List, Tuple
 # Label 1 = SCAM / FRAUD, Label 0 = SAFE / BENIGN
 TRAINING_SAMPLES: List[Tuple[str, int, str]] = [
     # --- PHISHING & SMISHING (Label: 1) ---
+    ("Dear customer, please share your 6-digit OTP to verify your account or netbanking will be suspended.", 1, "OTP_SOLICITATION"),
+    ("I asked for OTP to verify your instant loan approval of Rs 5,00,000. Send immediately.", 1, "OTP_SOLICITATION"),
+    ("Caller asked for my OTP claiming to be Mumbai Police Cyber Cell officer.", 1, "OTP_SOLICITATION"),
+    ("Sir apna OTP batao turant warna account freeze kar diya jayega bank manager dwara.", 1, "OTP_SOLICITATION"),
+    ("Enter your UPI PIN to claim scratch card cashback of Rs 2,500 directly in account.", 1, "PIN_EXTRACTION"),
     ("Dear SBI user, your YONO account will be blocked today due to pending KYC. Click http://sbi-kyc-update.xyz to update Pan Card immediately.", 1, "BANKING_PHISHING"),
     ("URGENT: Your HDFC netbanking access is suspended! Login to http://hdfc-verify-access.top to verify your debit card credentials.", 1, "BANKING_PHISHING"),
     ("Dear ICICI customer, 25,000 reward points expiring in 24 hours. Redeem cash Rs.12,500 now at http://icici-points-cash.online", 1, "REWARD_PHISHING"),

@@ -145,29 +145,59 @@ def generate_scaled_banking_kyc() -> List[Tuple[str, int, str]]:
     return samples
 
 # ==============================================================================
-# 4. SCALED HINGLISH & REGIONAL SCAMS (800+ SAMPLES)
+# 4. SCALED HINGLISH & REGIONAL SCAMS (1,000+ DIVERSE SAMPLES)
 # ==============================================================================
 def generate_scaled_hinglish_scams() -> List[Tuple[str, int, str]]:
     samples: List[Tuple[str, int, str]] = []
     
-    agencies = ["Mumbai Police", "Delhi Crime Branch", "CBI Cyber Cell", "Narcotics Control Bureau", "Customs Vibhag"]
-    threats = [
-        ("bijli connection kaat diya jayega", "electricity officer Mr. Sharma se 9876543210 par"),
-        ("Aadhaar card se illegal parcel pakda gaya hai", "turant verification fee jama karein"),
-        ("bank account freeze kar diya gaya hai", "diye gaye link par KYC verify karein"),
-        ("non-bailable warrant nikla hai", "police investigation join karein")
-    ]
-    deadlines = ["aaj raat 9:30 baje", "turant 2 ghante ke andar", "aaj dopahar 12 baje se pehle", "agale 30 minute mein"]
-    
-    for i in range(800):
-        agency = agencies[i % len(agencies)]
-        threat, action = threats[i % len(threats)]
-        deadline = deadlines[i % len(deadlines)]
-        phone = f"9821{i % 89 + 10:02d}48{i % 89 + 10:02d}"
+    hinglish_templates = [
+        # 1. Police / Digital Arrest
+        "Kripya dhyan dein: {agency} suchna! Aapke naam par non-bailable arrest warrant nikal chuka hai, {deadline}. Agar giraftari se bachna hai toh turant {phone} par sampark karein.",
+        "{agency} Customs Adhikari: Aapke international courier parcel mein illegal charas aur MDMA drugs pakda gaya hai. Case darj ho chuka hai, court fine bharne ke liye call karein.",
+        "CBI Cyber Cell notice: Aapke khate se money laundering hui hai, agle 30 minute mein video call par hazir hon warna police ghar aayegi.",
         
-        msg = f"Kripya dhyan dein: {agency} suchna! Aapka {threat} {deadline}. Agar karyawahi se bachna hai toh {action} call karein {phone} par. Dhanyawad."
+        # 2. Bijli / Electricity Disconnection
+        "Bijli vibhag suchna: Consumer dhyan dein, aapka electricity bill baki hai. Aaj raat 9:30 baje connection kaat diya jayega. Line bachane ke liye call karein {phone}.",
+        "Pichle mahine ka power bill update nahi hua, line kaat denge turant. Disconnection se bachne ke liye diye gaye UPI handle par bill jama karein.",
+        
+        # 3. Bank Khata & Credential Theft
+        "Aapka SBI bank khata freeze kar diya gaya hai, unblock karne ke liye apna 4 digit ATM PIN aur OTP batao turant.",
+        "Yono alert: KYC update na hone ke karan aapka debit card block ho gaya hai, turant diye gaye link par jakar PAN card jodein.",
+        "Bank manager bol raha hoon: Aapke khate se galat debit rokne ke liye mobile par aaya 6-digit OTP turant share karein.",
+        
+        # 4. UPI & QR Code Trap
+        "GPay cashback offer: Aapko 5000 rupaye cashback mile hain, receive karne ke liye QR code scan karein aur apna UPI PIN daalein.",
+        "PhonePe par Rs 2,500 ka lottery reward credit karne ke liye turant apna UPI PIN enter karein.",
+        
+        # 5. Ghar Baithe Part-Time Job
+        "Ghar baithe kamayein 2000 se 5000 rupaye daily! Bas YouTube videos like karein aur Telegram par task pura karke daily payout lein.",
+        "Part time online naukri: bina kisi experience ke ghar baithe roz paise kamayein, abhi WhatsApp karein task ke liye.",
+        
+        # 6. Lottery & KBC Inam
+        "Badhai ho! Aapka mobile number KBC lucky draw mein chuna gaya hai, aapne 25 lakh rupaye ka bumper inam jeeta hai. Inam paane ke liye call karein.",
+        "WhatsApp lottery suchna: Aapne jeeta hai 10 lakh rupaye ka cash prize, claim karne ke liye diye gaye number par contact karein.",
+        
+        # 7. SIM Card Cutoff
+        "TRAI aadesh: Aadhaar link na hone ke karan aapka SIM card agle 24 ghante mein band kar diya jayega, customer care se baat karein.",
+        
+        # 8. Predatory Loan APK
+        "Bina kisi CIBIL score ke paayein turant 2 lakh rupaye ka personal loan, 0% byaaj par. Abhi APK download karke paise withdraw karein.",
+        
+        # 9. Video Call Sextortion
+        "Aapka private video call record kar liya hai. Agar 50,000 rupaye nahi bheje toh video aapke gharwalon aur social media par viral kar denge."
+    ]
+    
+    agencies = ["Mumbai Police", "Delhi Crime Branch", "CBI Cyber Cell", "Narcotics Control Bureau", "Customs Vibhag"]
+    deadlines = ["aaj raat 9:30 baje se pehle", "turant 2 ghante ke andar", "aaj dopahar tak", "agale 30 minute mein"]
+    
+    for i in range(1000):
+        tpl = hinglish_templates[i % len(hinglish_templates)]
+        agency = agencies[i % len(agencies)]
+        deadline = deadlines[(i * 3) % len(deadlines)]
+        phone = f"9821{i % 89 + 10:02d}48{i % 89 + 10:02d}"
+        msg = tpl.format(agency=agency, deadline=deadline, phone=phone)
         samples.append((msg, 1, "SCALED_HINGLISH_SCAM"))
-
+    
     return samples
 
 # ==============================================================================
@@ -239,10 +269,111 @@ def generate_scaled_benign_corpus() -> List[Tuple[str, int, str]]:
         msg = f"{srv}: Your order for '{item}' (#ORD{code}) has been confirmed! Expected delivery in 15 minutes. Share OTP only upon delivery."
         samples.append((msg, 0, "SCALED_BENIGN_NOTIFICATION"))
 
+    # D. Safe Everyday Hinglish Casual & Family Chats (500 samples)
+    hinglish_benign_openers = [
+        "Bhai shaam ko chai peene chalein", "Aap kahan ho yaar kab se wait kar raha hoon",
+        "Mummy bol rahi thi aate waqt dahi aur bread le aana", "Maine project report GitHub par push kar di hai",
+        "Kal college mein lab evaluation hai kya bro", "Assignment complete ho gaya toh PDF bhej dena bhai",
+        "Match ka score kya hua bro kaunsi team jeeti aaj", "Kal movie dekhne chalte hain weekend par ticket book kar de"
+    ]
+    hinglish_benign_closers = [
+        "call kar free hoke", "10 minute mein bahar aao", "jaldi aana ghar pe",
+        "pull request check kar le", "sham ko milte hain canteen mein", "chal theek hai baad mein baat karte hain"
+    ]
+    for i in range(500):
+        op = hinglish_benign_openers[i % len(hinglish_benign_openers)]
+        cl = hinglish_benign_closers[(i * 3) % len(hinglish_benign_closers)]
+        msg = f"{op}, {cl}."
+        samples.append((msg, 0, "SCALED_BENIGN_HINGLISH_CHAT"))
+
     return samples
 
 # ==============================================================================
-# 7. MASTER MULTI-MODAL 10K+ DATASET COMPILER
+# 7. SCALED OTP & CREDENTIAL SOLICITATION VS LEGITIMATE ALERTS (1,200 SAMPLES)
+# ==============================================================================
+def generate_scaled_otp_scams_and_alerts() -> List[Tuple[str, int, str]]:
+    samples: List[Tuple[str, int, str]] = []
+    
+    # A. 600 Malicious OTP & Credential Harvesting Traps (Label 1 = Threat)
+    solicitation_openers = [
+        "Please share your 6-digit OTP to verify your bank account",
+        "Dear customer, send your OTP immediately to claim your lottery reward",
+        "Bank manager calling: please tell me the OTP received on your mobile to complete KYC",
+        "Warning: account will be blocked! Tell the officer your OTP to cancel unauthorized debit",
+        "I asked for OTP to approve your pre-approved loan of Rs 5,00,000",
+        "Caller asked for my OTP to update SIM card details and avoid deactivation",
+        "Forward the OTP you received to 9876543210 to claim Amazon cashback",
+        "Sir apna 6-digit OTP batao turant warna electricity bill cancel ho jayega",
+        "Share the verification code sent to your phone to activate Netflix premium for free",
+        "Enter your UPI PIN and share OTP to receive Rs 25,000 lottery winnings in your account",
+        "Please provide your 4 digits bank pin to verify your account",
+        "Kindly share your 4-digit ATM PIN and debit card details to avoid card suspension",
+        "Bank alert: provide your secret bank PIN to unlock your blocked debit card",
+        "Dear customer, tell me your debit card PIN and CVV for KYC verification",
+        "Please enter your 4 digits bank pin to approve pending refund of Rs 15,000",
+        "Share your netbanking password and PIN to prevent unauthorized login",
+        "Sir please provide your bank PIN and expiry date for card renewal",
+        "Your account is frozen! Please provide your 4 digits bank pin to restore access immediately",
+        "Urgent: send your ATM PIN and card number to customer support",
+        "Verify your identity: share your secret PIN and OTP immediately"
+    ]
+    solicitation_tails = [
+        "immediately or your account will be suspended permanently",
+        "within 10 minutes to avoid legal penalty",
+        "to stop unauthorized debit of Rs 48,000 from your account",
+        "for instant verification and approval",
+        "now to prevent police cyber investigation"
+    ]
+    for i in range(600):
+        op = solicitation_openers[i % len(solicitation_openers)]
+        tl = solicitation_tails[(i * 3) % len(solicitation_tails)]
+        msg = f"{op} {tl}."
+        samples.append((msg, 1, "SCALED_CREDENTIAL_SOLICITATION_SCAM"))
+
+    # B. 600 Legitimate Bank & System Transaction Alerts (Label 0 = Benign/Ham)
+    banks = ["HDFC Bank", "State Bank of India", "ICICI Bank", "Axis Bank", "Kotak Mahindra Bank", "Punjab National Bank", "Google", "Amazon", "Flipkart", "WhatsApp"]
+    for i in range(600):
+        b = banks[i % len(banks)]
+        code = f"{100000 + (i * 37) % 900000}"
+        amount = f"Rs {(i % 50 + 1) * 250}"
+        msg = f"{b}: Your OTP for transaction of {amount} is {code}. Valid for 10 minutes. Do NOT share this OTP or PIN with anyone, including bank staff. Bank never asks for OTP or PIN."
+        samples.append((msg, 0, "SCALED_LEGITIMATE_OTP_ALERT"))
+
+    return samples
+
+# ==============================================================================
+# 7B. SCALED LOTTERY, LUCKY DRAW & PRIZE SCAMS (500 SAMPLES)
+# ==============================================================================
+def generate_scaled_lottery_scams() -> List[Tuple[str, int, str]]:
+    samples: List[Tuple[str, int, str]] = []
+    lottery_openers = [
+        "You won a lottery, please come to this address for receiving it",
+        "Congratulations you have won a lottery of Rs 25,00,000",
+        "Dear customer, you won a mega lottery prize in our annual lucky draw",
+        "You are selected as the 1st prize winner of KBC lottery",
+        "Claim your lottery winnings of Rs 10 Lakhs immediately",
+        "You won a bumper cash prize, visit our nearest branch to collect",
+        "Notice: your mobile number won a lottery jackpot of Rs 50,00,000",
+        "You won a lottery award! Send your details or visit this address to receive it",
+        "Congratulations! You won a brand new car and cash prize in lucky draw",
+        "Special reward: you have been chosen as our lottery winner today"
+    ]
+    lottery_closers = [
+        "contact our claim manager on 9876543210 to claim immediately",
+        "please visit this office address to complete the receiving formalities",
+        "call our helpline number now before your prize expires",
+        "send a processing fee of Rs 2,500 to disburse the funds into your account",
+        "submit your bank details to claim the full prize money"
+    ]
+    for i in range(500):
+        op = lottery_openers[i % len(lottery_openers)]
+        cl = lottery_closers[(i * 3) % len(lottery_closers)]
+        msg = f"{op}, {cl}."
+        samples.append((msg, 1, "SCALED_LOTTERY_SCAM"))
+    return samples
+
+# ==============================================================================
+# 8. MASTER MULTI-MODAL 10K+ DATASET COMPILER
 # ==============================================================================
 def download_uci_dataset() -> bool:
     if os.path.exists(LOCAL_UCI_TSV) and os.path.getsize(LOCAL_UCI_TSV) > 10000:
@@ -330,6 +461,22 @@ def build_enterprise_10k_corpus() -> Tuple[List[str], List[int], List[str]]:
         labels.append(l)
         sources.append(s)
     print(f"😎 Ingested {len(benign_samples)} Scaled Benign, Work & Gen-Z Slang Chats.")
+
+    # 8. Ingest Scaled OTP Solicitation Scams & Legitimate Alerts (1,200 samples)
+    otp_samples = generate_scaled_otp_scams_and_alerts()
+    for t, l, s in otp_samples:
+        texts.append(t)
+        labels.append(l)
+        sources.append(s)
+    print(f"🔑 Ingested {len(otp_samples)} Scaled OTP Solicitation & Legitimate Alert samples.")
+
+    # 9. Ingest Scaled Lottery, Lucky Draw & Prize Scams (500 samples)
+    lottery_samples = generate_scaled_lottery_scams()
+    for t, l, s in lottery_samples:
+        texts.append(t)
+        labels.append(l)
+        sources.append(s)
+    print(f"🎉 Ingested {len(lottery_samples)} Scaled Lottery & Prize Scam samples.")
 
     # Save to CSV
     try:
