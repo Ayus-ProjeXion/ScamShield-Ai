@@ -172,7 +172,7 @@ class DatabaseManager:
     async def save_report(self, report_dict: Dict[str, Any]) -> Dict[str, Any]:
         rep_id = str(uuid.uuid4())
         now_str = datetime.datetime.now(datetime.timezone.utc).isoformat()
-        record = {
+        db_payload = {
             "id": rep_id,
             "ioc_value": report_dict["ioc_value"],
             "ioc_type": report_dict.get("ioc_type", "PHONE_NUMBER"),
@@ -182,18 +182,21 @@ class DatabaseManager:
             "evidence_url": report_dict.get("evidence_url"),
             "upvote_count": 1,
             "status": "PENDING",
-            "created_at": now_str,
-            "message": "Report submitted successfully to ScamShield Community Intelligence"
+            "created_at": now_str
         }
-        self.reports.insert(0, record)
         
         # Live Supabase sync
         if self.is_connected and self.supabase:
             try:
-                self.supabase.table("community_reports").insert(record).execute()
+                self.supabase.table("community_reports").insert(db_payload).execute()
             except Exception:
                 pass
                 
+        record = {
+            **db_payload,
+            "message": "Report submitted successfully to ScamShield Community Intelligence"
+        }
+        self.reports.insert(0, record)
         return record
 
     async def get_reports(self, limit: int = 50) -> List[Dict[str, Any]]:
