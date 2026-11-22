@@ -2,7 +2,7 @@
 
 **Project:** ScamShield AI  
 **Author & Lead Architect:** Ayusman Mishra ([@Ayus-ProjeXion](https://github.com/Ayus-ProjeXion))  
-**Effective Date:** November 2026  
+**Target Deadline:** December 6, 2026  
 **Status:** Mandatory Across All 4 Team Members  
 
 ---
@@ -10,54 +10,32 @@
 ## 1. Git & Sacred Trunk Discipline
 
 * **Rule 1.1: Sacred Trunk (`main`)**
-  - Pushing directly to `main` is strictly prohibited during active feature development.
-  - `main` must at all times contain clean, working, and presentation-ready code.
-* **Rule 1.2: Strict Feature Branching**
-  - Database schema & migrations: `database`
-  - Backend API & controllers: `backend`
-  - AI & detection models: `ai-engine`
-  - Frontend UI & client interactions: `frontend`
-* **Rule 1.3: Pull Requests & Peer Review**
-  - Merges into `main` require code reviews (via CodeRabbit CLI or Lead review by Ayusman).
+  - Direct pushes to `main` are strictly prohibited during active feature development.
+  - `main` must at all times remain clean, runnable, and presentation-ready.
+* **Rule 1.2: Feature Branches (4-Member Standard)**
+  - Member 1 (Frontend): `frontend`
+  - Member 2 (Backend): `backend`
+  - Member 3 (ML & Rules): `ai-engine`
+  - Member 4 (Database & Integration): `database`
 
 ---
 
-## 2. Supabase & Database Integrity
+## 2. Model & Threat Detection Guardrails
 
-* **Rule 2.1: Contract-First Migrations**
-  - No table or column may be created directly via ad-hoc dashboard clicks without an accompanying SQL migration file under `database/migrations/`.
-* **Rule 2.2: Strict Typing & Enums**
-  - Never store raw unvalidated strings for severity or categories. Use PostgreSQL `ENUM` types (`threat_severity`, `scam_category`, `scan_channel`).
-* **Rule 2.3: Zero Client-Side Service Keys**
-  - NEVER expose `SUPABASE_SERVICE_ROLE_KEY` in frontend code, HTML, or public repositories.
-  - Public web clients may only access Supabase using `anon` keys protected by Row-Level Security (RLS).
-
----
-
-## 3. Threat Detection Guardrails
-
-* **Rule 3.1: Hybrid Verifications (No Pure-LLM Decisions)**
-  - An LLM must NEVER be the sole decider of a threat without deterministic IOC verification.
-  - Known blacklisted indicators (URLs, phone numbers, UPI VPAs) trigger immediate definitive flags.
-* **Rule 3.2: Explainability by Default**
-  - Every detected threat must return an actionable human explanation detailing *why* it was flagged. Opaque scores without reasons are forbidden.
+* **Rule 2.1: Strictly Non-LLM Architecture**
+  - No large language models (LLMs) or generative AI APIs (OpenAI, Claude, Gemini) are used in the core inference path.
+  - Reasoning: Eliminates latency ($> 2\text{s}$), eliminates token costs, and guarantees 0% hallucination rate on threat assessments.
+* **Rule 2.2: Dual Verification (ML + Rules)**
+  - ML inference (TF-IDF + Logistic Regression) is combined with deterministic heuristic rules.
+  - Known blacklisted IOCs immediately trigger `CRITICAL` threat classification, bypassing probabilistic scores.
+* **Rule 2.3: Explainability Mandate**
+  - Every flagged item must output distinct reason badges (e.g. `[Electricity Cutoff Pattern]`, `[Known Phishing Domain]`, `[High Urgency Tone]`).
 
 ---
 
-## 4. UI/UX & Glassmorphism Standards
+## 3. Database & Credential Hygiene
 
-* **Rule 4.1: No Unstyled Elements**
-  - All components must comply with the dark cyberpunk glassmorphism theme (`--bg-card`, `--border-color`, glowing hover states).
-* **Rule 4.2: Visual Urgency Colors**
-  - 🔴 Red (`#ef4444`): Critical Threat / Phishing / Financial Risk
-  - 🟡 Amber (`#f59e0b`): Suspicious / Unverified / High Urgency Language
-  - 🟢 Green (`#10b981`): Safe / Clean Domain / Verified Entity
-
----
-
-## 5. Documentation & Automated Report Synchronization
-
-* **Rule 5.1: Synchronized SDD Suite**
-  - Maintain the 6 core spec blueprints: `PRD.md`, `architecture.md`, `rules.md`, `phases.md`, `design.md`, `memory.md`.
-* **Rule 5.2: Word Report Maintenance**
-  - As development advances, all technical decisions and progress milestones must be reflected in `ScamShield_AI_Project_Report.docx` without needing manual reminders.
+* **Rule 3.1: Zero Client-Side Secrets**
+  - Never put Supabase service-role keys or database passwords in frontend code.
+* **Rule 3.2: Automated Project Report**
+  - Maintain `ScamShield_AI_Project_Report.docx` via `generate_report.py`, automatically synchronized at every milestone.

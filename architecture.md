@@ -2,8 +2,8 @@
 
 **Project:** ScamShield AI  
 **Author & Lead Architect:** Ayusman Mishra ([@Ayus-ProjeXion](https://github.com/Ayus-ProjeXion))  
-**Database:** Supabase (PostgreSQL 15+)  
-**Version:** 1.0.0  
+**Target Deadline:** December 6, 2026  
+**Version:** 1.1.0  
 
 ---
 
@@ -11,83 +11,85 @@
 
 ```
 +-------------------------------------------------------------------------+
-|                         Frontend Client (UI)                            |
-|        Mission Control Dashboard / Real-Time Scanner Simulator          |
-|                 (Dark Glassmorphism UI / Vite / HTML5)                  |
+|                    React Frontend Client (Vite + Tailwind)              |
+|        - Multi-Channel Scan Input (SMS, URL, Email, Call Transcript)    |
+|        - Dynamic Threat Severity Meter (Safe, Moderate, Critical)       |
+|        - Explainable Evidence Breakdown & Community Threat Feed         |
 +------------------------------------+------------------------------------+
                                      |
                                 HTTPS REST
                                      v
 +------------------------------------+------------------------------------+
-|                      Backend API Gateway (FastAPI)                      |
-|  - Rate Limiter & Sanitize Input     - Token Authentication             |
-|  - Threat Orchestrator               - Community Report Router          |
+|                      FastAPI Backend Gateway (app/main.py)              |
+|        - Input Sanitization & Entity Extraction (URLs, Phones, VPAs)    |
+|        - Orchestration Service: Rule Engine + ML Model Pipeline        |
 +-------------------+-------------------------------+---------------------+
                     |                               |
-       Direct Query |                  Async Queue  |
-                    v                               v
-+-------------------+-------------------+   +-------+---------------------+
-|        Deterministic Engine           |   |       AI Engine Worker      |
-|  - Known IOC Matching (Blacklist/White)|  | - NLP Intent & Urgency      |
-|  - Domain Entropy & Homoglyphs        |   | - Zero-Shot Categorization  |
-|  - Regex Threat Signatures            |   | - Confidence Calibrator     |
-+-------------------+-------------------+   +-------+---------------------+
+     Deterministic  |                  Vectorized   |
+     Lookup         v                  Inference    v
++-------------------+---------------+   +-----------+---------------------+
+|        Deterministic Rule Engine  |   |    Scikit-Learn ML Service      |
+|  - Threat IOC Lookup (Supabase)   |   | - TF-IDF Feature Extraction     |
+|  - Domain Entropy & Homoglyphs    |   | - Logistic Regression Classifier|
+|  - Regex Threat Heuristics        |   | - Calibrated Scam Probability   |
++-------------------+---------------+   +-----------+---------------------+
                     \                               /
-                     \                             /
-                      v                           v
+                     \       Weighted Score        /
+                      v      Consolidation        v
 +-------------------------------------------------------------------------+
 |                  Database Layer (Supabase PostgreSQL)                   |
 |  - profiles                      - threat_scans                         |
-|  - scam_classifications          - threat_iocs (Blacklist/Whitelist)    |
+|  - scam_classifications          - threat_iocs (Blacklist / Whitelist)  |
 |  - community_reports             - audit_logs                           |
-|  - Row-Level Security (RLS)      - GIN / B-Tree High Speed Indexes     |
+|  - Row-Level Security (RLS)      - High-Speed B-Tree / GIN Indexes      |
 +-------------------------------------------------------------------------+
 ```
 
 ---
 
-## 2. Layer Responsibilities & 4-Member Workstream
+## 2. Directory Structure Contract
 
-1. **Database Layer (Lead: Ayusman | Branch: `database`):**
-   - Supabase project configuration, migration scripts (`schema.sql`), triggers, RLS policies, and seed data.
-2. **Backend API Layer (Branch: `backend`):**
-   - RESTful API gateway, input normalization, Supabase client integration, and proxy protection for internal services.
-3. **AI / Detection Engine (Branch: `ai-engine`):**
-   - Heuristic feature extractor, embedding pipelines, LLM prompt engineering with JSON schema validation, and confidence calibration.
-4. **Frontend Experience (Branch: `frontend`):**
-   - Cyberpunk/Dark Glassmorphism dashboard, risk score visualizers, interactive multi-channel scanner, and live community report feed.
-
----
-
-## 3. Data Flow Lifecycle
-
+```text
+ScamShield-Ai/
+├── frontend/
+│   ├── src/
+│   │   ├── components/
+│   │   │   ├── ThreatScanner.jsx
+│   │   │   ├── RiskGauge.jsx
+│   │   │   ├── ThreatFeed.jsx
+│   │   │   └── EvidenceCard.jsx
+│   │   ├── App.jsx
+│   │   ├── index.css
+│   │   └── main.jsx
+│   ├── vite.config.js
+│   └── package.json
+├── backend/
+│   ├── app/
+│   │   ├── __init__.py
+│   │   ├── main.py
+│   │   ├── routes/
+│   │   │   ├── scan.py
+│   │   │   ├── reports.py
+│   │   │   └── health.py
+│   │   ├── services/
+│   │   │   ├── rule_engine.py
+│   │   │   ├── ml_classifier.py
+│   │   │   ├── external_api.py
+│   │   │   └── supabase_client.py
+│   │   ├── models/
+│   │   │   └── ml_model.pkl
+│   │   └── schemas/
+│   │       ├── scan_schema.py
+│   │       └── report_schema.py
+│   └── requirements.txt
+├── database/
+│   ├── schema.sql
+│   └── seed.sql
+├── PRD.md
+├── architecture.md
+├── rules.md
+├── phases.md
+├── design.md
+├── memory.md
+└── ScamShield_AI_Project_Report.docx
 ```
-[User Input: SMS / URL / UPI]
-           │
-           ▼
-[Backend /api/v1/scan] ──▶ [Deterministic Check in Supabase threat_iocs]
-           │                       │
-           │                       ├─▶ Match Found: Instant Response (< 50ms)
-           │                       │   (Cached Critical Threat / Whitelisted Safe)
-           ▼                       │
-[No Instant Match] ◀───────────────┘
-           │
-           ▼
-[AI Feature Extraction & Classification Pipeline]
-           │
-           ▼
-[Consolidated Score: Deterministic + AI Probability]
-           │
-           ▼
-[Write to Supabase: threat_scans & scam_classifications]
-           │
-           ▼
-[Return Formatted Threat Assessment to Frontend]
-```
-
----
-
-## 4. Security & Compliance Posture
-
-* **Row Level Security (RLS):** All Supabase tables enforce granular access controls. Authenticated users can only view their own scan history; public feeds expose only aggregated threat telemetry.
-* **Environment Isolation:** `.env` files hold Supabase `SUPABASE_URL` and `SUPABASE_ANON_KEY` for client/read queries, and `SUPABASE_SERVICE_ROLE_KEY` strictly inside backend proxy containers.

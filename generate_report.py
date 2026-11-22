@@ -3,7 +3,7 @@ import datetime
 from docx import Document
 from docx.shared import Inches, Pt, RGBColor
 from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.enum.table import WD_TABLE_ALIGNMENT, WD_ALIGN_VERTICAL
+from docx.enum.table import WD_TABLE_ALIGNMENT
 from docx.oxml import OxmlElement, parse_xml
 from docx.oxml.ns import nsdecls, qn
 
@@ -36,7 +36,7 @@ def create_project_report(output_path="ScamShield_AI_Project_Report.docx"):
     normal_style = doc.styles['Normal']
     normal_style.font.name = 'Calibri'
     normal_style.font.size = Pt(11)
-    normal_style.font.color.rgb = RGBColor(0x2D, 0x37, 0x48) # Dark slate
+    normal_style.font.color.rgb = RGBColor(0x2D, 0x37, 0x48)
 
     # --- Title Banner ---
     title_p = doc.add_paragraph()
@@ -46,26 +46,27 @@ def create_project_report(output_path="ScamShield_AI_Project_Report.docx"):
     run_title.font.name = 'Arial'
     run_title.font.size = Pt(26)
     run_title.font.bold = True
-    run_title.font.color.rgb = RGBColor(0x0F, 0x17, 0x2A) # Deep Navy
+    run_title.font.color.rgb = RGBColor(0x0F, 0x17, 0x2A)
 
     sub_p = doc.add_paragraph()
     sub_p.paragraph_format.space_after = Pt(16)
     run_sub = sub_p.add_run("Real-Time Multi-Modal Scam Detection, Threat Intelligence & Prevention Platform")
     run_sub.font.name = 'Arial'
     run_sub.font.size = Pt(14)
-    run_sub.font.color.rgb = RGBColor(0x4F, 0x46, 0xE5) # Indigo Accent
+    run_sub.font.color.rgb = RGBColor(0x4F, 0x46, 0xE5)
 
     # --- Metadata Table ---
-    meta_table = doc.add_table(rows=6, cols=2)
+    meta_table = doc.add_table(rows=7, cols=2)
     meta_table.alignment = WD_TABLE_ALIGNMENT.CENTER
     meta_table.autofit = False
 
     meta_data = [
         ("Project Lead & Lead Architect", "Ayusman Mishra (@Ayus-ProjeXion)"),
-        ("Team Structure", "4 Members (Database, Backend API, Frontend UI, AI Detection Engine)"),
-        ("Database Infrastructure", "Supabase PostgreSQL 15+ with Row-Level Security (RLS)"),
+        ("Hackathon Target Deadline", "December 6, 2026"),
+        ("Core Technology Stack", "React + Tailwind CSS | Python FastAPI | Scikit-Learn ML | Supabase PostgreSQL"),
+        ("Team Structure (4 Members)", "Member 1 (Frontend), Member 2 (Backend), Member 3 (ML & Rules), Member 4 (Database & Integration)"),
+        ("Architectural Paradigm", "Classical ML (TF-IDF + Logistic Regression) + Rule Engine (Zero Generative AI/LLM)"),
         ("Git Repository", "https://github.com/Ayus-ProjeXion/ScamShield-Ai"),
-        ("Active Git Branches", "main, database (Active Workstream), backend, frontend, ai-engine"),
         ("Last Report Synchronization", datetime.datetime.now().strftime("%B %d, %Y - %I:%M %p"))
     ]
 
@@ -95,7 +96,6 @@ def create_project_report(output_path="ScamShield_AI_Project_Report.docx"):
 
     doc.add_paragraph().paragraph_format.space_after = Pt(12)
 
-    # --- Helper for Section Headings ---
     def add_section_header(title, level=1):
         h = doc.add_paragraph()
         h.paragraph_format.space_before = Pt(16)
@@ -113,36 +113,31 @@ def create_project_report(output_path="ScamShield_AI_Project_Report.docx"):
             r.font.color.rgb = RGBColor(0x31, 0x2E, 0x81)
         return h
 
-    # --- 1. Executive Summary ---
-    add_section_header("1. Executive Summary & Problem Scope")
+    # --- 1. Executive Summary & Architecture Decision ---
+    add_section_header("1. Executive Summary & Non-LLM Architecture Decision")
     p = doc.add_paragraph(
-        "Digital deception and financial fraud in India and globally have surged exponentially, spanning spoofed banking URLs, "
-        "malicious SMS (smishing), fraudulent WhatsApp impersonation, and deceitful UPI QR code traps. "
-        "ScamShield AI is engineered as an enterprise-grade multi-modal fraud detection and threat intelligence system that intercepts, "
-        "analyzes, explains, and neutralizes fraudulent digital interactions in real time."
+        "ScamShield AI is designed to solve one of the most pressing cybersecurity threats facing digital citizens: "
+        "the rampant spread of phishing links, fraudulent SMS (smishing), deceptive phone calls, and malicious payment QR/UPI requests. "
+        "With a target hackathon submission deadline of December 6, 2026, the architectural foundation prioritizes speed, accuracy, and zero hallucinations."
     )
     p.paragraph_format.space_after = Pt(6)
     
     p2 = doc.add_paragraph(
-        "Led by Ayusman Mishra (@Ayus-ProjeXion) with a 4-member hackathon engineering squad, the platform couples ultra-fast deterministic "
-        "heuristic checking with multi-label AI intent classification, backed by a production-ready Supabase PostgreSQL data store "
-        "and complete Spec-Driven Development (SDD) documentation suite."
+        "Crucially, the platform intentionally avoids heavy Large Language Model (LLM) or Generative AI integrations. "
+        "Instead, ScamShield AI leverages Scikit-Learn Machine Learning (TF-IDF vectorization + Logistic Regression), "
+        "coupled with a deterministic heuristic rule engine, external URL reputation checking APIs, and a high-performance Supabase PostgreSQL data store. "
+        "This delivers sub-50ms scan latency, zero token costs, and 100% explainable, deterministic threat scoring."
     )
     p2.paragraph_format.space_after = Pt(12)
 
-    # --- 2. Team Workstream & Git Branching Matrix ---
-    add_section_header("2. Team Workstream & Git Branching Matrix (4 Members)")
-    doc.add_paragraph(
-        "To enable simultaneous high-velocity development without merge conflicts, the project enforces strict Spec-Driven Development (SDD) "
-        "and dedicated feature branches:"
-    )
-
+    # --- 2. Team Workstream Matrix ---
+    add_section_header("2. 4-Member Team Workstream & Git Branch Matrix")
     team_table = doc.add_table(rows=5, cols=4)
     team_table.alignment = WD_TABLE_ALIGNMENT.CENTER
     team_table.autofit = False
 
-    headers = ["Member Workstream", "Git Branch", "Core Responsibilities", "Key Deliverables"]
-    col_widths = [Inches(1.5), Inches(1.2), Inches(2.2), Inches(1.9)]
+    headers = ["Member Workstream", "Git Branch", "Core Technologies", "Key Deliverables"]
+    col_widths = [Inches(1.5), Inches(1.2), Inches(2.0), Inches(2.1)]
 
     hdr_row = team_table.rows[0]
     for j, h_text in enumerate(headers):
@@ -158,10 +153,10 @@ def create_project_report(output_path="ScamShield_AI_Project_Report.docx"):
         r.font.color.rgb = RGBColor(0xFF, 0xFF, 0xFF)
 
     team_data = [
-        ("Database Architect (Ayusman - Lead)", "database", "Supabase PostgreSQL schema, migration SQL, RLS policies, threat IOC indexing, mock seed fixtures", "database/schema.sql, database/seed.sql, SDD suite"),
-        ("Backend Engineer", "backend", "FastAPI / Node API gateway, validation pipelines, external threat API proxies, deterministic rule engine", "REST API endpoints (/scan, /report, /feed), rate-limiting"),
-        ("AI / ML Detection Engineer", "ai-engine", "Scam classifier pipelines, NLP feature extraction, zero-shot fraud categorization, heuristic engines", "Inference service, prompt contracts, confusion matrix evals"),
-        ("Frontend / UI Engineer", "frontend", "Dark glassmorphism user dashboard, multi-vector scanner simulator, alert notifications, risk gauges", "Interactive web UI, threat visualizer, responsive cards")
+        ("Member 1: Frontend Developer", "frontend", "React, Vite, Tailwind CSS, Heroicons", "Dark glassmorphism scanner dashboard, risk score gauge, evidence breakdown, community threat feed"),
+        ("Member 2: Backend Developer", "backend", "FastAPI, Uvicorn, Pydantic, Python", "RESTful API gateway (/api/v1/scan, /report, /feed), entity extractor, rate limiting"),
+        ("Member 3: ML & Rule Developer", "ai-engine", "Scikit-learn, Pandas, NumPy, Joblib", "TF-IDF text vectorizer, Logistic Regression model, deterministic regex & urgency heuristic rules"),
+        ("Member 4: Database & Integration (Lead)", "database", "Supabase PostgreSQL, Python, Pytest", "PostgreSQL DDL schema, RLS policies, seed fixtures, external URL reputation integration, tests")
     ]
 
     for i, row_data in enumerate(team_data):
@@ -184,11 +179,6 @@ def create_project_report(output_path="ScamShield_AI_Project_Report.docx"):
 
     # --- 3. Supabase Schema Architecture ---
     add_section_header("3. Supabase PostgreSQL Schema Specification (database/schema.sql)")
-    doc.add_paragraph(
-        "The relational database schema is deployed on Supabase PostgreSQL 15+ with active Row-Level Security (RLS) "
-        "and automated updated_at triggers across all major entities:"
-    )
-
     schema_table = doc.add_table(rows=7, cols=3)
     schema_table.alignment = WD_TABLE_ALIGNMENT.CENTER
     schema_table.autofit = False
@@ -241,12 +231,12 @@ def create_project_report(output_path="ScamShield_AI_Project_Report.docx"):
     doc.add_paragraph("ScamShield AI maintains 6 fully synchronized markdown blueprints in the project root:")
 
     sdd_items = [
-        ("PRD.md: ", "Complete Product Requirements Document detailing user personas, functional and non-functional specifications, and multi-channel detection requirements."),
-        ("architecture.md: ", "End-to-end system topology, data flow lifecycle diagram, Supabase client/service proxy security model, and microservice interfaces."),
-        ("rules.md: ", "Engineering operational guardrails: Sacred Trunk (`main`), zero client-side service keys, deterministic threat scoring, and dark glassmorphism design contracts."),
-        ("phases.md: ", "Five-phase execution roadmap mapping milestones to team branches (`database`, `backend`, `ai-engine`, `frontend`, `main`)."),
-        ("design.md: ", "UI/UX design system: Cyberpunk Mission Control theme tokens (`#0a0d14`, `#6366f1`, `#10b981`), typography hierarchy, and interactive risk gauge specs."),
-        ("memory.md: ", "Architectural Decision Records (ADRs) logging project inception, database-first strategy, and state transitions.")
+        ("PRD.md: ", "Product Requirements Document detailing personas, functional/non-functional specs, and performance targets."),
+        ("architecture.md: ", "End-to-end system topology, monorepo directory contract, data flow lifecycle, and security model."),
+        ("rules.md: ", "Engineering operational guardrails: Sacred Trunk (`main`), 4-member branching, non-LLM requirement, and zero secrets."),
+        ("phases.md: ", "Implementation roadmap aligned with the December 6, 2026 hackathon deadline."),
+        ("design.md: ", "Dark glassmorphism Cyberpunk Mission Control UI tokens, typography, and gauge components."),
+        ("memory.md: ", "Architectural Decision Records (ADR-001 through ADR-004) and project history.")
     ]
     for prefix, desc in sdd_items:
         p = doc.add_paragraph(style='List Bullet')
@@ -260,7 +250,7 @@ def create_project_report(output_path="ScamShield_AI_Project_Report.docx"):
 
     # --- 5. Execution Audit Log ---
     add_section_header("5. Project Execution & Audit Log")
-    audit_table = doc.add_table(rows=6, cols=3)
+    audit_table = doc.add_table(rows=7, cols=3)
     audit_table.alignment = WD_TABLE_ALIGNMENT.CENTER
     audit_table.autofit = False
 
@@ -282,8 +272,9 @@ def create_project_report(output_path="ScamShield_AI_Project_Report.docx"):
         ("Nov 22, 2026 - 15:09", "Cloned GitHub repo 'ScamShield-Ai' and cleanly saved 'smart-campus-ai' on origin/main", "COMPLETED"),
         ("Nov 22, 2026 - 15:10", "Created and published 4 git team branches to GitHub: 'database', 'backend', 'frontend', 'ai-engine'", "COMPLETED"),
         ("Nov 22, 2026 - 15:11", "Generated automated living Word report (ScamShield_AI_Project_Report.docx)", "COMPLETED"),
-        ("Nov 22, 2026 - 15:14", "Switched to 'database' branch; authored full 6-file SDD suite (PRD, architecture, rules, phases, design, memory)", "COMPLETED"),
-        ("Nov 22, 2026 - 15:15", "Authored database/schema.sql (Supabase PostgreSQL DDL, ENUMs, RLS, Indexes) and database/seed.sql", "COMPLETED")
+        ("Nov 22, 2026 - 15:14", "Switched to 'database' branch; authored full 6-file SDD suite and Supabase schema.sql / seed.sql", "COMPLETED"),
+        ("Nov 22, 2026 - 15:16", "Committed and pushed full Supabase database layer to origin/database", "COMPLETED"),
+        ("Nov 22, 2026 - 15:18", "Ingested public ChatGPT roadmap; integrated Dec 6 deadline, 4-member roles, and Non-LLM ML decision", "COMPLETED")
     ]
 
     for i, record in enumerate(audit_records):

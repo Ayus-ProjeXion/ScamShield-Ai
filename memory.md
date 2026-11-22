@@ -2,48 +2,40 @@
 
 **Project:** ScamShield AI  
 **Author & Lead Architect:** Ayusman Mishra ([@Ayus-ProjeXion](https://github.com/Ayus-ProjeXion))  
+**Submission Deadline:** December 6, 2026  
 **Last Updated:** November 22, 2026  
 
 ---
 
-## 1. Project Inception & Hackathon Context
+## 1. Project Inception & Timeline Context
 
-* **Genesis:** ScamShield AI was initiated during the hackathon cycle as a rapid-response, multi-modal scam prevention system.
-* **Leadership & Team Allocation:**
-  - Led by Ayusman Mishra (@Ayus-ProjeXion) as Lead Architect & Database Engineer.
-  - 4 specialized team members covering Database, Backend, Frontend, and AI Detection.
-* **Previous Project Preservation:**
-  - `smart-campus-ai` was cleanly saved, committed, and synced to `origin/main`.
-  - Development actively pivots to `ScamShield-Ai` under `C:\Users\HP\OneDrive\Desktop\ScamShield-Ai`.
+* **Genesis:** ScamShield AI was established for the hackathon competition with a target completion deadline of **December 6, 2026**.
+* **Team Structure:** 4 dedicated members assigned to isolated feature branches:
+  - Member 1: React Frontend (`frontend`)
+  - Member 2: FastAPI Backend (`backend`)
+  - Member 3: ML Model & Rule Engine (`ai-engine`)
+  - Member 4: Database & Integration (Ayusman - Lead | `database`)
 
 ---
 
 ## 2. Architectural Decisions Log (ADR)
 
 ### ADR-001: Start with Database Schema (Supabase PostgreSQL)
-* **Decision:** Build and deploy the database schema on branch `database` prior to backend API or frontend development.
-* **Rationale:** The database acts as the immutable data contract. Establishing tables, enums, and foreign keys first unblocks all 4 team members simultaneously and prevents breaking schema changes later.
+* **Decision:** Build and publish the Supabase PostgreSQL relational schema on `database` first.
+* **Rationale:** Establishes the immutable contract and mock seeds so Frontend, Backend, and ML engineers can develop concurrently without blocking.
 
-### ADR-002: Dual-Engine Threat Detection (Deterministic + AI)
-* **Decision:** Decouple instantaneous heuristic/IOC matching from LLM-based linguistic analysis.
-* **Rationale:** LLMs are prone to latency and hallucinations. Known phishing domains and blacklisted UPI IDs must be flagged instantly in $< 50\text{ ms}$ with 100% deterministic accuracy. AI is reserved for novel, zero-day social engineering text.
+### ADR-002: Exclude Generative AI / LLMs in Favor of Classical ML + Rule Engine
+* **Decision:** Reject Generative AI (LLMs) in favor of Scikit-Learn (TF-IDF + Logistic Regression) coupled with deterministic rule engines.
+* **Rationale:**
+  1. *Speed:* Real-time response time $< 50\text{ ms}$ vs $> 2000\text{ ms}$ for cloud LLMs.
+  2. *Deterministic Trust:* In fraud prevention, hallucinations destroy user trust.
+  3. *Cost & Resilience:* Eliminates API rate limits, paywalls, and offline degradation.
+  4. *Deadline:* Allows team to finalize a rock-solid, production-grade MVP before December 6, 2026.
 
-### ADR-003: Supabase as Central Managed Backend
-* **Decision:** Adopt Supabase for managed PostgreSQL, Row-Level Security (RLS), real-time change events, and built-in auth integration.
-* **Rationale:** Maximizes hackathon velocity without sacrificing production-grade SQL standards, indexing, or ACID guarantees.
+### ADR-003: Unified Monorepo with Clean Layer Separation
+* **Decision:** House `frontend/`, `backend/`, and `database/` in a single Git repository under feature branches.
+* **Rationale:** Facilitates cross-team integration tests and simplified deployment.
 
 ### ADR-004: Automated Living Project Report (.docx)
-* **Decision:** Maintain `ScamShield_AI_Project_Report.docx` via `generate_report.py`, automatically updated at every engineering step.
-* **Rationale:** Ensures hackathon submission deliverables and project reports are ready on demand without manual last-minute assembly.
-
----
-
-## 3. Current Session State & Immediate Next Action
-
-* **Current Status:**
-  - Git branches created and pushed to GitHub (`main`, `database`, `backend`, `frontend`, `ai-engine`).
-  - Active branch switched to `database`.
-  - Spec-Driven Development (SDD) suite synchronized (`PRD.md`, `architecture.md`, `rules.md`, `phases.md`, `design.md`, `memory.md`).
-* **Next Immediate Action:**
-  - Create `database/schema.sql` (Supabase migration script) and `database/seed.sql`.
-  - Re-generate `ScamShield_AI_Project_Report.docx` with updated architecture and schema specifications.
+* **Decision:** Automatically update and maintain `ScamShield_AI_Project_Report.docx` via `generate_report.py` at every milestone.
+* **Rationale:** The team always has a ready-to-submit project report with complete technical specifications and audit logs.
