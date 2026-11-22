@@ -267,7 +267,8 @@ def create_project_report(output_path="ScamShield_AI_Project_Report.docx"):
         ("Nov 22, 2026 - 18:11", "Deployed 100+ Bilingual & Hinglish Multi-Vector Perfection Benchmark; augmented corpus to ~12.8K; 130/130 Hinglish tests passing", "COMPLETED"),
         ("Nov 22, 2026 - 18:45", "Expanded Voice Call Audio Library to 22 Multi-Length Recordings (Short, Medium, Long; 15 Scams + 7 Benign); deployed Advance Fee Loan Fraud Vector; 100% Pass Rate", "COMPLETED"),
         ("Nov 22, 2026 - 18:52", "Expanded Email Security Modality to 16 Multi-Length RFC .eml Files (Short, Medium, Long; Webmail Spoofing, BEC Wire Fraud, M365 Credential Harvesting); 100% Pass Rate", "COMPLETED"),
-        ("Nov 22, 2026 - 19:01", "Enterprise Security Audit & Hardening: Fixed webmail bank false positive, added Credit Card PII masking, ReDoS 10k-char bounding, HMAC verification roundtrip; 219/219 tests pass", "COMPLETED")
+        ("Nov 22, 2026 - 19:01", "Enterprise Security Audit & Hardening: Fixed webmail bank false positive, added Credit Card PII masking, ReDoS 10k-char bounding, HMAC verification roundtrip; 219/219 tests pass", "COMPLETED"),
+        ("Nov 22, 2026 - 19:20", "FastAPI Backend Gateway Microservice (Phase 2): Built 12-endpoint REST service (/scan/text, /scan/email, /scan/audio, /report, /feed, /health), Supabase client with offline fallback, CORS & HMAC; 12/12 API tests pass", "COMPLETED")
     ]
 
     audit_table = doc.add_table(rows=len(audit_records) + 1, cols=3)
