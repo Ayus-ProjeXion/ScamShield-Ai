@@ -77,9 +77,9 @@ export function ThreatHUD({ result, onCopyComplaint, isDark }) {
 
   // Resilient explanation fallback: never display 'no patterns' when risk is high
   const displayExplanation = (riskScore >= 50 && (!explanation || explanation.includes('No known fraud') || explanation.includes('No malicious patterns')))
-    ? (badges && badges.length > 0 
-        ? `Critical cyber-threat detected. Triggered indicators: ${badges.join(', ')}.`
-        : 'High-risk fraudulent patterns and coercive language detected in message.')
+    ? (badges && badges.length > 0
+      ? `Critical cyber-threat detected. Triggered indicators: ${badges.join(', ')}.`
+      : 'High-risk fraudulent patterns and coercive language detected in message.')
     : explanation;
 
   const circumference = 414.7;
