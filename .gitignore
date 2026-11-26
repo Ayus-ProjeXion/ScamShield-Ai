@@ -233,6 +233,9 @@ Git_Beginner_Guide.pdf
 generate_git_pdf.py
 generate_defense_guide_pdf.py
 generate_judge_pdf.py
+generate_questions_pdf.py
+questions/
+*.pdf
 generate_audio_benchmark.py
 generate_email_benchmark.py
 test_cred_check.py
