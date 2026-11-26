@@ -1,0 +1,4 @@
+VOICE CALL TRANSCRIPT: Medium Risk Wallet Verification
+Target Threat Tier: MEDIUM (50-70%)
+
+Notice: Immediate verification required for your digital wallet account to avoid suspension of outbound transfers.

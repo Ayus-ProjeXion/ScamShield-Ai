@@ -1,0 +1,4 @@
+VOICE CALL TRANSCRIPT: High Risk Untrusted Domain Shipment
+Target Threat Tier: HIGH (70-85%)
+
+Order shipment notice: Your parcel requires address re-confirmation. Update your shipping address at http://track-package-support.site

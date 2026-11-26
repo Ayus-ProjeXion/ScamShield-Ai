@@ -1,0 +1,4 @@
+VOICE CALL TRANSCRIPT: High Risk Insecure Delivery Portal
+Target Threat Tier: HIGH (70-85%)
+
+Notification: Your package delivery address is incomplete. Please confirm your postal code at http://delivery-support-desk.top to avoid delay.
