@@ -568,7 +568,7 @@ export function ThreatScanner({
                 ? 'Call Transcript / Notes:'
                 : activeTab === 'image'
                   ? 'Extracted Screenshot Text (OCR):'
-                  : 'Message Content:'}
+                  : 'Message Content or Case ID:'}
           </span>
           {inputText && (
             <button
@@ -598,7 +598,7 @@ export function ThreatScanner({
                 ? "Paste audio call transcript here or upload a .wav audio file above..."
                 : activeTab === 'image'
                   ? "Screenshot text will automatically be extracted here via on-device OCR, or you can paste / edit here..."
-                  : "Type or paste suspicious SMS or WhatsApp message here..."
+                  : "Type or paste suspicious SMS, WhatsApp message, or enter Case ID (#D3E256...)..."
           }
           className={`w-full bg-transparent font-sans text-sm resize-none focus:outline-none placeholder:text-zinc-500 leading-relaxed ${isDark ? 'text-white' : 'text-[#1C1B18]'
             }`}
