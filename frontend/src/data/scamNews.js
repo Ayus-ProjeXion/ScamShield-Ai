@@ -1,0 +1,140 @@
+export const LIVE_SCAM_NEWS = [
+  {
+    id: 'electricity-kyc',
+    title: 'Electricity (Bijli) Bill KYC Disconnection Alert',
+    badge: 'MahaVitaran / State DISCOM Impersonation',
+    category: 'UTILITY_BILL_KYC',
+    severity: 'CRITICAL',
+    riskScore: 96,
+    region: 'Maharashtra & Delhi NCR',
+    incidentCount: 142,
+    timeAgo: '4 mins ago',
+    imageUrl: 'https://images.unsplash.com/photo-1473341304170-971dccb5ac1e?auto=format&fit=crop&w=400&q=80',
+    iconType: 'Zap',
+    tagColor: 'amber',
+    summary: 'Mass SMS wave claiming electricity supply will be disconnected tonight at 9:30 PM due to un-updated KYC. Directs victims to call rogue mobile numbers or install malicious APK files.',
+    attackVector: 'Artificial urgency coercion (2-hour ultimatum) coupled with trojanized Android APK (MahaVitaran_Update.apk) designed to intercept banking SMS and forward OTPs.',
+    iocs: [
+      { type: 'Phone', value: '+91 98765 43210' },
+      { type: 'Malicious APK', value: 'MahaVitaran_BillPay_v3.apk' },
+      { type: 'Fake VPA', value: 'powerpay@ybl' }
+    ],
+    advisory: 'State electricity boards NEVER send SMS from personal 10-digit mobile numbers or demand APK installations. Official communications only come from verified alpha-sender IDs (e.g., VM-MSPDCL).',
+    samplePayload: 'URGENT: Your Bijli (Electricity) bill was not updated. Power supply will be disconnected tonight at 09:30 PM by Electricity Officer. Immediately call 9876543210 or install MahaVitaran_Update.apk to verify UPI payment.'
+  },
+  {
+    id: 'digital-arrest',
+    title: 'Digital Arrest by Fake CBI & Mumbai Cyber Police',
+    badge: 'Law Enforcement Extortion',
+    category: 'DIGITAL_ARREST',
+    severity: 'CRITICAL',
+    riskScore: 99,
+    region: 'Bengaluru, Mumbai & Hyderabad',
+    incidentCount: 280,
+    timeAgo: '9 mins ago',
+    imageUrl: 'https://images.unsplash.com/photo-1589829545856-d10d557cf95f?auto=format&fit=crop&w=400&q=80',
+    iconType: 'ShieldAlert',
+    tagColor: 'crimson',
+    summary: 'High-pressure Skype/WhatsApp video calls from fraudsters dressed in fake police uniforms claiming customs seized 140g MDMA and multiple fake passports in the victim\'s name.',
+    attackVector: 'Victims placed under "Digital Custody" for 24-72 hours, forbidden from telling family, and coerced into transferring funds to "RBI Supreme Court Verification Escrow Accounts".',
+    iocs: [
+      { type: 'Skype ID', value: 'cbi.cybercell.hq' },
+      { type: 'Fake Officer', value: 'Inspector Ajay Kumar (Badge #8821)' },
+      { type: 'Mule Account', value: 'HDFC Escrow 50100492817263' }
+    ],
+    advisory: 'The Ministry of Home Affairs (MHA) clarifies: There is NO provision for "Digital Arrest" under Indian law. Police and CBI NEVER conduct interrogations or demand money over Skype or video calls.',
+    samplePayload: 'FINAL LEGAL WARNING: This is Inspector Ajay Kumar from Mumbai Cyber Crime Cell & CBI Headquarters. A parcel containing 140g MDMA and 5 fake passports in your name has been confiscated at Delhi IGI Airport. You are under immediate Digital Arrest. Do not disconnect this video call or local police will raid your premises.'
+  },
+  {
+    id: 'fedex-customs',
+    title: 'FedEx Overseas Parcel Narcotics Seizure Threat',
+    badge: 'Customs & Courier Trap',
+    category: 'COURIER_CUSTOMS_FRAUD',
+    severity: 'CRITICAL',
+    riskScore: 97,
+    region: 'Delhi, Pune & Chennai',
+    incidentCount: 94,
+    timeAgo: '18 mins ago',
+    imageUrl: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=400&q=80',
+    iconType: 'Package',
+    tagColor: 'indigo',
+    summary: 'Automated robocalls impersonating FedEx courier services claiming an unauthorized international parcel containing narcotics and forged debit cards has been detained by Indian Customs.',
+    attackVector: 'Call transferred to fake "Customs Clearance Desk" threatening immediate non-bailable FIR unless a ₹24,500 security deposit is paid to a personal UPI handle within 40 minutes.',
+    iocs: [
+      { type: 'Spoofed Domain', value: 'fedex-customs-clearance.in' },
+      { type: 'UPI Handle', value: 'customsclear@axis' },
+      { type: 'Fake Case #', value: 'FIR/CUSTOMS/2026/88412' }
+    ],
+    advisory: 'FedEx India strictly advises: Customs clearance duties are never settled through personal UPI VPAs or direct phone calls. Authentic customs queries involve formal documented notices.',
+    samplePayload: 'FedEx Notice: Consignment #FX-884012 on hold at Mumbai Customs. Unregistered overseas shipment requires immediate clearance fee of INR 24,500. Pay to UPI handle customsclear@axis via official gateway within 40 minutes to avoid MHA FIR registration.'
+  },
+  {
+    id: 'telegram-job',
+    title: 'Part-Time Telegram Video Liking & Crypto Task Trap',
+    badge: 'Work-From-Home Extortion',
+    category: 'PART_TIME_JOB_FRAUD',
+    severity: 'HIGH',
+    riskScore: 84,
+    region: 'Uttar Pradesh & Gujarat',
+    incidentCount: 310,
+    timeAgo: '26 mins ago',
+    imageUrl: 'https://images.unsplash.com/photo-1611974789855-9c2a0a7236a3?auto=format&fit=crop&w=400&q=80',
+    iconType: 'Coins',
+    tagColor: 'cyan',
+    summary: 'WhatsApp invitations offering ₹3,000–₹8,000 per day for simple tasks like rating Google Maps locations or liking YouTube videos. Initially pays small amounts to build trust.',
+    attackVector: 'Victims are migrated to Telegram group chats and coerced into "prepaid crypto investment tasks" where funds are permanently frozen and release requires continuous 50% deposits.',
+    iocs: [
+      { type: 'Telegram Channel', value: '@TaskMasterVIP_Earn' },
+      { type: 'UPI VPA', value: 'earnlot@okaxis' },
+      { type: 'Tether Address', value: 'TRC20: TLsV8194...xK91a' }
+    ],
+    advisory: 'Legitimate marketing agencies never demand upfront "security deposits" to withdraw earned wages. Never transfer money to unlock promised task rewards.',
+    samplePayload: 'Dear candidate, congratulations! Your resume has been shortlisted for Online YouTube Review Associate. Earn ₹150 per review, ₹5,000 daily payout. Join official Telegram HR channel @TaskMasterVIP_Earn to claim your first ₹300 welcome bonus.'
+  },
+  {
+    id: 'kbc-lottery',
+    title: 'KBC WhatsApp Lucky Draw & ₹25 Lakh Lottery Fraud',
+    badge: 'Advance Fee Scheme',
+    category: 'LOTTERY_ADVANCE_FEE',
+    severity: 'HIGH',
+    riskScore: 91,
+    region: 'Bihar, MP & West Bengal',
+    incidentCount: 185,
+    timeAgo: '35 mins ago',
+    imageUrl: 'https://images.unsplash.com/photo-1518609878373-06d740f60d8b?auto=format&fit=crop&w=400&q=80',
+    iconType: 'Gift',
+    tagColor: 'emerald',
+    summary: 'WhatsApp images with fake logos of Kaun Banega Crorepati (KBC) and State Bank of India claiming the recipient\'s SIM number won ₹25,00,000 in a national lucky draw.',
+    attackVector: 'Victim receives audio recordings of a fake bank manager asking for ₹6,200 GST / registration duty before the lottery cheque can be released.',
+    iocs: [
+      { type: 'WhatsApp Line', value: '+91 99312 01928' },
+      { type: 'Lottery Token', value: 'KBC-ALL-INDIA-7789' },
+      { type: 'Fake Manager', value: 'Rana Pratap Singh (SBI)' }
+    ],
+    advisory: 'KBC and Sony Entertainment never run WhatsApp SIM lotteries. No legitimate lottery requires a pre-payment fee or GST transfer to a personal bank account.',
+    samplePayload: 'Congratulations! You have won 25 Lakh INR in KBC WhatsApp All India Sim Card Lucky Draw 2025. Contact State Bank of India manager Rana Pratap Singh on WhatsApp +91 9931201928 with your Lottery Number 7789 to claim check after INR 6,200 processing duty.'
+  },
+  {
+    id: 'loan-apk',
+    title: 'Instant 7-Day Chinese Loan App Gallery Extortion',
+    badge: 'Predatory Malware & Blackmail',
+    category: 'PREDATORY_LOAN_APP',
+    severity: 'CRITICAL',
+    riskScore: 98,
+    region: 'Pan-India Nationwide Surge',
+    incidentCount: 412,
+    timeAgo: '42 mins ago',
+    imageUrl: 'https://images.unsplash.com/photo-1563986768609-322da13575f3?auto=format&fit=crop&w=400&q=80',
+    iconType: 'AlertOctagon',
+    tagColor: 'crimson',
+    summary: 'Aggressive advertisements on Instagram promising ₹10,000 instant loan with zero paperwork. Requires sideloading an unverified `.apk` from third-party links.',
+    attackVector: 'App stealthily uploads complete contact list and camera photo gallery to offshore servers. After 6 days, calls contacts with morphed photos demanding 400% interest.',
+    iocs: [
+      { type: 'Rogue APK', value: 'RupeeFast_InstantLoan_v2.apk' },
+      { type: 'Payment Gateway', value: 'pay.fastrupee-settle.in' },
+      { type: 'Harassment IVR', value: '+91 70123 99812' }
+    ],
+    advisory: 'Only borrow from RBI-registered NBFCs and banks listed on the RBI Sachet portal. Never install loan apps from APK links or grant contacts/gallery permissions.',
+    samplePayload: 'Instant Loan Sanctioned: ₹50,000 approved without CIBIL check. Transfer directly to bank in 2 minutes. Download RupeeFast_Update.apk now: https://shorturl.at/loan98 to complete Aadhaar OTP e-sign.'
+  }
+];
