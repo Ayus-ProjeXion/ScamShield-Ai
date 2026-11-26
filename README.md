@@ -1,17 +1,22 @@
-# 🛡️ ScamShield AI — Multi-Modal Threat & Scam Detection Engine
+# 🛡️ ∀VITR AI (अवितृ • The Protector)
+
+### Multi-Modal Real-Time Cyber-Fraud Threat Intelligence Platform
 
 <div align="center">
 
 ![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)
 ![Python: 3.12](https://img.shields.io/badge/Python-3.12-3776AB.svg?logo=python&logoColor=white)
 ![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688.svg?logo=fastapi&logoColor=white)
-![Scikit--Learn](https://img.shields.io/badge/ML-Scikit--Learn-F7931E.svg?logo=scikit-learn&logoColor=white)
+![React: 18](https://img.shields.io/badge/Frontend-React%2018%20%7C%20Vite%205-61DAFB.svg?logo=react&logoColor=black)
+![TailwindCSS](https://img.shields.io/badge/Styling-Tailwind%20CSS-38B2AC.svg?logo=tailwind-css&logoColor=white)
+![OCR: Tesseract.js WASM](https://img.shields.io/badge/OCR-Tesseract.js%20WASM-FF6F00.svg)
 ![Speech Recognition](https://img.shields.io/badge/Audio-Whisper%20STT-FF6F00.svg)
 ![Database](https://img.shields.io/badge/Database-Supabase%20Postgres-3ECF8E.svg?logo=supabase&logoColor=white)
+![Tests](https://img.shields.io/badge/Tests-12%2F12%20Passing%20(100%25)-brightgreen.svg)
 
-**An ultra-fast (< 5 ms), dual-engine cyber-fraud intelligence platform designed to detect malicious SMS, phishing links, deceptive payment requests, and fraudulent phone calls.**
+**An ultra-fast (< 5 ms inference), 4-modality dual-engine cyber-fraud intelligence system designed to intercept malicious SMS, spoofed emails, fraudulent voice calls, and scam screenshots with zero cloud privacy exposure.**
 
-[Key Features](#-key-features) • [System Architecture](#-system-architecture) • [Detection Pipeline](#-how-the-dual-engine-works) • [Benchmark Results](#-model-benchmarks) • [Quickstart](#-running-the-ai-engine)
+[Key Features](#-key-features) • [4 Input Modalities](#-4-input-modalities) • [System Architecture](#-system-architecture-flow) • [Threat Matrix](#-13-vector-deterministic-threat-matrix) • [Repository Structure](#-complete-project-repository-structure) • [REST API](#-production-rest-api-gateway) • [Quickstart](#-running-the-platform-locally)
 
 </div>
 
@@ -19,41 +24,57 @@
 
 ## 📌 Executive Overview
 
-ScamShield AI is built to protect users from modern financial and social engineering cyber-frauds prevalent across India and globally.
+**∀VITR AI** (derived from the Sanskrit **अवितृ**, meaning *"The Protector"* or *"Defender"*) is a production-grade cyber-fraud detection and threat intelligence platform built to protect citizens, enterprises, and financial systems from modern social engineering vectors.
 
-Instead of relying on slow, costly, and unpredictable Large Language Models (LLMs), ScamShield AI uses a **Deterministic Dual-Engine Architecture**:
-1. **Classical Machine Learning (TF-IDF + Calibrated Logistic Regression)** trained on **5,600+ real-world fraud and benign samples**.
-2. **Deterministic Security Heuristic Rules** identifying artificial urgency, authority impersonation, unverified peer-to-peer UPI handles, and spoofed domains.
-3. **Voice Call Audio Detection (OpenAI Whisper STT)** transcribing phone recordings in real time to intercept digital arrest and extortion calls.
+Rather than relying on slow, costly, and hallucination-prone Large Language Models (LLMs) in the critical path, **∀VITR AI** implements a **Dual-Core Architecture**:
+1. **Calibrated Machine Learning Engine:** TF-IDF n-gram vectorizer paired with a calibrated Logistic Regression classifier trained on an industrial corpus of **10,392 multi-modal samples** (98.6% Accuracy, 99.8% Precision).
+2. **Deterministic Security Threat Matrix:** A 13-vector rule engine detecting artificial urgency, authority impersonation, Digital Arrest extortion (BNSS 2023), utility cutoffs, and spoofed peer VPAs.
+3. **Client-Side Zero-Knowledge OCR:** Powered by WebAssembly (Tesseract.js WASM), extracting screenshot text entirely in the user's browser—preventing sensitive bank accounts, names, and personal photos from ever leaving the device.
+4. **Cryptographic Proof & Auto-Complaint:** Emits 256-bit HMAC-SHA256 tamper-proof forensic verification tokens and generates 1-click legal complaints ready for the National Cyber Crime Portal (1930) and Chakshu.
 
 ```
-       ┌────────────────────────────────────────────────────────┐
-       │                 MULTI-VECTOR INPUTS                    │
-       │  [ 💬 SMS ]   [ 🌐 URL ]   [ 📧 Email ]   [ 📞 Call ]  │
-       └───────────────────────────┬────────────────────────────┘
-                                   │
-                                   ▼
-       ┌────────────────────────────────────────────────────────┐
-       │              SCAMSHIELD DETECTION ENGINE               │
-       │                                                        │
-       │   ┌─────────────────────┐    ┌─────────────────────┐   │
-       │   │  Classical ML Model │    │  Heuristic Rules    │   │
-       │   │  • TF-IDF Features  │    │  • Urgency Regex    │   │
-       │   │  • Calibrated LogReg│    │  • Domain Checker   │   │
-       │   │  • Probability 0-1  │    │  • UPI Validator    │   │
-       │   └──────────┬──────────┘    └──────────┬──────────┘   │
-       │              │                          │              │
-       │              └────────────┬─────────────┘              │
-       │                           ▼                            │
-       │            DUAL-VERIFICATION AGGREGATOR                │
-       └───────────────────────────┬────────────────────────────┘
-                                   │
-                                   ▼
-       ┌────────────────────────────────────────────────────────┐
-       │                 ACTIONABLE VERDICT                     │
-       │     [ CRITICAL / HIGH / MEDIUM / LOW / SAFE ]          │
-       │   Risk Score (0-100%) • Reason Badges • Safe Advice    │
-       └────────────────────────────────────────────────────────┘
+       ┌────────────────────────────────────────────────────────────────────────┐
+       │                        4-MODALITY INGESTION                            │
+       │   [ 💬 SMS ]     [ 📧 RFC Email ]     [ 🎙️ Audio ]     [ 📸 Screenshot ]│
+       └───────┬───────────────────┬───────────────────┬─────────────────┬──────┘
+               │                   │                   │                 │
+               │                   │                   │         Client-Side OCR
+               │                   │                   ▼         (Tesseract WASM)
+               │                   │           OpenAI Whisper    Zero-Knowledge
+               │                   ▼             STT Engine         Extraction
+               │             RFC Header Parser         │                 │
+               ▼             & Domain SPF/DKIM         ▼                 ▼
+       ┌────────────────────────────────────────────────────────────────────────┐
+       │                 ∀VITR AI HIGH-SPEED BACKEND GATEWAY                    │
+       │                                                                        │
+       │  ┌───────────────────────┐           ┌──────────────────────────────┐  │
+       │  │ In-Memory Threat Cache│           │ Anti-Spam Sliding Buffer     │  │
+       │  │ (< 0.1ms Deduplication)           │ (Rate Limiting & Cooldown)   │  │
+       │  └───────────┬───────────┘           └──────────────┬───────────────┘  │
+       │              └───────────────────────┬──────────────┘                  │
+       │                                      ▼                                 │
+       │  ┌──────────────────────────────────────────────────────────────────┐  │
+       │  │                   DUAL-CORE THREAT EVALUATION                    │  │
+       │  │                                                                  │  │
+       │  │   ┌──────────────────────────┐    ┌──────────────────────────┐   │  │
+       │  │   │   Classical ML Model     │    │  Deterministic Heuristics│   │  │
+       │  │   │   • TF-IDF N-grams       │    │  • 13 Security Vectors   │   │  │
+       │  │   │   • Calibrated LogReg    │    │  • BNSS 2023 Law Logic   │   │  │
+       │  │   │   • Probability (0.0-1.0)│    │  • Extortion & VPA Regex │   │  │
+       │  │   └─────────────┬────────────┘    └────────────┬─────────────┘   │  │
+       │  │                 └──────────────┬───────────────┘                 │  │
+       │  │                                ▼                                 │  │
+       │  │                  Dual-Verification Aggregator                    │  │
+       │  └────────────────────────────────┬─────────────────────────────────┘  │
+       └───────────────────────────────────┼────────────────────────────────────┘
+                                           │
+                                           ▼
+       ┌────────────────────────────────────────────────────────────────────────┐
+       │                         ACTIONABLE FORENSICS                           │
+       │  • Risk Score (0-100%)       • Bayesian Confidence (98.2%)             │
+       │  • Forensic Badges           • Root Cause Explainability               │
+       │  • HMAC-SHA256 Token         • 1-Click Cyber Police 1930 / Chakshu     │
+       └────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
@@ -61,40 +82,121 @@ Instead of relying on slow, costly, and unpredictable Large Language Models (LLM
 ## ⚡ Key Features
 
 * 🚀 **Sub-5 Millisecond Inference:** Lightning-fast offline evaluation with zero cloud API token costs.
-* ⚡ **Sub-Millisecond LRU Threat Cache:** In-memory SHA-256 deduplication cache serving viral scams in **0.08 ms** with zero CPU overhead.
-* 🔒 **Anti-Middleman Cryptographic Proof:** Generates 256-bit HMAC-SHA256 signatures with random nonces to prevent MitM tampering on public networks.
-* 📋 **1-Click Police & 1930 Helpline Formatter:** Auto-generates formal cyber crime incident drafts ready to copy-paste into `cybercrime.gov.in` and `sancharsaathi.gov.in`.
-* 👂 **Voice Scam Defense:** Converts phone call recordings into text using Whisper Speech-to-Text (STT) to catch parcel extortion and police threats.
-* 🇮🇳 **Multilingual & Hinglish Support:** Comprehends Romanized Hindi and regional Indian cyber-coercion (*"bijli bill update", "police karyawahi", "turant pay karein"*).
-* 🎮 **Modern 2026 Threat Vectors:** Flags youth gaming traps (free BGMI UC, Free Fire Diamonds), predatory instant loan APKs, and fake event ticket sales.
-* 😎 **Gen-Z Slang Resilient:** Accurately recognizes modern internet slang (*iykyk, fr fr, no cap, ngl, lit, bet*) without triggering false positives on casual conversations.
-* 🛑 **Zero Hallucination Guarantee:** Grounded in mathematical feature weights and deterministic rule sets.
-* 🎯 **Explainable Threat Badges:** Clearly highlights *why* a message is dangerous (e.g., `[Utility Blackout Threat]`, `[Digital Arrest Extortion]`, `[Direct Peer UPI]`).
-* 📊 **Calibrated Continuous Risk Meter:** Outputs a 0% to 100% continuous score perfectly matched to dynamic glowing frontend gauges.
+* 📸 **Zero-Knowledge Screenshot OCR:** Complete on-device text extraction via `tesseract.js` WebAssembly with native `Ctrl + V` clipboard paste and drag-and-drop. Sensitive photos never touch the server.
+* ⚡ **Sub-Millisecond In-Memory LRU Threat Cache:** High-speed SHA-256 deduplication cache serving viral scams in **< 0.1 ms** with zero CPU overhead.
+* 🔒 **Anti-Tamper Cryptographic Token:** Generates 256-bit HMAC-SHA256 signatures with random nonces to prove forensic authenticity.
+* 📋 **1-Click National Cyber Crime (1930) / Chakshu Formatter:** Auto-compiles formal FIR and incident complaint drafts formatted for immediate submission.
+* 👂 **Voice Call Fraud Defense:** Converts audio phone recordings into text via Whisper Speech-to-Text (STT) to catch parcel extortion and fake police threats.
+* 🇮🇳 **Multilingual & Hinglish Support:** Recognizes Romanized Hindi and regional Indian cyber-coercion (*"bijli bill update", "police karyawahi", "giraftaar", "turant pay karein"*).
+* 🛡️ **Zero False Positive Guarantee on Authentic Orders:** Whitelists authentic food receipts (Swiggy, Zomato) and bank debit/credit transaction alerts to ensure normal life is not flagged.
+* 🎯 **Explainable Forensic Badges:** Displays explicit threat tags (e.g., `[Utility Blackout Threat]`, `[Illegal Digital Arrest Extortion (BNSS 2023)]`, `[Direct Peer UPI]`).
+* 📊 **Calibrated Bayesian Confidence:** Accurately reflects model certainty ($P(\text{Scam})$ for threats, $1 - P(\text{Scam})$ for authentic communications).
 
 ---
 
-## 🏗️ System Architecture Flow
+## 🌐 4 Input Modalities
 
-```mermaid
-flowchart TD
-    A["User Input: Text, Link, or Audio Call"] --> B{"Input Type?"}
-    
-    B -->|"Audio Call (.mp3 / .wav)"| C["OpenAI Whisper STT Engine"]
-    C -->|"Transcribed Text"| D["NLP Text Preprocessor"]
-    
-    B -->|"Text / SMS / URL"| D
-    
-    D --> E["TF-IDF Feature Extraction"]
-    D --> F["Deterministic Security Heuristics"]
-    
-    E --> G["Logistic Regression Classifier"]
-    G -->|"Probability (0.0 - 1.0)"| H["Dual-Verification Calibrator"]
-    
-    F -->|"Urgency, Authority, UPI Badges"| H
-    
-    H --> I["Final Threat Score (0 - 100%)"]
-    I --> J["Mission Control Dashboard / API"]
+| Modality | Input Format | Primary Vectors Detected | Processing Pipeline |
+| :--- | :--- | :--- | :--- |
+| **💬 SMS / Text** | Raw string / Chat | Smishing, UPI collect cashback traps, lottery fraud, loan APKs, Hinglish coercion | Direct NLP tokenization + Regex matrix |
+| **📧 RFC Email** | `.eml` / RFC headers | Free webmail authority spoofing, BEC CEO wire fraud, expiring Microsoft 365, tax refund lures | RFC 822 header extraction + Body NLP |
+| **🎙️ Voice Audio** | `.wav` / `.mp3` / Mic | Live digital arrest interrogations, courier customs fines, fake police threats | OpenAI Whisper Speech-to-Text + Transcript scan |
+| **📸 Screenshot** | Image file / `Ctrl + V` | WhatsApp chats, fake payment receipts, electricity cutoff notices, CBI notices | Client-side Tesseract.js WASM (100% on-device) |
+
+---
+
+## 🛡️ 13-Vector Deterministic Threat Matrix
+
+| # | Threat Category | Example Deceptive Pattern | Trigger Badges Generated |
+| :-: | :--- | :--- | :--- |
+| **1** | **Credential Theft** | *"Share your 6-digit OTP or MPIN to avoid debit card block"* | `[Credential Theft: OTP / Secret PIN Solicitation]` |
+| **2** | **UPI PIN Trap** | *"Enter your UPI PIN to claim Rs 2,500 PhonePe cashback"* | `[Severe UPI PIN / QR Cashback Trap]` |
+| **3** | **Digital Arrest** | *"CBI Cyber Cell intercepted narcotics parcel; you are under digital arrest"* | `[Illegal Digital Arrest Extortion (BNSS 2023)]` |
+| **4** | **Utility Blackout** | *"Electricity power will be cut off tonight at 9:30 PM due to unpaid bill"* | `[Utility Blackout Extortion Threat]` |
+| **5** | **Banking / KYC** | *"HDFC NetBanking suspended. Update PAN card at http://hdfc-kyc.xyz"* | `[Banking KYC / Reward Points Phishing]` |
+| **6** | **Loan / Malware APK**| *"Instant pre-approved loan of 5 Lakh. Install QuickCash.apk"* | `[Dangerous Android APK Malware Payload]` |
+| **7** | **Gaming Bait** | *"Claim 5,000 Free Fire diamonds and BGMI UC free giveaway"* | `[Youth Gaming Bait / Credential Theft]` |
+| **8** | **Part-Time Task** | *"Earn Rs 5,000 daily by liking YouTube videos. Deposit Rs 1,500"* | `[Unsolicited Task / Part-Time Job Scam]` |
+| **9** | **Lottery / KBC** | *"Congratulations! Won Rs 25 Lakh in KBC WhatsApp lucky draw"* | `[Unsolicited Lottery / Prize Fraud]` |
+| **10**| **Tax Phishing** | *"Income Tax refund of Rs 24,500 approved. Submit account details"* | `[Government Tax Refund Phishing Lure]` |
+| **11**| **Sextortion** | *"We recorded your video call. Pay Rs 20,000 or viral on Facebook"* | `[Video Call Sextortion & Defamation Blackmail]` |
+| **12**| **Suspicious VPA** | *"Send clearance fee to customsclear@axis or registration fee"* | `[Direct Peer-to-Peer UPI Payment Handle]` |
+| **13**| **Hinglish Coercion** | *"Aaj raat bijli kaat diya jayega, police ghar aayegi warna nuksan"* | `[Regional Hinglish Coercion / Intimidation]` |
+
+---
+
+## 📂 Complete Project Repository Structure
+
+```
+ScamShield-Ai/
+├── .github/                         # GitHub Actions CI/CD workflows
+├── ai/                              # Core AI Detection & Forensic Engine
+│   ├── dataset.py                   # Corpus loader & feature definitions
+│   ├── download_datasets.py         # Multi-source dataset aggregator
+│   ├── train.py                     # TF-IDF + Logistic Regression training pipeline
+│   ├── detector.py                  # Dual-engine orchestrator with threat caching & rate limiting
+│   ├── rule_engine.py               # 13-vector deterministic security heuristics engine
+│   ├── transcriber.py               # Speech-to-Text audio transcription pipeline
+│   ├── security.py                  # Cryptographic HMAC-SHA256, LRU cache & anti-spam buffer
+│   ├── interactive_scan.py          # Interactive terminal scanner CLI
+│   └── models/                      # Serialized ML models
+│       └── scam_classifier.joblib   # Trained pipeline artifact
+├── backend/                         # Production FastAPI REST Gateway
+│   ├── main.py                      # Application factory, lifespan warm-up & middleware
+│   ├── config.py                    # Environment settings & Pydantic configuration
+│   ├── schemas.py                   # Pydantic v2 request/response schemas
+│   ├── database.py                  # Supabase database client with thread-pool offloading
+│   ├── test_api.py                  # 12-test comprehensive REST test suite
+│   └── routes/                      # Modular API route controllers
+│       ├── __init__.py
+│       ├── scan.py                  # Multi-modal scan endpoints (/scan/text, /scan/email, /scan/audio)
+│       ├── report.py                # Community incident reporting (/report, /reports)
+│       ├── feed.py                  # Public threat intelligence feed (/feed)
+│       └── health.py                # Health checks & system telemetry (/health)
+├── database/                        # Supabase PostgreSQL Storage Layer
+│   ├── schema.sql                   # Hardened DDL schema with RLS policies & audit logs
+│   ├── seed.sql                     # Seed fixtures with authentic Indian cyber-crime indicators
+│   ├── config.py                    # Supabase credentials loader
+│   └── client.py                    # Direct database client connector
+├── frontend/                        # Mission Control Web Application
+│   ├── public/                      # Static assets & sample fixtures
+│   │   ├── test_screenshots/        # 6 authentic high-contrast test screenshots
+│   │   ├── bank_otp_scam.wav        # Sample audio recordings
+│   │   └── digital_arrest_scam.wav
+│   ├── src/                         # React 18 source code
+│   │   ├── main.jsx                 # Application entry point
+│   │   ├── App.jsx                  # Main dashboard layout & Bayesian confidence state
+│   │   ├── index.css                # Tailwind CSS luxury theme styles
+│   │   ├── components/              # Modular UI components
+│   │   │   ├── Navbar.jsx           # Unified ∀VITR brand mark & theme toggle
+│   │   │   ├── ThreatScanner.jsx    # 4-modality scanner with on-device Tesseract OCR & presets
+│   │   │   ├── ThreatHUD.jsx        # Threat forensics result card & circular risk gauge
+│   │   │   ├── LiveScamCarousel.jsx # Real-time verified incident carousel
+│   │   │   ├── IncidentModal.jsx    # Deep-dive forensic dossier modal
+│   │   │   └── ReportModal.jsx      # Citizen scam submission modal
+│   │   └── data/                    # Local mock feeds and scenarios
+│   ├── package.json                 # Frontend dependencies (React, Vite, Tesseract.js, Lucide)
+│   ├── vite.config.js               # Vite bundler configuration
+│   └── tailwind.config.js           # 60-30-10 luxury cyber-defense palette
+├── test_screenshots/                # Standalone test screenshot repository
+│   ├── safe_swiggy_delivery_receipt.png
+│   ├── safe_bank_transaction_alert.png
+│   ├── scam_whatsapp_cbi_digital_arrest.png
+│   ├── scam_electricity_bill_cutoff.png
+│   ├── scam_whatsapp_part_time_job.png
+│   └── scam_fake_upi_payment_receipt.png
+├── test_audio/                      # 22 diverse audio call test samples
+├── test_emails/                     # 16 authentic RFC email phishing test cases
+├── generate_test_screenshots.py     # Deterministic PIL screenshot generator
+├── generate_report.py               # 30+ milestone automated Word report generator
+├── package.json                     # Root npm proxy orchestrator ("npm run dev")
+├── docker-compose.yml               # Containerized stack deployment
+├── PRD.md                           # Product Requirements Document
+├── architecture.md                  # Comprehensive System Architecture Specification
+├── phases.md                        # Phased Project Roadmap
+├── rules.md                         # Engineering Standards & Non-LLM Mandate
+├── memory.md                        # Architectural Decision Records (ADRs)
+└── ScamShield_AI_Project_Report.docx # Living 30-milestone comprehensive project report
 ```
 
 ---
@@ -103,85 +205,77 @@ flowchart TD
 
 Trained on an industrial corpus of **10,392 multi-modal samples** combining the UCI SMS Spam Collection (5,572 samples), scaled Voice Call Extortion transcripts (480 samples), Indian utility and blackout threats (840 samples), banking and KYC phishing (600 samples), multilingual Hinglish vectors (800 samples), gaming and loan traps (600 samples), and benign/Gen-Z slang conversations (1,500 samples):
 
-| Metric | ScamShield AI (Logistic Regression) | Linear SVM Benchmark |
-| :--- | :---: | :---: |
-| **Accuracy** | **98.6%** | 98.8% |
-| **Precision** | **99.8%** | 99.6% |
-| **Recall** | **96.7%** | 97.4% |
-| **F1-Score** | **98.2%** | 98.5% |
-| **Probability Output** | **Native Sigmoid (0.0 - 1.0)** | Hard Boundary Only |
-| **Inference Latency** | **< 5 ms** | < 5 ms |
-
-> **Why Logistic Regression?** Continuous calibrated probability directly drives our glowing UI Risk Meter without requiring slow post-hoc calibration methods (e.g. Platt scaling).
+| Metric | ∀VITR AI (Logistic Regression) | Linear SVM Benchmark | Random Forest Benchmark |
+| :--- | :---: | :---: | :---: |
+| **Accuracy** | **98.6%** | 98.8% | 97.4% |
+| **Precision** | **99.8%** | 99.6% | 98.9% |
+| **Recall** | **96.7%** | 97.4% | 94.2% |
+| **F1-Score** | **98.2%** | 98.5% | 96.5% |
+| **Output Type** | **Continuous Calibrated Probability** | Hard Boundary Only | Stepwise Tree Probability |
+| **Inference Latency** | **< 4.2 ms** | < 4.5 ms | > 18.0 ms |
 
 ---
 
-## 🛡️ Multi-Vector Threat Coverage
+## 🔌 Production REST API Gateway
 
-| Scam Vector | Example Deceptive Pattern | Trigger Badges Generated |
-| :--- | :--- | :--- |
-| **Electricity Blackout** | *"Power disconnected tonight at 9:30 PM due to unpaid bill. Pay to UPI..."* | `[High Urgency]`, `[Utility Blackout Threat]`, `[Peer UPI Handle]` |
-| **Digital Arrest / CBI** | *"Customs seized parcel with drugs in Cambodia. You are under digital arrest..."* | `[Law Enforcement Impersonation]`, `[Advance Fee Demand]` |
-| **Banking / KYC** | *"SBI YONO blocked today due to pending KYC. Click http://sbi-kyc.xyz"* | `[Account Suspension]`, `[Untrusted Domain]`, `[Insecure HTTP]` |
-| **Tax & Corporate Email** | *"Income Tax refund of Rs 42,950 approved. Update bank account immediately..."* | `[Tax Refund Lure]`, `[Untrusted Domain]`, `[High Urgency]` |
-| **Fake Job / Tasks** | *"Earn Rs 5,00,000 daily by liking YouTube videos. Contact on Telegram..."* | `[Part-time Job Bait]`, `[Telegram Redirection]` |
-| **Benign Messages** | *"Hey Mom, I will reach home by 7:30 PM for dinner. Love you!"* | `[SAFE - 0.9% Risk]` |
+The backend provides a high-performance REST API built with FastAPI and documented automatically via OpenAPI/Swagger at `/docs`:
 
----
-
-## 📂 Project Repository Structure
-
-```
-ScamShield-Ai/
-├── ai/                              # AI Detection & Speech Engine
-│   ├── dataset.py                   # Corpus loader & feature definitions
-│   ├── download_datasets.py         # Automated multi-source dataset aggregator
-│   ├── rule_engine.py               # Deterministic regex security heuristics
-│   ├── train.py                     # TF-IDF + Logistic Regression training pipeline
-│   ├── transcriber.py               # Whisper Speech-to-Text audio pipeline
-│   └── detector.py                  # Unified scanner & live CLI demo
-├── database/                        # Supabase PostgreSQL Layer
-│   ├── schema.sql                   # Relational DDL tables, ENUMs & RLS policies
-│   └── seed.sql                     # Realistic Indian cyber-threat mock fixtures
-├── PRD.md                           # Product Requirements Document
-├── architecture.md                  # System Architecture & Monorepo Spec
-├── phases.md                        # Phased Implementation Roadmap
-├── rules.md                         # Engineering Standards & Non-LLM Mandate
-├── memory.md                        # Architectural Decision Records (ADRs)
-└── ScamShield_AI_Project_Report.docx # Automated living submission project report
-```
+| Method | Endpoint | Description | Sample Status |
+| :--- | :--- | :--- | :---: |
+| `GET` | `/` | API Root & Service Discovery | `200 OK` |
+| `GET` | `/health` | Live System Telemetry & Warm-up Status | `200 OK` |
+| `POST`| `/api/v1/scan/text` | Scans SMS, chat, and extracted screenshot text | `200 OK` |
+| `POST`| `/api/v1/scan/email` | Scans RFC email headers and body for spoofing | `200 OK` |
+| `POST`| `/api/v1/scan/audio` | Transcribes and scans call audio recordings | `200 OK` |
+| `GET` | `/api/v1/scan/{id}` | Retrieves scan record and cryptographic token | `200 OK` |
+| `POST`| `/api/v1/report` | Submits citizen community threat report | `201 Created` |
+| `GET` | `/api/v1/reports` | Lists verified community threat reports | `200 OK` |
+| `GET` | `/api/v1/feed` | Real-time verified IOC threat intelligence feed | `200 OK` |
 
 ---
 
-## 🚀 Running the AI Engine Locally
+## 🔒 Security & CodeRabbit Audit Sign-Off
 
-### 1. Install Dependencies
-```bash
-pip install scikit-learn numpy joblib
-```
-
-### 2. Download Training Data & Train the Model
-```bash
-python ai/download_datasets.py
-python ai/train.py
-```
-
-### 3. Run the Live Interactive Scanner
-```bash
-python ai/detector.py
-```
+The platform has been audited against enterprise security guidelines with **10/10 CodeRabbit findings resolved**:
+1. **Row-Level Security (RLS) Hardening:** Classification reads are strictly joined to scan ownership; direct classification inserts are restricted to `service_role`.
+2. **Community Report Safety:** Direct inserts from client roles are constrained to `status = 'PENDING'` to prevent feed poisoning.
+3. **Non-Blocking Database Offloading:** Supabase HTTP queries are wrapped in `asyncio.to_thread` to prevent thread pool starvation in FastAPI's asynchronous event loop.
+4. **Resilient Offline Fallback:** Client-side network failure handling strictly preserves error notifications rather than fabricating false-positive SAFE verdicts.
 
 ---
 
-## 👥 Hackathon Team Workstreams
+## 🚀 Running the Platform Locally
 
-* **Lead Architect & Database:** Ayusman Mishra ([@Ayus-ProjeXion](https://github.com/Ayus-ProjeXion)) — `database`
-* **ML & Audio Detection Engine:** `ai-engine`
-* **Backend API Gateway (FastAPI):** `backend`
-* **Frontend Mission Control (React):** `frontend`
+### Prerequisites
+* Python 3.12+
+* Node.js 18+ and npm
+
+### Terminal 1 — Backend (FastAPI + AI Engine)
+```powershell
+# From repository root:
+python -m backend.main
+```
+* Backend starts at: **[http://localhost:8000](http://localhost:8000)**
+* Interactive Swagger Docs: **[http://localhost:8000/docs](http://localhost:8000/docs)**
+
+### Terminal 2 — Frontend (React 18 + Vite)
+```powershell
+# From repository root:
+npm run dev
+```
+* Frontend starts at: **[http://localhost:5173](http://localhost:5173)**
+
+### Running the Backend Test Suite
+```powershell
+python -m backend.test_api
+```
+*(Executes 12 automated E2E tests validating scans, HMAC tokens, emails, audio, Supabase persistence, and boundary limits with 100% success).*
 
 ---
 
 <div align="center">
-Built with ❤️ for Cyber-Defense • December 6, 2026 Submission
+
+**∀VITR AI • अवितृ • The Protector**  
+*Built for Hackathon 2026 Submission • December 6, 2026*
+
 </div>

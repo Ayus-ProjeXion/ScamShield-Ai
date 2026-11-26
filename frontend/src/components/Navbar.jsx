@@ -3,11 +3,10 @@ import { Sun, Moon, PhoneCall, PlusCircle } from 'lucide-react';
 
 export function Navbar({ isDark, onToggleTheme, onOpenReportModal }) {
   return (
-    <header className={`sticky top-0 z-40 w-full border-b backdrop-blur-md transition-colors duration-200 ${
-      isDark 
-        ? 'bg-[#0C0C0C]/90 border-[#242428]' 
-        : 'bg-[#ECEAE5]/90 border-[#DCD9D2]'
-    }`}>
+    <header className={`sticky top-0 z-40 w-full border-b backdrop-blur-md transition-colors duration-200 ${isDark
+      ? 'bg-[#0C0C0C]/90 border-[#242428]'
+      : 'bg-[#ECEAE5]/90 border-[#DCD9D2]'
+      }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
 
         {/* AVITR AI — Unified Geometric Brand Identity */}
@@ -36,20 +35,18 @@ export function Navbar({ isDark, onToggleTheme, onOpenReportModal }) {
               AI
             </span>
           </div>
-          <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-semibold border ${
-            isDark 
-              ? 'bg-zinc-900 text-zinc-300 border-zinc-800' 
-              : 'bg-[#F6F5F2] text-[#1C1B18] border-[#DCD9D2]'
+          <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-semibold border ${isDark
+            ? 'bg-zinc-900 text-zinc-300 border-zinc-800'
+            : 'bg-[#F6F5F2] text-[#1C1B18] border-[#DCD9D2]'
             }`}>
             v4.2
           </span>
         </div>
 
         {/* Live Engine Status Badge */}
-        <div className={`hidden md:flex items-center gap-2.5 px-3.5 py-1.5 rounded-full border text-xs font-mono ${
-          isDark 
-            ? 'bg-[#141416] border-[#242428] text-zinc-300' 
-            : 'bg-[#F6F5F2] border-[#DCD9D2] text-[#1C1B18]'
+        <div className={`hidden md:flex items-center gap-2.5 px-3.5 py-1.5 rounded-full border text-xs font-mono ${isDark
+          ? 'bg-[#141416] border-[#242428] text-zinc-300'
+          : 'bg-[#F6F5F2] border-[#DCD9D2] text-[#1C1B18]'
           }`}>
           <span className="relative flex h-2 w-2">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#FF6F32] opacity-75"></span>
@@ -67,11 +64,10 @@ export function Navbar({ isDark, onToggleTheme, onOpenReportModal }) {
           {/* Light / Dark Mode Toggle Button */}
           <button
             onClick={onToggleTheme}
-            className={`p-2 rounded-xl border transition-all ${
-              isDark 
-                ? 'bg-[#141416] border-[#242428] text-zinc-300 hover:text-white hover:border-zinc-700' 
-                : 'bg-[#F6F5F2] border-[#DCD9D2] text-[#1C1B18] hover:text-[#FF6F32] hover:border-[#FF6F32]/40'
-            }`}
+            className={`p-2 rounded-xl border transition-all ${isDark
+              ? 'bg-[#141416] border-[#242428] text-zinc-300 hover:text-white hover:border-zinc-700'
+              : 'bg-[#F6F5F2] border-[#DCD9D2] text-[#1C1B18] hover:text-[#FF6F32] hover:border-[#FF6F32]/40'
+              }`}
             title={isDark ? 'Switch to Soothing Light Mode' : 'Switch to Midnight Dark Mode'}
             type="button"
           >
@@ -85,10 +81,9 @@ export function Navbar({ isDark, onToggleTheme, onOpenReportModal }) {
           {/* Emergency 1930 Helpline Button */}
           <a
             href="tel:1930"
-            className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all ${
-              isDark 
-                ? 'bg-zinc-900 border-zinc-800 text-zinc-300 hover:border-[#FF6F32]/50 hover:text-white' 
-                : 'bg-[#F6F5F2] border-[#DCD9D2] text-[#1C1B18] hover:border-[#FF6F32]/50 hover:text-[#FF6F32]'
+            className={`hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-xl border text-xs font-semibold transition-all ${isDark
+              ? 'bg-zinc-900 border-zinc-800 text-zinc-300 hover:border-[#FF6F32]/50 hover:text-white'
+              : 'bg-[#F6F5F2] border-[#DCD9D2] text-[#1C1B18] hover:border-[#FF6F32]/50 hover:text-[#FF6F32]'
               }`}
             title="National Cyber Crime Helpline"
           >
