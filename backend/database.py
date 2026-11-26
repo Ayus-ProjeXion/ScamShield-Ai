@@ -3,6 +3,7 @@ import time
 import uuid
 import logging
 import datetime
+import asyncio
 from typing import Dict, Any, List, Optional
 from backend.config import settings
 
@@ -172,15 +173,17 @@ class DatabaseManager:
         # In-memory store (instantaneous lookup)
         self.scans[scan_id] = scan_data
         
-        # If circuit allows, persist to live Supabase
+        # If circuit allows, persist to live Supabase offloaded to thread pool (non-blocking)
         if self._can_attempt_remote():
             try:
-                self.supabase.table("threat_scans").insert({
-                    "id": scan_id,
-                    "channel": scan_data.get("channel", "SMS"),
-                    "raw_payload": scan_data.get("text_preview", ""),
-                    "created_at": scan_data["created_at"]
-                }).execute()
+                def _insert_scan():
+                    return self.supabase.table("threat_scans").insert({
+                        "id": scan_id,
+                        "channel": scan_data.get("channel", "SMS"),
+                        "raw_payload": scan_data.get("text_preview", ""),
+                        "created_at": scan_data["created_at"]
+                    }).execute()
+                await asyncio.to_thread(_insert_scan)
                 self._record_success()
             except Exception as e:
                 self._record_failure(e)
@@ -193,7 +196,9 @@ class DatabaseManager:
             
         if self._can_attempt_remote():
             try:
-                res = self.supabase.table("threat_scans").select("*").eq("id", scan_id).execute()
+                def _fetch_scan():
+                    return self.supabase.table("threat_scans").select("*").eq("id", scan_id).execute()
+                res = await asyncio.to_thread(_fetch_scan)
                 if res.data:
                     self._record_success()
                     return res.data[0]
@@ -217,17 +222,26 @@ class DatabaseManager:
             "created_at": now_str
         }
         
-        # Live Supabase sync with circuit breaker
+        # Live Supabase sync with circuit breaker offloaded to thread
+        remote_synced = False
         if self._can_attempt_remote():
             try:
-                self.supabase.table("community_reports").insert(db_payload).execute()
+                def _insert_report():
+                    return self.supabase.table("community_reports").insert(db_payload).execute()
+                await asyncio.to_thread(_insert_report)
                 self._record_success()
+                remote_synced = True
             except Exception as e:
                 self._record_failure(e)
                 
+        status_msg = (
+            "Report submitted and synced to Cloud Intelligence"
+            if remote_synced else
+            "Report registered locally in memory (cloud sync pending)"
+        )
         record = {
             **db_payload,
-            "message": "Report submitted successfully to ScamShield Community Intelligence"
+            "message": status_msg
         }
         self.reports.insert(0, record)
         return record
@@ -235,7 +249,9 @@ class DatabaseManager:
     async def get_reports(self, limit: int = 50) -> List[Dict[str, Any]]:
         if self._can_attempt_remote():
             try:
-                res = self.supabase.table("community_reports").select("*").order("created_at", desc=True).limit(limit).execute()
+                def _fetch_reports():
+                    return self.supabase.table("community_reports").select("*").order("created_at", desc=True).limit(limit).execute()
+                res = await asyncio.to_thread(_fetch_reports)
                 if res.data:
                     self._record_success()
                     return res.data
@@ -250,10 +266,12 @@ class DatabaseManager:
             
         if self._can_attempt_remote():
             try:
-                q = self.supabase.table("threat_iocs").select("*").order("created_at", desc=True).limit(limit)
-                if category:
-                    q = q.eq("category", category)
-                res = q.execute()
+                def _fetch_feed():
+                    q = self.supabase.table("threat_iocs").select("*").order("created_at", desc=True).limit(limit)
+                    if category:
+                        q = q.eq("category", category)
+                    return q.execute()
+                res = await asyncio.to_thread(_fetch_feed)
                 if res.data:
                     self._record_success()
                     return res.data

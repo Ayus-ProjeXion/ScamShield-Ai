@@ -68,9 +68,14 @@ class ScamDetector:
                 "rate_limited": False
             }
 
-        # Enterprise Input Boundary: Bound text to 10,000 chars to prevent ReDoS / memory exhaustion
-        if len(text) > 10000:
-            text = text[:10000]
+        # Enterprise Input Boundary: Strip whitespace and bound text to 10,000 chars to prevent ReDoS / memory exhaustion
+        text_clean = text.strip()
+        is_length_bounded = False
+        if len(text_clean) > 10000:
+            text = text_clean[:10000]
+            is_length_bounded = True
+        else:
+            text = text_clean
 
         # 0. Anti-Spam Buffer & Cooldown Check (prevents bot spamming & model overload)
         allowed, wait_sec, msg = self.rate_buffer.check_and_record(client_id)
@@ -133,14 +138,21 @@ class ScamDetector:
         elif heuristic_res["rule_hit_count"] >= 1:
             combined_risk = max(ml_prob * 100, 75.0)
         else:
-            # Zero heuristic triggers (Structurally harmless text without any security red flags):
-            # Strictly suppress false positives on everyday chats, family syncs, and colloquial slang
+            # Zero heuristic triggers:
+            # High-confidence statistical anomalies are elevated, while normal conversation is protected
             if ml_prob >= 0.95:
+                combined_risk = ml_prob * 75.0
+                badges.append("Statistical Anomaly: High-Probability Scam Pattern (ML)")
+            elif ml_prob >= 0.85:
+                combined_risk = ml_prob * 55.0
+                badges.append("Statistical Anomaly: Elevated Scam Probability (ML)")
+            elif ml_prob >= 0.70:
                 combined_risk = ml_prob * 20.0
-            elif ml_prob >= 0.80:
-                combined_risk = ml_prob * 10.0
             else:
                 combined_risk = (ml_prob ** 2) * 8.0
+
+        if is_length_bounded:
+            badges.append("Input Bounded (First 10,000 Chars Evaluated)")
 
         final_risk = round(min(100.0, max(0.0, combined_risk)), 1)
 

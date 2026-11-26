@@ -216,16 +216,22 @@ CREATE POLICY "Users can read own scans, anonymous scans visible to creator sess
         user_id IS NULL OR auth.uid() = user_id
     );
 
--- Policy: Scam Classifications (Readable if scan is accessible)
+-- Policy: Scam Classifications (Readable if parent scan is accessible)
 CREATE POLICY "Classifications are readable for scan viewers" 
-    ON public.scam_classifications FOR SELECT USING (true);
+    ON public.scam_classifications FOR SELECT USING (
+        EXISTS (
+            SELECT 1 FROM public.threat_scans ts 
+            WHERE ts.id = scam_classifications.scan_id 
+            AND (ts.user_id IS NULL OR ts.user_id = auth.uid())
+        )
+    );
 
 CREATE POLICY "Service role can insert classifications" 
-    ON public.scam_classifications FOR INSERT WITH CHECK (true);
+    ON public.scam_classifications FOR INSERT TO service_role WITH CHECK (true);
 
--- Policy: Community Reports (Publicly readable, authenticated can insert)
+-- Policy: Community Reports (Publicly readable, inserts must start with PENDING status)
 CREATE POLICY "Community reports are publicly viewable" 
     ON public.community_reports FOR SELECT USING (true);
 
 CREATE POLICY "Authenticated users can submit reports" 
-    ON public.community_reports FOR INSERT WITH CHECK (true);
+    ON public.community_reports FOR INSERT WITH CHECK (status = 'PENDING');
