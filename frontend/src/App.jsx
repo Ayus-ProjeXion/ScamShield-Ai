@@ -357,7 +357,7 @@ Please take immediate action under Indian Cyber Crime Prevention guidelines.`
         isDark ? 'border-[#242428] text-zinc-500' : 'border-[#DCD9D2] text-[#57554F]'
       }`}>
         <p>
-          ScamShield AI • Submission for Hackathon 2026 • 60-30-10 Luxury Cyber-Defense Architecture
+          ∀VITR AI (अवितृ • The Sanskrit Protector) • Multi-Modal Cyber-Fraud Threat Intelligence
         </p>
       </footer>
 

@@ -10,15 +10,31 @@ export function Navbar({ isDark, onToggleTheme, onOpenReportModal }) {
     }`}>
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
 
-        {/* Minimalist Typographic Brand — No Cheesy Logos */}
+        {/* AVITR AI — Unified Geometric Brand Identity */}
         <div className="flex items-center gap-3">
-          <div className="flex items-baseline gap-1">
-            <span className={`text-xl font-bold tracking-tight ${
+          <div className="flex items-center select-none">
+            <span className={`flex items-center text-2xl font-black tracking-tight ${
               isDark ? 'text-white' : 'text-[#1C1B18]'
             }`}>
-              ScamShield
+              {/* Precision Inverted 'A' Logo Mark — Perfectly Proportioned & Matched to VITR */}
+              <svg 
+                viewBox="0 0 24 24" 
+                fill="none" 
+                stroke="currentColor" 
+                strokeWidth="3.2" 
+                strokeLinecap="round" 
+                strokeLinejoin="round" 
+                className="w-[0.85em] h-[0.85em] inline-block mr-[1px] translate-y-[-1px]"
+              >
+                <line x1="3.5" y1="3.5" x2="12" y2="20.5" />
+                <line x1="20.5" y1="3.5" x2="12" y2="20.5" />
+                <line x1="6.8" y1="10" x2="17.2" y2="10" />
+              </svg>
+              <span>VITR</span>
             </span>
-            <span className="w-1.5 h-1.5 rounded-full bg-[#FF6F32]"></span>
+            <span className="ml-1.5 px-1.5 py-0.5 text-[10px] font-mono font-extrabold rounded-md bg-[#FF6F32]/15 text-[#FF6F32] border border-[#FF6F32]/30">
+              AI
+            </span>
           </div>
           <span className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-semibold border ${
             isDark 
