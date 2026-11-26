@@ -52,6 +52,61 @@ export default function App() {
     setIsLoading(true);
     const startTime = performance.now();
 
+    // 0. Instant Case ID Quick-Lookup Feature:
+    // If input is an official Case ID (#D3E2569B... or UUID), query database audit ledger directly
+    const trimmedInput = inputText.trim();
+    const isCaseIdLookup = activeTab === 'text' && (
+      trimmedInput.startsWith('#') ||
+      (trimmedInput.length >= 8 && /^[a-f0-9-]{8,}$/i.test(trimmedInput) && !trimmedInput.includes(' '))
+    );
+
+    if (isCaseIdLookup && !audioFile) {
+      try {
+        const cleanLookupId = encodeURIComponent(trimmedInput);
+        const lookupResponse = await fetch(`${API_BASE_URL}/api/v1/scan/${cleanLookupId}`);
+        if (lookupResponse.ok) {
+          const data = await lookupResponse.json();
+          const elapsed = (performance.now() - startTime).toFixed(1);
+
+          let resolvedExplanation = data.explanation;
+          if (!resolvedExplanation && data.why_its_risky && data.why_its_risky.length > 0) {
+            resolvedExplanation = data.why_its_risky.map(item => item.explanation || item.factor || '').filter(Boolean).join(' ');
+          }
+          if (!resolvedExplanation) {
+            resolvedExplanation = data.is_scam
+              ? `Verified case forensic record retrieved from database. Triggered markers: ${(data.badges || []).join(', ') || 'Known malicious pattern'}.`
+              : 'Verified case record retrieved from database: Normal conversation with zero fraud indicators.';
+          }
+
+          const isThreat = Boolean(data.is_scam || (data.threat_level && data.threat_level !== 'SAFE') || (data.risk_score && data.risk_score >= 50));
+          const rawConfidence = typeof data.confidence === 'number'
+            ? data.confidence
+            : (typeof data.ml_probability === 'number'
+              ? (isThreat ? data.ml_probability : (1.0 - data.ml_probability))
+              : 0.98);
+          const computedConfidence = Math.max(60.0, Math.min(99.9, rawConfidence * 100)).toFixed(1);
+
+          setScanResult({
+            riskScore: Math.round(data.risk_score || 0),
+            verdict: data.threat_level || data.verdict || (data.is_scam ? 'CRITICAL' : 'SAFE'),
+            confidence: computedConfidence,
+            latencyMs: elapsed,
+            badges: ['Verified Case Record (Database Retrieved)', ...(data.badges || [])],
+            explanation: resolvedExplanation,
+            hmacToken: data.security_token?.hmac_signature || data.security_token?.signature || trimmedInput.replace(/^#/, ''),
+            complaintDraft: data.complaint_draft || ''
+          });
+
+          const displayId = (data.security_token?.hmac_signature || trimmedInput).replace(/^#/, '').substring(0, 14).toUpperCase();
+          showToast(`Official Case Record Verified! Retrieved #${displayId}`);
+          setIsLoading(false);
+          return;
+        }
+      } catch (lookupErr) {
+        console.log('Case ID lookup check passed through to live scan:', lookupErr);
+      }
+    }
+
     try {
       let endpoint = `${API_BASE_URL}/api/v1/scan/text`;
       let bodyData;

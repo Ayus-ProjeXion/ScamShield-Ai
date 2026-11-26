@@ -191,9 +191,29 @@ class DatabaseManager:
         return scan_id
 
     async def get_scan(self, scan_id: str) -> Optional[Dict[str, Any]]:
+        clean_target = scan_id.strip().lstrip('#').lower()
+        
+        # 1. Direct match in local in-memory registry
         if scan_id in self.scans:
             return self.scans[scan_id]
+        if clean_target in self.scans:
+            return self.scans[clean_target]
             
+        # 2. Case-insensitive lookup by UUID prefix or HMAC signature (Case ID)
+        for sid, sdata in self.scans.items():
+            if sid.lower() == clean_target or sid.lower().startswith(clean_target):
+                return sdata
+            if isinstance(sdata, dict):
+                token = sdata.get("security_token") or {}
+                sig = ""
+                if isinstance(token, dict):
+                    sig = str(token.get("hmac_signature", "")).lower()
+                elif hasattr(token, "hmac_signature"):
+                    sig = str(getattr(token, "hmac_signature", "")).lower()
+                if sig and (sig.startswith(clean_target) or clean_target in sig):
+                    return sdata
+            
+        # 3. Supabase remote persistence lookup
         if self._can_attempt_remote():
             try:
                 def _fetch_scan():
