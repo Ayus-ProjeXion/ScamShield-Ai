@@ -5,6 +5,7 @@ Combines Classical ML (Logistic Regression) + Deterministic Security Heuristics.
 
 import os
 import sys
+import re
 from typing import Dict, Any, List
 
 # Ensure ai directory is in path
@@ -139,8 +140,15 @@ class ScamDetector:
             combined_risk = max(ml_prob * 100, 75.0)
         else:
             # Zero heuristic triggers:
-            # High-confidence statistical anomalies are elevated, while normal conversation is protected
-            if ml_prob >= 0.95:
+            # Protect authentic financial transaction alerts, food orders and benign notifications
+            is_authentic_notification = bool(re.search(
+                r'\b(debited\s*(by|from)?|credited\s*(to|by)?|available\s*balance|clear\s*balance|avl\s*bal|atm\s*(cash\s*)?withdrawal|if\s*(this\s*)?(transaction|txn)\s*(was\s*)?(not\s*done\s*by\s*you|done\s*by\s*you)|enjoy\s*your\s*(food|meal)|order\s*#|delivery\s*partner|swiggy|zomato)\b',
+                text.lower()
+            ))
+
+            if is_authentic_notification:
+                combined_risk = min(ml_prob * 3.5, 3.5)
+            elif ml_prob >= 0.95:
                 combined_risk = ml_prob * 75.0
                 badges.append("Statistical Anomaly: High-Probability Scam Pattern (ML)")
             elif ml_prob >= 0.85:

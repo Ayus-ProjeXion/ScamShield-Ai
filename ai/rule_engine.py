@@ -318,9 +318,19 @@ def evaluate_heuristics(text: str) -> Dict[str, Any]:
     # -------------------------------------------------------------
     # 12B. FAKE COURIER / DELIVERY FEE EXTORTION
     # -------------------------------------------------------------
-    has_courier = bool(re.search(r'\b(courier|parcel|delivery|consignment|package|india\s*post|fedex|dhl)\b', text_lower))
-    has_courier_fee = bool(re.search(r'\b(pay\s*(rs\.?|\d+)?\s*(delivery\s*charges?|fee|charges?)|customs\s*fee|clearance\s*fee|delivery\s*charges?|tracking\s*fee)\b', text_lower))
-    if has_courier and has_courier_fee:
+    # Exclude authentic food orders, grocery receipts, and e-commerce delivery confirmations
+    is_legit_receipt = bool(re.search(
+        r'\b(swiggy|zomato|order\s*#|delivered\s*(to|at)|delivery\s*partner|items\s*(ordered|delivered)|enjoy\s*your\s*(food|meal)|subtotal|grand\s*total|taxes\s*included)\b',
+        text_lower
+    ))
+    
+    has_courier = bool(re.search(r'\b(courier|parcel|consignment|india\s*post|fedex|dhl|bluedart|dtdc)\b', text_lower))
+    has_courier_extortion = bool(re.search(
+        r'\b(customs\s*(fee|duty|clearance|penalty|hold)|clearance\s*fee|unregistered\s*(shipment|parcel)|(parcel|consignment|package)\s*(on\s*hold|held|seized)|(pay|transfer)\s*.*(release|customs|delivery\s*fee\s*to\s*receive))\b',
+        text_lower
+    ))
+    
+    if not is_legit_receipt and (has_courier and has_courier_extortion):
         badges.append("Fake Delivery / Courier Fee Extortion")
         matched_categories.append("SUSPICIOUS_PAYMENT")
         urgency_hits += 1
