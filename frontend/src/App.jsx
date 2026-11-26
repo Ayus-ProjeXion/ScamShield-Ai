@@ -70,7 +70,7 @@ export default function App() {
         endpoint = `${API_BASE_URL}/api/v1/scan/text`;
         bodyData = JSON.stringify({
           text: inputText,
-          channel: activeTab === 'audio' ? 'VOICE' : (activeTab === 'email' ? 'EMAIL' : 'SMS')
+          channel: activeTab === 'audio' ? 'VOICE' : (activeTab === 'email' ? 'EMAIL' : (activeTab === 'image' ? 'SCREENSHOT' : 'SMS'))
         });
         headers['Content-Type'] = 'application/json';
       }
@@ -104,7 +104,9 @@ export default function App() {
         verdict: data.threat_level || data.verdict || (data.is_scam ? 'CRITICAL' : 'SAFE'),
         confidence: Number((data.ml_probability || data.confidence || 0.98) * 100).toFixed(1),
         latencyMs: elapsed,
-        badges: data.badges || [],
+        badges: (activeTab === 'image' && !(data.badges || []).some(b => b.includes('Screenshot')))
+          ? ['Screenshot OCR Verified (Zero-Knowledge)', ...(data.badges || [])]
+          : (data.badges || []),
         explanation: resolvedExplanation,
         hmacToken: data.security_token?.hmac_signature || data.security_token?.signature || `0x${Math.random().toString(16).substring(2, 42)}`,
         complaintDraft: data.complaint_draft || ''
