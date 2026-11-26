@@ -221,6 +221,20 @@ export function ThreatScanner({
     }
   };
 
+  const loadSampleScreenshot = async (filename, label) => {
+    try {
+      setOcrStatus(`Loading test screenshot: ${filename}...`);
+      const res = await fetch(`/test_screenshots/${filename}`);
+      if (!res.ok) throw new Error('Could not fetch sample screenshot');
+      const blob = await res.blob();
+      const file = new File([blob], filename, { type: 'image/png' });
+      await processImageOcr(file);
+    } catch (err) {
+      console.error('Failed to load sample screenshot:', err);
+      setOcrStatus(`Could not load ${filename}. Select manually from test_screenshots/ folder.`);
+    }
+  };
+
   const handleKeyDown = (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key === 'Enter') {
       e.preventDefault();
@@ -504,6 +518,40 @@ export function ThreatScanner({
               </div>
             </div>
           )}
+
+          {/* 1-Click Load Sample Test Screenshots */}
+          <div className={`flex flex-wrap items-center justify-center gap-2 pt-3 border-t border-dashed ${
+            isDark ? 'border-zinc-800' : 'border-[#DCD9D2]'
+          }`}>
+            <span className="text-[11px] text-zinc-500 font-mono">1-Click Test Screenshots:</span>
+            <button
+              type="button"
+              onClick={() => loadSampleScreenshot('scam_whatsapp_cbi_digital_arrest.png', 'CBI Digital Arrest Notice')}
+              className={`text-xs px-2.5 py-1 rounded-lg border font-medium transition-all ${
+                isDark ? 'bg-zinc-900 border-zinc-700 text-rose-400 hover:bg-zinc-800 hover:border-rose-400/50' : 'bg-white border-zinc-300 text-rose-600 hover:bg-zinc-50 hover:border-rose-500/50'
+              }`}
+            >
+              📸 CBI Digital Arrest Notice (Scam)
+            </button>
+            <button
+              type="button"
+              onClick={() => loadSampleScreenshot('scam_electricity_bill_cutoff.png', 'MahaVitaran Cutoff Notice')}
+              className={`text-xs px-2.5 py-1 rounded-lg border font-medium transition-all ${
+                isDark ? 'bg-zinc-900 border-zinc-700 text-amber-400 hover:bg-zinc-800 hover:border-amber-400/50' : 'bg-white border-zinc-300 text-amber-600 hover:bg-zinc-50 hover:border-amber-500/50'
+              }`}
+            >
+              ⚡ Electricity Cutoff Notice (Scam)
+            </button>
+            <button
+              type="button"
+              onClick={() => loadSampleScreenshot('safe_swiggy_delivery_receipt.png', 'Swiggy Food Receipt')}
+              className={`text-xs px-2.5 py-1 rounded-lg border font-medium transition-all ${
+                isDark ? 'bg-zinc-900 border-zinc-700 text-emerald-400 hover:bg-zinc-800 hover:border-emerald-400/50' : 'bg-white border-zinc-300 text-emerald-600 hover:bg-zinc-50 hover:border-emerald-500/50'
+              }`}
+            >
+              🥗 Swiggy Order Receipt (Safe)
+            </button>
+          </div>
         </div>
       )}
 

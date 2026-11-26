@@ -339,7 +339,8 @@ def create_project_report(output_path="ScamShield_AI_Project_Report.docx"):
         ("Nov 22, 2026 - 22:00", "Citizen Privacy & Forensic Verification Framework: Integrated DPDP Act 2023 compliant Zero-Knowledge PII masking (Aadhaar, PAN, phone numbers), standardized Official Forensic Case ID (#27440E) with HMAC-SHA256 tamper-proofing, and resolved dynamic root-cause forensics", "COMPLETED"),
         ("Nov 22, 2026 - 22:25", "Multi-Modal 1-Click Preset & Audio Testing Engine: Deployed dynamic modality-aware presets across SMS, Email (.eml with RFC headers), and Voice Call (.wav recordings & transcripts) with 1-click sample loaders; 12/12 API tests pass, 0 frontend build errors", "COMPLETED"),
         ("Nov 26, 2026 - 12:25", "Multi-Modal Quad-Vector Complete: Integrated Client-Side Zero-Knowledge Screenshot & OCR Analyzer (Tesseract.js WASM + Native Ctrl+V Clipboard Paste); 12/12 API tests pass, 0 frontend build errors", "COMPLETED"),
-        ("Nov 26, 2026 - 12:30", "CodeRabbit Architecture & Security Hardening: Addressed all 10 reviewer findings (Row-Level Security policy locks, async thread offloading for database I/O, ML high-confidence anomaly scaling, frontend failure integrity & explicit retry); 12/12 API tests pass, 0 frontend build errors", "COMPLETED")
+        ("Nov 26, 2026 - 12:30", "CodeRabbit Architecture & Security Hardening: Addressed all 10 reviewer findings (Row-Level Security policy locks, async thread offloading for database I/O, ML high-confidence anomaly scaling, frontend failure integrity & explicit retry); 12/12 API tests pass, 0 frontend build errors", "COMPLETED"),
+        ("Nov 26, 2026 - 12:40", "Dedicated Forensic Test Screenshot Suite: Deployed 6 high-contrast mobile scam and safe test cases in test_screenshots/ with 1-click in-app loaders (CBI Arrest, Electricity Cutoff, Task Job, Swiggy, Bank Alert); 100% verified", "COMPLETED")
     ]
 
     audit_table = doc.add_table(rows=len(audit_records) + 1, cols=3)
