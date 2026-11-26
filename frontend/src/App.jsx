@@ -99,10 +99,18 @@ export default function App() {
           : 'Text contains normal language with zero fraud indicators.';
       }
 
+      const isThreat = Boolean(data.is_scam || (data.threat_level && data.threat_level !== 'SAFE') || (data.risk_score && data.risk_score >= 50));
+      const rawConfidence = typeof data.confidence === 'number'
+        ? data.confidence
+        : (typeof data.ml_probability === 'number'
+          ? (isThreat ? data.ml_probability : (1.0 - data.ml_probability))
+          : 0.98);
+      const computedConfidence = Math.max(60.0, Math.min(99.9, rawConfidence * 100)).toFixed(1);
+
       setScanResult({
         riskScore: Math.round(data.risk_score || 0),
         verdict: data.threat_level || data.verdict || (data.is_scam ? 'CRITICAL' : 'SAFE'),
-        confidence: Number((data.ml_probability || data.confidence || 0.98) * 100).toFixed(1),
+        confidence: computedConfidence,
         latencyMs: elapsed,
         badges: (activeTab === 'image' && !(data.badges || []).some(b => b.includes('Screenshot')))
           ? ['Screenshot OCR Verified (Zero-Knowledge)', ...(data.badges || [])]
