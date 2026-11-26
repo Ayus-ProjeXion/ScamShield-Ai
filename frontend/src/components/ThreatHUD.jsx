@@ -92,7 +92,15 @@ export function ThreatHUD({ result, onCopyComplaint, isDark }) {
   };
 
   const handleCopyComplaint = () => {
-    onCopyComplaint(complaintDraft);
+    const displayCaseId = hmacToken ? `#${hmacToken.replace(/^0x/, '').substring(0, 14).toUpperCase()}` : '';
+    let enrichedDraft = complaintDraft || '';
+    if (displayCaseId && !enrichedDraft.includes('Case ID:')) {
+      enrichedDraft = enrichedDraft.replace(
+        '=== INCIDENT COMPLAINT DRAFT FOR CYBERCRIME.GOV.IN / HELPLINE 1930 ===',
+        `=== INCIDENT COMPLAINT DRAFT FOR CYBERCRIME.GOV.IN / HELPLINE 1930 ===\n• Official Forensic Case ID: ${displayCaseId} (Tamper-Proof Audit Record)`
+      );
+    }
+    onCopyComplaint(enrichedDraft || complaintDraft);
     setCopiedComplaint(true);
     setTimeout(() => setCopiedComplaint(false), 2500);
   };

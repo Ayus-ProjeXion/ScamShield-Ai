@@ -151,15 +151,17 @@ class SecurityGuardian:
         except Exception:
             return False
 
-    def generate_complaint_draft(self, text: str, threat_level: str, risk_score: float, badges: list) -> str:
+    def generate_complaint_draft(self, text: str, threat_level: str, risk_score: float, badges: list, case_id: str = "") -> str:
         """
         Generates a 1-click official complaint draft ready to file on cybercrime.gov.in or Helpline 1930.
         """
         timestamp_str = time.strftime("%Y-%m-%d %H:%M:%S IST", time.localtime())
         badge_list = ", ".join(badges) if badges else "Suspicious Social Engineering Pattern"
+        case_line = f"• Official Forensic Case ID: {case_id} (Tamper-Proof Audit Record)\n" if case_id else ""
         
         draft = (
             f"=== INCIDENT COMPLAINT DRAFT FOR CYBERCRIME.GOV.IN / HELPLINE 1930 ===\n"
+            f"{case_line}"
             f"• Incident Timestamp: {timestamp_str}\n"
             f"• Automated Threat Assessment: [{threat_level}] ({risk_score}% Fraud Probability)\n"
             f"• Detected Threat Categories: {badge_list}\n"

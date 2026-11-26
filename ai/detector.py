@@ -300,7 +300,8 @@ class ScamDetector:
 
         # 7. Cryptographic Tamper-Proof Token & Zero-PII Sanitization
         security_token = self.guardian.generate_tamper_proof_token(final_risk, threat_level)
-        complaint_draft = self.guardian.generate_complaint_draft(text, threat_level, final_risk, badges) if is_scam else ""
+        case_id = f"#{security_token['hmac_signature'][:14].upper()}"
+        complaint_draft = self.guardian.generate_complaint_draft(text, threat_level, final_risk, badges, case_id=case_id) if is_scam else ""
         sanitized_preview = self.guardian.sanitize_pii(text[:140])
 
         result = {
