@@ -143,6 +143,11 @@ export default function App() {
       const data = await response.json();
       const elapsed = (performance.now() - startTime).toFixed(1);
 
+      // Auto-populate audio call transcript in the input box so the user can inspect the transcribed speech
+      if (activeTab === 'audio' && (data.audio_meta?.transcribed_text || data.text_preview)) {
+        setInputText(data.audio_meta?.transcribed_text || data.text_preview);
+      }
+
       // Resolve root cause explanation from backend
       let resolvedExplanation = data.explanation;
       if (!resolvedExplanation && data.why_its_risky && data.why_its_risky.length > 0) {
