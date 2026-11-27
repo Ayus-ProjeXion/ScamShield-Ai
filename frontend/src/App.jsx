@@ -7,7 +7,7 @@ import { IncidentModal } from './components/IncidentModal';
 import { ReportModal } from './components/ReportModal';
 import { CheckCircle } from 'lucide-react';
 
-const API_BASE_URL = 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
 
 export default function App() {
   // Theme state: dark (60% Midnight Black #0C0C0C) or light (60% Soothing Warm Sand #ECEAE5)
