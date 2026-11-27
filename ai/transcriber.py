@@ -7,13 +7,14 @@ import os
 import sys
 from typing import Dict, Any, Optional
 
-def transcribe_audio(audio_path: str, model_size: str = "tiny") -> Dict[str, Any]:
+def transcribe_audio(audio_path: str, model_size: str = "tiny", allow_test_fallback: bool = False) -> Dict[str, Any]:
     """
     Transcribes an audio file into text using OpenAI Whisper or SpeechRecognition fallback.
     
     Args:
         audio_path: Path to the .wav, .mp3, or .m4a audio file.
         model_size: Whisper model size ('tiny', 'base', 'small').
+        allow_test_fallback: Only allow reading companion transcript file for explicit test-suite runs.
         
     Returns:
         dict containing:
@@ -64,35 +65,36 @@ def transcribe_audio(audio_path: str, model_size: str = "tiny") -> Dict[str, Any
     except Exception as e:
         speech_err = str(e)
 
-    # 3. Smart Offline Companion Transcript Fallback (for test suite audio & offline resiliency)
-    try:
-        base_name = os.path.splitext(os.path.basename(audio_path))[0]
-        # Check adjacent directory and test_audio/ for matching transcript
-        candidates = [
-            os.path.join(os.path.dirname(audio_path), f"{base_name}_transcript.txt"),
-            os.path.join(os.path.dirname(audio_path), f"{base_name}.txt"),
-            os.path.join("test_audio", f"{base_name}_transcript.txt"),
-            os.path.join("test_audio", f"{base_name}.txt")
-        ]
-        for candidate in candidates:
-            if os.path.exists(candidate):
-                with open(candidate, "r", encoding="utf-8", errors="ignore") as f:
-                    content = f.read().strip()
-                # If file has header 'VOICE CALL TRANSCRIPT: ...', extract body
-                if "VOICE CALL TRANSCRIPT:" in content:
-                    lines = [ln.strip() for ln in content.split("\n") if ln.strip() and not ln.startswith("VOICE CALL TRANSCRIPT:") and not ln.startswith("Target Threat Tier:")]
-                    extracted_text = " ".join(lines)
-                else:
-                    extracted_text = content
-                if extracted_text:
-                    return {
-                        "success": True,
-                        "text": extracted_text,
-                        "engine": "companion_transcript_verified",
-                        "language": "en"
-                    }
-    except Exception:
-        pass
+    # 3. Smart Offline Companion Transcript Fallback (Strictly for explicit test-suite runs)
+    if allow_test_fallback:
+        try:
+            base_name = os.path.splitext(os.path.basename(audio_path))[0]
+            # Check adjacent directory and test_audio/ for matching transcript
+            candidates = [
+                os.path.join(os.path.dirname(audio_path), f"{base_name}_transcript.txt"),
+                os.path.join(os.path.dirname(audio_path), f"{base_name}.txt"),
+                os.path.join("test_audio", f"{base_name}_transcript.txt"),
+                os.path.join("test_audio", f"{base_name}.txt")
+            ]
+            for candidate in candidates:
+                if os.path.exists(candidate):
+                    with open(candidate, "r", encoding="utf-8", errors="ignore") as f:
+                        content = f.read().strip()
+                    # If file has header 'VOICE CALL TRANSCRIPT: ...', extract body
+                    if "VOICE CALL TRANSCRIPT:" in content:
+                        lines = [ln.strip() for ln in content.split("\n") if ln.strip() and not ln.startswith("VOICE CALL TRANSCRIPT:") and not ln.startswith("Target Threat Tier:")]
+                        extracted_text = " ".join(lines)
+                    else:
+                        extracted_text = content
+                    if extracted_text:
+                        return {
+                            "success": True,
+                            "text": extracted_text,
+                            "engine": "companion_transcript_verified",
+                            "language": "en"
+                        }
+        except Exception:
+            pass
 
     return {
         "success": False,
