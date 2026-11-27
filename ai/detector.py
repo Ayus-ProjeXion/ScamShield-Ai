@@ -140,22 +140,22 @@ class ScamDetector:
             combined_risk = max(ml_prob * 100, 75.0)
         else:
             # Zero heuristic triggers:
-            # Protect authentic financial transaction alerts, food orders and benign notifications
+            # Protect authentic financial transaction alerts, food orders and benign notifications (English & Devanagari Hindi)
             is_authentic_notification = bool(re.search(
-                r'\b(debited\s*(by|from)?|credited\s*(to|by)?|available\s*balance|clear\s*balance|avl\s*bal|atm\s*(cash\s*)?withdrawal|if\s*(this\s*)?(transaction|txn)\s*(was\s*)?(not\s*done\s*by\s*you|done\s*by\s*you)|enjoy\s*your\s*(food|meal)|order\s*#|delivery\s*partner|swiggy|zomato)\b',
+                r'\b(debited\s*(by|from)?|credited\s*(to|by)?|available\s*balance|clear\s*balance|avl\s*bal|atm\s*(cash\s*)?withdrawal|if\s*(this\s*)?(transaction|txn)\s*(was\s*)?(not\s*done\s*by\s*you|done\s*by\s*you)|enjoy\s*your\s*(food|meal)|order\s*#|delivery\s*partner|swiggy|zomato)\b|डेबिट\s*किया\s*गया|क्रेडिट\s*किया\s*गया|शेष\s*राशि|उपलब्ध\s*राशि',
                 text.lower()
             ))
 
             if is_authentic_notification:
                 combined_risk = min(ml_prob * 3.5, 3.5)
             elif ml_prob >= 0.95:
-                combined_risk = ml_prob * 75.0
+                combined_risk = ml_prob * 60.0
                 badges.append("Statistical Anomaly: High-Probability Scam Pattern (ML)")
-            elif ml_prob >= 0.85:
-                combined_risk = ml_prob * 55.0
+            elif ml_prob >= 0.88:
+                combined_risk = ml_prob * 30.0
                 badges.append("Statistical Anomaly: Elevated Scam Probability (ML)")
             elif ml_prob >= 0.70:
-                combined_risk = ml_prob * 20.0
+                combined_risk = ml_prob * 10.0
             else:
                 combined_risk = (ml_prob ** 2) * 8.0
 

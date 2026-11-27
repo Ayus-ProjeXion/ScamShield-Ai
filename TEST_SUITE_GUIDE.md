@@ -37,6 +37,13 @@ Comprehensive reference guide for all **4 sample test folders** across **threat 
 | `09_critical_90pct_predatory_loan_trap.txt` | **90.0%** | `CRITICAL` | Instant loan sanctioned without CIBIL check, coercive e-sign. |
 | `10_critical_96pct_bijli_blackout_apk_extortion.txt` | **96.1%** | `CRITICAL` | Electricity cutoff tonight at 9:30 PM with malicious APK payload. |
 | `11_critical_98pct_cbi_digital_arrest_warrant.txt` | **90.0%** | `CRITICAL` | Fake CBI narcotics seizure and Digital Arrest legal threat. |
+| `12_critical_96pct_hinglish_otp_extraction.txt` | **96.0%** | `CRITICAL` | Hinglish OTP extraction ("Mobile pei aya hua otp dijie"). |
+| `13_critical_96pct_hindi_parcel_otp_extortion.txt` | **96.0%** | `CRITICAL` | Devanagari Hindi parcel hold OTP scam ("पार्सल होल्ड पर है, आया OTP बताएं"). |
+| `14_critical_96pct_hindi_bijli_blackout_threat.txt` | **95.0%** | `CRITICAL` | Devanagari Hindi electricity blackout ("आज रात 9:30 बजे बिजली कनेक्शन काट दिया जाएगा"). |
+| `15_critical_99pct_hindi_cbi_digital_arrest.txt` | **90.0%** | `CRITICAL` | Devanagari Hindi CBI Digital arrest ("अवैध पार्सल में ड्रग्स, आप डिजिटल अरेस्ट के तहत हैं"). |
+| `16_critical_96pct_hindi_bank_kyc_freeze.txt` | **95.0%** | `CRITICAL` | Devanagari Hindi bank KYC freeze ("खाता और डेबिट कार्ड ब्लॉक, तुरंत पैन लिंक करें"). |
+| `17_safe_02pct_hindi_bank_debit_alert.txt` | **1.0%** | `SAFE` | Devanagari Hindi legitimate bank transaction alert ("खाते से ₹450 डेबिट किए गए"). |
+| `18_safe_02pct_hinglish_casual_meeting.txt` | **0.1%** | `SAFE` | Everyday casual Hinglish meet-up planning chat. |
 
 ---
 
