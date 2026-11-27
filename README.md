@@ -12,9 +12,13 @@
 ![OCR: Tesseract.js WASM](https://img.shields.io/badge/OCR-Tesseract.js%20WASM-FF6F00.svg)
 ![Speech Recognition](https://img.shields.io/badge/Audio-Whisper%20STT-FF6F00.svg)
 ![Database](https://img.shields.io/badge/Database-Supabase%20Postgres-3ECF8E.svg?logo=supabase&logoColor=white)
+![Frontend: Vercel](https://img.shields.io/badge/Frontend-Vercel%20Live-black.svg?logo=vercel&logoColor=white)
+![Backend: Render](https://img.shields.io/badge/Backend-Render%20Live-46E3B7.svg?logo=render&logoColor=white)
 ![Tests](https://img.shields.io/badge/Tests-12%2F12%20Passing%20(100%25)-brightgreen.svg)
 
 **An ultra-fast (< 5 ms inference), 4-modality dual-engine cyber-fraud intelligence system designed to intercept malicious SMS, spoofed emails, fraudulent voice calls, and scam screenshots with zero cloud privacy exposure.**
+
+🚀 **[Live Production Web App](https://scam-shield-ai-wheat.vercel.app)** • ⚡ **[Live Backend API Gateway](https://avitr-ai-backend.onrender.com)** • [Interactive API Docs](https://avitr-ai-backend.onrender.com/docs)
 
 [Key Features](#-key-features) • [4 Input Modalities](#-4-input-modalities) • [System Architecture](#-system-architecture-flow) • [Threat Matrix](#-13-vector-deterministic-threat-matrix) • [Repository Structure](#-complete-project-repository-structure) • [REST API](#-production-rest-api-gateway) • [Quickstart](#-running-the-platform-locally)
 
