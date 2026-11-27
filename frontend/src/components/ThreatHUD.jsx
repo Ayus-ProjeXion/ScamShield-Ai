@@ -270,37 +270,48 @@ export function ThreatHUD({ result, onCopyComplaint, isDark }) {
         </div>
       )}
 
-      {/* 1-Click Police Complaint Draft */}
-      <div className="pt-2 space-y-2">
-        <button
-          type="button"
-          onClick={handleCopyComplaint}
-          className="w-full py-2.5 px-4 rounded-xl bg-[#FF6F32] hover:bg-[#E55B1F] text-white text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-[0_4px_15px_rgba(255,111,50,0.25)] active:scale-95"
-        >
-          {copiedComplaint ? (
-            <>
-              <Check className="w-4 h-4 text-white" />
-              <span>Copied Police Draft to Clipboard!</span>
-            </>
-          ) : (
-            <>
-              <FileText className="w-4 h-4" />
-              <span>📋 Copy Cyber Police (1930 / Chakshu) Draft</span>
-            </>
-          )}
-        </button>
+      {/* 1-Click Police Complaint Draft (Only shown when a threat is identified) */}
+      {(isCritical || isSuspicious || riskScore >= 50) ? (
+        <div className="pt-2 space-y-2">
+          <button
+            type="button"
+            onClick={handleCopyComplaint}
+            className="w-full py-2.5 px-4 rounded-xl bg-[#FF6F32] hover:bg-[#E55B1F] text-white text-xs font-semibold flex items-center justify-center gap-2 transition-all shadow-[0_4px_15px_rgba(255,111,50,0.25)] active:scale-95"
+          >
+            {copiedComplaint ? (
+              <>
+                <Check className="w-4 h-4 text-white" />
+                <span>Copied Police Draft to Clipboard!</span>
+              </>
+            ) : (
+              <>
+                <FileText className="w-4 h-4" />
+                <span>📋 Copy Cyber Police (1930 / Chakshu) Draft</span>
+              </>
+            )}
+          </button>
 
-        <a
-          href="tel:1930"
-          className={`w-full py-2 px-3 rounded-xl border text-xs font-bold font-mono flex items-center justify-center gap-1.5 transition-all ${isDark
-            ? 'bg-[#18181B] border-[#27272A] text-zinc-300 hover:text-white hover:border-[#FF6F32]/40'
-            : 'bg-[#ECEAE5] border-[#DCD9D2] text-[#1C1B18] hover:text-[#FF6F32] hover:border-[#FF6F32]/40'
-            }`}
-        >
-          <PhoneCall className="w-3.5 h-3.5 text-[#FF6F32]" />
-          <span>Emergency: Dial Helpline 1930</span>
-        </a>
-      </div>
+          <a
+            href="tel:1930"
+            className={`w-full py-2 px-3 rounded-xl border text-xs font-bold font-mono flex items-center justify-center gap-1.5 transition-all ${isDark
+              ? 'bg-[#18181B] border-[#27272A] text-zinc-300 hover:text-white hover:border-[#FF6F32]/40'
+              : 'bg-[#ECEAE5] border-[#DCD9D2] text-[#1C1B18] hover:text-[#FF6F32] hover:border-[#FF6F32]/40'
+              }`}
+          >
+            <PhoneCall className="w-3.5 h-3.5 text-[#FF6F32]" />
+            <span>Emergency: Dial Helpline 1930</span>
+          </a>
+        </div>
+      ) : (
+        <div className={`mt-2 p-3 rounded-xl border flex items-center justify-center gap-2 text-xs font-mono font-medium ${
+          isDark 
+            ? 'bg-emerald-950/20 border-emerald-500/30 text-emerald-400' 
+            : 'bg-emerald-50 border-emerald-300 text-emerald-800'
+        }`}>
+          <ShieldCheck className="w-4 h-4 text-emerald-500 flex-shrink-0" />
+          <span>Verified Safe — Zero Threat Indicators Found</span>
+        </div>
+      )}
 
     </div>
   );
