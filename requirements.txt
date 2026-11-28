@@ -20,3 +20,7 @@ speechrecognition>=3.10.0
 
 # Security & Testing
 cryptography>=42.0.0
+
+# Hybrid Cloud LLM Copilot (Groq & Gemini)
+groq>=0.11.0
+google-generativeai>=0.5.0

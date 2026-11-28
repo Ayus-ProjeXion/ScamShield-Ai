@@ -148,9 +148,6 @@ def generate_deterministic_reply(query: str, context: Dict[str, Any]) -> tuple[s
     return reply, chips
 
 async def query_groq(prompt: str, context: Dict[str, Any], history: List[Any]) -> tuple[str, str]:
-    from groq import AsyncGroq
-    client = AsyncGroq(api_key=settings.GROQ_API_KEY, timeout=10.0)
-    
     messages = [{"role": "system", "content": COPILOT_SYSTEM_PROMPT}]
     # Add scan context as system knowledge
     context_str = (
@@ -164,10 +161,11 @@ async def query_groq(prompt: str, context: Dict[str, Any], history: List[Any]) -
     )
     messages.append({"role": "system", "content": context_str})
     
-    # Add recent history (up to last 4 turns)
+    # Add recent history (up to last 4 turns) safely supporting dict or Pydantic items
     for h in history[-4:]:
-        role = "assistant" if h.role == "assistant" else "user"
-        messages.append({"role": role, "content": h.content})
+        role = getattr(h, "role", "user") if hasattr(h, "role") else (h.get("role", "user") if isinstance(h, dict) else "user")
+        content = getattr(h, "content", "") if hasattr(h, "content") else (h.get("content", "") if isinstance(h, dict) else str(h))
+        messages.append({"role": role, "content": content})
         
     messages.append({"role": "user", "content": prompt})
     
@@ -175,21 +173,57 @@ async def query_groq(prompt: str, context: Dict[str, Any], history: List[Any]) -
     seen = set()
     candidate_models = [m for m in candidate_models if not (m in seen or seen.add(m))]
 
-    for model_name in candidate_models:
-        try:
-            completion = await client.chat.completions.create(
-                model=model_name,
-                messages=messages,
-                temperature=0.2,
-                max_tokens=400
-            )
-            content = (completion.choices[0].message.content or "").strip()
-            if content:
-                return content, model_name
-        except Exception as e:
-            logger.warning(f"Groq model {model_name} failed: {e}. Trying fallback model...")
-            continue
-            
+    # Path A: Official Groq Python SDK
+    try:
+        from groq import AsyncGroq
+        client = AsyncGroq(api_key=settings.GROQ_API_KEY, timeout=10.0)
+        for model_name in candidate_models:
+            try:
+                completion = await client.chat.completions.create(
+                    model=model_name,
+                    messages=messages,
+                    temperature=0.2,
+                    max_tokens=400
+                )
+                content = (completion.choices[0].message.content or "").strip()
+                if content:
+                    return content, model_name
+            except Exception as e:
+                logger.warning(f"Groq SDK model {model_name} failed: {e}. Trying next...")
+                continue
+    except ImportError:
+        logger.info("groq SDK not installed; using direct HTTPX Groq API connector.")
+
+    # Path B: Direct HTTPX REST API connector (Zero SDK dependency, works everywhere)
+    try:
+        import httpx
+        headers = {
+            "Authorization": f"Bearer {settings.GROQ_API_KEY}",
+            "Content-Type": "application/json"
+        }
+        async with httpx.AsyncClient(timeout=10.0) as http_client:
+            for model_name in candidate_models:
+                try:
+                    payload = {
+                        "model": model_name,
+                        "messages": messages,
+                        "temperature": 0.2,
+                        "max_tokens": 400
+                    }
+                    res = await http_client.post("https://api.groq.com/openai/v1/chat/completions", json=payload, headers=headers)
+                    if res.status_code == 200:
+                        data = res.json()
+                        content = (data.get("choices", [{}])[0].get("message", {}).get("content") or "").strip()
+                        if content:
+                            return content, model_name
+                    else:
+                        logger.warning(f"Groq HTTPX {model_name} returned status {res.status_code}: {res.text[:200]}")
+                except Exception as e:
+                    logger.warning(f"Groq HTTPX model {model_name} failed: {e}")
+                    continue
+    except Exception as e:
+        logger.error(f"Groq HTTPX client connector failed: {e}")
+
     return "", ""
 
 async def query_gemini(prompt: str, context: Dict[str, Any], history: List[Any]) -> str:

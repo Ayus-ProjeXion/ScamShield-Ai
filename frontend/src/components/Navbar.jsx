@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sun, Moon, PhoneCall, PlusCircle, Shield, Sparkles, Download } from 'lucide-react';
+import { Sun, Moon, PhoneCall, PlusCircle, Shield, Sparkles } from 'lucide-react';
 
 export function Navbar({
   isDark,
@@ -7,8 +7,7 @@ export function Navbar({
   onOpenReportModal,
   isShieldMode,
   onToggleShieldMode,
-  onOpenOnboarding,
-  onOpenDownloadCompanion
+  onOpenOnboarding
 }) {
   return (
     <header className={`sticky top-0 z-40 w-full border-b backdrop-blur-md transition-colors duration-200 ${isDark
@@ -80,20 +79,6 @@ export function Navbar({
           >
             <Sparkles className="w-3.5 h-3.5 text-[#FF6F32]" />
             <span>Modes</span>
-          </button>
-
-          {/* Real-Time Background Companion Download */}
-          <button
-            onClick={onOpenDownloadCompanion}
-            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-mono font-medium transition-all ${isDark
-              ? 'bg-orange-500/10 border-orange-500/30 text-orange-400 hover:bg-orange-500/20'
-              : 'bg-orange-50 border-orange-200 text-orange-700 hover:bg-orange-100'
-              }`}
-            title="Download Real-Time Windows & Android Companion"
-            type="button"
-          >
-            <Download className="w-3.5 h-3.5 text-orange-500" />
-            <span>Get Companion</span>
           </button>
 
           {/* Shield Mode Toggle */}

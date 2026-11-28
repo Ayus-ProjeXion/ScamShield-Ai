@@ -9,7 +9,6 @@ import { FloatingCopilot } from './components/FloatingCopilot';
 import { LiveScamCarousel } from './components/LiveScamCarousel';
 import { IncidentModal } from './components/IncidentModal';
 import { ReportModal } from './components/ReportModal';
-import { DownloadCompanionModal } from './components/DownloadCompanionModal';
 import { CheckCircle } from 'lucide-react';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
@@ -48,7 +47,6 @@ export default function App() {
   // Universal Shield Mode & Onboarding Modal states
   const [isShieldMode, setIsShieldMode] = useState(false);
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
-  const [isCompanionModalOpen, setIsCompanionModalOpen] = useState(false);
 
   useEffect(() => {
     const hideWelcome = localStorage.getItem('scamshield_hide_welcome');
@@ -394,7 +392,6 @@ Please take immediate action under Indian Cyber Crime Prevention guidelines.`
         isShieldMode={isShieldMode}
         onToggleShieldMode={() => setIsShieldMode(!isShieldMode)}
         onOpenOnboarding={() => setIsOnboardingOpen(true)}
-        onOpenDownloadCompanion={() => setIsCompanionModalOpen(true)}
       />
 
       {/* Main Content Area */}
@@ -558,13 +555,6 @@ Please take immediate action under Indian Cyber Crime Prevention guidelines.`
         isOpen={isReportModalOpen}
         onClose={() => setIsReportModalOpen(false)}
         onSubmitReport={handleSubmitReport}
-        isDark={isDark}
-      />
-
-      {/* Real-Time Background Companion Download Modal */}
-      <DownloadCompanionModal
-        isOpen={isCompanionModalOpen}
-        onClose={() => setIsCompanionModalOpen(false)}
         isDark={isDark}
       />
     </div>
