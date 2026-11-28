@@ -66,12 +66,17 @@ export function WhatsAppShieldModal({ isOpen, onClose, isDark }) {
     }
   };
 
-  const openRealWhatsApp = (text) => {
+  const openRealWhatsApp = (text, targetNumber = null) => {
     const message = text || inputText || 'Hi, please verify this suspicious message: ';
     const encoded = encodeURIComponent(message);
-    const cleanNumber = botNumber.replace(/[^0-9]/g, '');
-    const url = cleanNumber ? `https://wa.me/${cleanNumber}?text=${encoded}` : `https://api.whatsapp.com/send?text=${encoded}`;
-    // Opens real WhatsApp chat directly on mobile or WhatsApp Web on desktop
+    let url;
+    if (targetNumber) {
+      const clean = targetNumber.replace(/[^0-9]/g, '');
+      url = `https://wa.me/${clean}?text=${encoded}`;
+    } else {
+      // Universal WhatsApp intent: opens WhatsApp and lets user select any chat/contact/self
+      url = `https://api.whatsapp.com/send?text=${encoded}`;
+    }
     window.open(url, '_blank');
   };
 
@@ -124,17 +129,28 @@ export function WhatsAppShieldModal({ isOpen, onClose, isDark }) {
               <Check className="w-3.5 h-3.5 text-emerald-400 stroke-[3]" />
             </h4>
             <p className="text-xs text-zinc-400">
-              Bot Contact: <strong className="font-mono text-zinc-200">{botNumber}</strong> • Tap below to chat or forward messages directly.
+              Helpline: <strong className="font-mono text-zinc-200">{botNumber}</strong> • Forward any message in WhatsApp for instant AI defense.
             </p>
           </div>
-          <button
-            type="button"
-            onClick={() => openRealWhatsApp(inputText)}
-            className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg transition-all"
-          >
-            <ExternalLink className="w-4 h-4" />
-            <span>Chat on WhatsApp ({botNumber})</span>
-          </button>
+          <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto">
+            <button
+              type="button"
+              onClick={() => openRealWhatsApp(inputText)}
+              className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2 shadow-lg transition-all"
+            >
+              <ExternalLink className="w-4 h-4" />
+              <span>Open in WhatsApp</span>
+            </button>
+            <button
+              type="button"
+              onClick={() => openRealWhatsApp(inputText, '+14155238886')}
+              className="w-full sm:w-auto px-3.5 py-2.5 rounded-xl bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 font-semibold text-xs flex items-center justify-center gap-1.5 transition-all"
+              title="Official Twilio live registered WhatsApp test number"
+            >
+              <MessageSquare className="w-3.5 h-3.5 text-emerald-400" />
+              <span>Live Bot (+1 415...)</span>
+            </button>
+          </div>
         </div>
 
         {/* Real Live Text Verification Input */}
