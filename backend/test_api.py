@@ -182,6 +182,15 @@ Body: Dear Customer, verify your PAN immediately at http://sbi-unblock.xyz to av
         f"Grounded Sections: IT Act 66D / BNS 318(4) confirmed in reply"
     )
 
+    # 15. Copilot Engine Availability & Status
+    r = client.get("/api/v1/copilot/status")
+    c_stat = r.json()
+    check(
+        "AI Copilot Endpoint - Engine Status & Health (GET /api/v1/copilot/status)",
+        r.status_code == 200 and "active_engine" in c_stat and c_stat.get("status") in ["online", "offline-fallback"],
+        f"Status: {c_stat.get('status')} | Engine: {c_stat.get('active_engine')} | Label: {c_stat.get('engine_label')}"
+    )
+
     print("\n" + "=" * 80)
     print(f"📊 BACKEND API TEST SUMMARY: {passed}/{total} Tests Passed ({int((passed/total)*100)}% Success Rate)")
     print("=" * 80)

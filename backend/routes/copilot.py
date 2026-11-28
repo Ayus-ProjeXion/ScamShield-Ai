@@ -5,11 +5,38 @@ from typing import Dict, Any, List, Optional
 from fastapi import APIRouter, HTTPException, status
 
 from backend.config import settings
-from backend.schemas import CopilotChatRequest, CopilotChatResponse
+from backend.schemas import CopilotChatRequest, CopilotChatResponse, CopilotStatusResponse
 
 logger = logging.getLogger("ScamShieldCopilot")
 
 router = APIRouter(prefix="/copilot", tags=["AI Copilot"])
+
+@router.get("/status", response_model=CopilotStatusResponse)
+async def get_copilot_status():
+    """
+    Returns live copilot engine availability, active model, and configuration state.
+    """
+    has_groq = bool(settings.GROQ_API_KEY)
+    has_gemini = bool(settings.GEMINI_API_KEY)
+    
+    if has_groq:
+        active_engine = f"groq:{settings.COPILOT_MODEL_GROQ}"
+        engine_label = "Groq Qwen 27B AI" if "qwen" in settings.COPILOT_MODEL_GROQ.lower() else f"Groq ({settings.COPILOT_MODEL_GROQ})"
+    elif has_gemini:
+        active_engine = f"gemini:{settings.COPILOT_MODEL_GEMINI}"
+        engine_label = f"Gemini ({settings.COPILOT_MODEL_GEMINI})"
+    else:
+        active_engine = "offline:deterministic-forensic"
+        engine_label = "Offline Forensic Engine"
+        
+    return CopilotStatusResponse(
+        status="online" if (has_groq or has_gemini) else "offline-fallback",
+        active_engine=active_engine,
+        engine_label=engine_label,
+        groq_configured=has_groq,
+        gemini_configured=has_gemini,
+        timestamp=datetime.utcnow().isoformat() + "Z"
+    )
 
 COPILOT_SYSTEM_PROMPT = """You are the ∀VITR AI (ScamShield) Cyber Threat Copilot — an expert, reassuring anti-fraud specialist embedded in the threat analysis dashboard.
 
@@ -122,7 +149,7 @@ def generate_deterministic_reply(query: str, context: Dict[str, Any]) -> tuple[s
 
 async def query_groq(prompt: str, context: Dict[str, Any], history: List[Any]) -> tuple[str, str]:
     from groq import AsyncGroq
-    client = AsyncGroq(api_key=settings.GROQ_API_KEY, timeout=12.0)
+    client = AsyncGroq(api_key=settings.GROQ_API_KEY, timeout=10.0)
     
     messages = [{"role": "system", "content": COPILOT_SYSTEM_PROMPT}]
     # Add scan context as system knowledge
@@ -144,7 +171,7 @@ async def query_groq(prompt: str, context: Dict[str, Any], history: List[Any]) -
         
     messages.append({"role": "user", "content": prompt})
     
-    candidate_models = [settings.COPILOT_MODEL_GROQ, "qwen/qwen3.8-27b", "openai/gpt-oss-120b", "llama-3.1-8b-instant"]
+    candidate_models = [settings.COPILOT_MODEL_GROQ, "qwen/qwen3.8-27b", "openai/gpt-oss-120b"]
     seen = set()
     candidate_models = [m for m in candidate_models if not (m in seen or seen.add(m))]
 

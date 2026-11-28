@@ -11,7 +11,18 @@ import {
   MessageSquare
 } from 'lucide-react';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://127.0.0.1:8000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
+
+function formatEngineLabel(engine) {
+  if (!engine || engine.startsWith('offline')) return 'Offline Forensic Engine';
+  if (engine.includes('groq')) {
+    const raw = engine.replace('groq:', '');
+    if (raw.toLowerCase().includes('qwen')) return 'Groq Qwen 27B AI';
+    return `Groq AI (${raw.split('/').pop()})`;
+  }
+  if (engine.includes('gemini')) return 'Gemini 1.5 Flash';
+  return engine;
+}
 
 export function FloatingCopilot({ scanResult, isDark }) {
   const [isOpen, setIsOpen] = useState(false);
@@ -24,8 +35,34 @@ export function FloatingCopilot({ scanResult, isDark }) {
   ]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
-  const [engineUsed, setEngineUsed] = useState('offline:deterministic-forensic');
+  const [engineUsed, setEngineUsed] = useState('groq:qwen/qwen3.8-27b');
+  const [isOnline, setIsOnline] = useState(true);
   const messagesEndRef = useRef(null);
+
+  // Sync live copilot engine status on mount & drawer open
+  useEffect(() => {
+    let isMounted = true;
+    const fetchStatus = async () => {
+      try {
+        const res = await fetch(`${API_BASE_URL}/api/v1/copilot/status`);
+        if (res.ok) {
+          const data = await res.json();
+          if (isMounted) {
+            setEngineUsed(data.active_engine || 'groq:qwen/qwen3.8-27b');
+            setIsOnline(data.status === 'online');
+          }
+        }
+      } catch (err) {
+        if (isMounted) {
+          setEngineUsed('offline:deterministic-forensic');
+          setIsOnline(false);
+        }
+      }
+    };
+
+    fetchStatus();
+    return () => { isMounted = false; };
+  }, [isOpen]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -91,7 +128,9 @@ export function FloatingCopilot({ scanResult, isDark }) {
 
       if (response.ok) {
         const data = await response.json();
-        setEngineUsed(data.engine_used || 'offline:deterministic-forensic');
+        const used = data.engine_used || 'offline:deterministic-forensic';
+        setEngineUsed(used);
+        setIsOnline(!used.startsWith('offline'));
         setMessages(prev => [
           ...prev,
           {
@@ -105,6 +144,8 @@ export function FloatingCopilot({ scanResult, isDark }) {
       }
     } catch (err) {
       console.warn('Copilot call fallback:', err);
+      setEngineUsed('offline:deterministic-forensic');
+      setIsOnline(false);
       // Fallback offline message
       setMessages(prev => [
         ...prev,
@@ -142,7 +183,7 @@ export function FloatingCopilot({ scanResult, isDark }) {
           >
             <span className="absolute -inset-1 rounded-full bg-[#FF6F32]/40 animate-ping opacity-60"></span>
             <Bot className="w-7 h-7" />
-            <span className="absolute -top-1 -right-1 w-3.5 h-3.5 bg-emerald-500 border-2 border-[#141416] rounded-full"></span>
+            <span className={`absolute -top-1 -right-1 w-3.5 h-3.5 border-2 border-[#141416] rounded-full ${isOnline && !engineUsed.startsWith('offline') ? 'bg-emerald-500' : 'bg-amber-500'}`}></span>
           </button>
         )}
       </div>
@@ -163,8 +204,13 @@ export function FloatingCopilot({ scanResult, isDark }) {
               <div>
                 <div className="flex items-center gap-1.5">
                   <h4 className="text-xs font-bold font-mono tracking-tight">∀VITR Threat Copilot</h4>
-                  <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-400 font-semibold border border-emerald-500/30">
-                    LIVE
+                  <span className={`text-[9px] font-mono px-1.5 py-0.5 rounded font-semibold border flex items-center gap-1 ${
+                    isOnline && !engineUsed.startsWith('offline')
+                      ? 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30'
+                      : 'bg-amber-500/10 text-amber-400 border-amber-500/30'
+                  }`}>
+                    <span className={`w-1.5 h-1.5 rounded-full ${isOnline && !engineUsed.startsWith('offline') ? 'bg-emerald-400 animate-pulse' : 'bg-amber-400'}`}></span>
+                    {isOnline && !engineUsed.startsWith('offline') ? 'ONLINE AI' : 'OFFLINE SECURE'}
                   </span>
                 </div>
                 <p className="text-[10px] text-zinc-400 font-mono truncate max-w-[200px]">
@@ -245,8 +291,15 @@ export function FloatingCopilot({ scanResult, isDark }) {
           <div className={`px-4 py-1.5 border-t text-[10px] font-mono flex items-center justify-between text-zinc-500 ${
             isDark ? 'bg-[#111113] border-[#2C2C32]' : 'bg-[#EAE8E3] border-[#DCD9D2]'
           }`}>
-            <span>Engine: {engineUsed.includes('groq') ? 'Groq Llama 3.1 8B' : (engineUsed.includes('gemini') ? 'Gemini 1.5 Flash' : 'Offline Forensic Engine')}</span>
-            <span className="text-emerald-500 font-semibold">100% Grounded</span>
+            <span className="flex items-center gap-1.5">
+              <span className="text-zinc-400">Engine:</span>
+              <span className={isOnline && !engineUsed.startsWith('offline') ? 'text-zinc-300 font-semibold' : 'text-amber-500/90 font-medium'}>
+                {formatEngineLabel(engineUsed)}
+              </span>
+            </span>
+            <span className={isOnline && !engineUsed.startsWith('offline') ? 'text-emerald-500 font-semibold' : 'text-zinc-400'}>
+              {isOnline && !engineUsed.startsWith('offline') ? '100% Grounded' : 'Rule-Based & Safe'}
+            </span>
           </div>
 
           {/* Chat Input */}

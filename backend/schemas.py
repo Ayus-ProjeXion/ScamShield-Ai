@@ -128,3 +128,11 @@ class CopilotChatResponse(BaseModel):
     engine_used: str
     latency_ms: float
     timestamp: str
+
+class CopilotStatusResponse(BaseModel):
+    status: str
+    active_engine: str
+    engine_label: str
+    groq_configured: bool
+    gemini_configured: bool
+    timestamp: str
