@@ -28,7 +28,13 @@ class Settings:
     MAX_SCANS_PER_MINUTE: int = 30
     
     # Hybrid AI Copilot Settings
-    GROQ_API_KEY: Optional[str] = os.getenv("GROQ_API_KEY")
+    GROQ_API_KEY: Optional[str] = (
+        os.getenv("GROQ_API_KEY") or
+        os.getenv("GROQ_KEY") or
+        os.getenv("GROQ_API_TOKEN") or
+        os.getenv("groq_api_key") or
+        os.getenv("GROQ_TOKEN")
+    )
     GEMINI_API_KEY: Optional[str] = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
     COPILOT_MODEL_GROQ: str = os.getenv("COPILOT_MODEL_GROQ", "qwen/qwen3.8-27b")
     COPILOT_MODEL_GEMINI: str = os.getenv("COPILOT_MODEL_GEMINI", "gemini-1.5-flash")
