@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sun, Moon, PhoneCall, PlusCircle, Shield, Sparkles, Smartphone, MessageSquare } from 'lucide-react';
+import { Sun, Moon, PhoneCall, PlusCircle, Shield, Sparkles, MessageSquare } from 'lucide-react';
 
 export function Navbar({
   isDark,
@@ -8,7 +8,6 @@ export function Navbar({
   isShieldMode,
   onToggleShieldMode,
   onOpenOnboarding,
-  onOpenMobileDemo,
   onOpenWhatsAppModal
 }) {
   return (
@@ -85,12 +84,12 @@ export function Navbar({
 
           {/* WhatsApp Cyber Shield */}
           <button
-            onClick={onOpenWhatsAppModal || onOpenMobileDemo}
+            onClick={onOpenWhatsAppModal}
             className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-mono font-medium transition-all ${isDark
               ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20'
               : 'bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100'
               }`}
-            title="Verify WhatsApp & SMS scams 24/7 without downloading any app"
+            title="Verify suspicious WhatsApp messages & forwards"
             type="button"
           >
             <MessageSquare className="w-3.5 h-3.5 text-emerald-500" />
