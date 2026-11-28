@@ -3,6 +3,7 @@ import { Navbar } from './components/Navbar';
 import { ThreatScanner } from './components/ThreatScanner';
 import { ThreatHUD } from './components/ThreatHUD';
 import { ShieldModeCard } from './components/ShieldModeCard';
+import { LiveInterceptorBanner } from './components/LiveInterceptorBanner';
 import { OnboardingModal } from './components/OnboardingModal';
 import { FloatingCopilot } from './components/FloatingCopilot';
 import { LiveScamCarousel } from './components/LiveScamCarousel';
@@ -399,6 +400,15 @@ Please take immediate action under Indian Cyber Crime Prevention guidelines.`
       {/* Main Content Area */}
       <main className="relative z-10 flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-4 pb-12 space-y-6">
         
+        {/* Real-Time Live Interceptor (Paused by default, user-activated) */}
+        <LiveInterceptorBanner
+          onTriggerScan={handleTriggerDirectScan}
+          onOpenReport={(sender, text) => {
+            setIsReportModalOpen(true);
+          }}
+          isDark={isDark}
+        />
+
         {/* Toast Notification */}
         {toastMessage && (
           <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-xl border text-xs font-mono shadow-2xl animate-bounce ${
