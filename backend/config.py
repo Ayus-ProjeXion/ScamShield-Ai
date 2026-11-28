@@ -1,5 +1,5 @@
 import os
-from typing import List
+from typing import List, Optional
 from dotenv import load_dotenv
 
 load_dotenv()
@@ -26,5 +26,14 @@ class Settings:
     # Rate Limiting & Cooldown
     SCAN_COOLDOWN_SECONDS: float = 1.0
     MAX_SCANS_PER_MINUTE: int = 30
+    
+    # WhatsApp Shield Number (National 1930 Cyber Defense)
+    WHATSAPP_BOT_NUMBER: str = os.getenv("WHATSAPP_BOT_NUMBER", "+91 91193 01930")
+    
+    # Hybrid AI Copilot Settings
+    GROQ_API_KEY: Optional[str] = os.getenv("GROQ_API_KEY")
+    GEMINI_API_KEY: Optional[str] = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")
+    COPILOT_MODEL_GROQ: str = os.getenv("COPILOT_MODEL_GROQ", "qwen/qwen3.8-27b")
+    COPILOT_MODEL_GEMINI: str = os.getenv("COPILOT_MODEL_GEMINI", "gemini-1.5-flash")
 
 settings = Settings()

@@ -29,12 +29,17 @@ def evaluate_heuristics(text: str) -> Dict[str, Any]:
     matched_categories: List[str] = []
     urgency_hits = 0
 
+    has_negative_warning = bool(re.search(
+        r'\b(do\s*not|never|don\'?t|strictly\s*not|should\s*not)\s+(share|disclose|give|tell|forward|enter)\b|\bbank\s*never\s*asks?\b|\bkisi\s*ko\s*(na\s*dein|mat\s*batao|share\s*na\s*karein)\b|\b(no\s*comparta|nunca\s*comparta|ne\s*partagez\s*pas|ne\s*communiquez\s*jamais|non\s*condividere|non\s*comunicare\s*mai)\b|(साझा|शेयर|बताएं|दें|दे)\s*ना\s*करें|कभी\s*(साझा|शेयर)\s*न\s*करें|किसी\s*को\s*न\s*दें|बैंक\s*कभी\s*नहीं\s*मांगता',
+        text_lower
+    ))
+
     # -------------------------------------------------------------
     # 1. CREDENTIAL HARVESTING (OTP, PIN, MPIN, CVV, Passwords)
-    # Supports English, Hinglish, and Multilingual (Devanagari Hindi)
+    # Supports English, Hinglish, Devanagari Hindi, Spanish, French, and Italian
     # -------------------------------------------------------------
     has_cred_term = bool(re.search(
-        r'\b(pin|mpin|tpin|cvv|cvc|otp|one\s*time\s*password|passcode|password|passphrase|verification\s*code|security\s*code|card\s*details|card\s*number|expiry\s*date|bank\s*details|account\s*details|netbanking\s*password|credentials)\b|ओटीपी|पिन|पासवर्ड|पासकोड|गुप्त\s*कोड|सत्यापन\s*कोड|सीवीवी|खाता\s*विवरण|कार्ड\s*नंबर',
+        r'\b(pin|mpin|tpin|cvv|cvc|otp|one\s*time\s*password|passcode|password|passphrase|verification\s*code|security\s*code|card\s*details|card\s*number|expiry\s*date|bank\s*details|account\s*details|netbanking\s*password|credentials|código\s*(de\s*)?(seguridad|verificación|confirmación|otp|acceso)|clave\s*de\s*acceso|contraseña|code\s*(de\s*)?(sécurité|confirmation|validation|otp|accès)|mot\s*de\s*passe|identifiants|codice\s*(di\s*)?(sicurezza|conferma|verifica|otp|accesso)|parola\s*d\'ordine|credenziali)\b|ओटीपी|पिन|पासवर्ड|पासकोड|गुप्त\s*कोड|सत्यापन\s*कोड|सीवीवी|खाता\s*विवरण|कार्ड\s*नंबर',
         text_lower
     ))
     
@@ -43,24 +48,21 @@ def evaluate_heuristics(text: str) -> Dict[str, Any]:
             r'\b(delivery\s*pin|ride\s*pin|share\s+(with\s+)?(driver|delivery)\s+(only|upon\s+arrival)?|share\s+delivery\s*pin|pin\s+only\s+upon\s+delivery)\b|डिलीवरी\s*पिन|राइड\s*पिन',
             text_lower
         ))
-        has_negative_warning = bool(re.search(
-            r'\b(do\s*not|never|don\'?t|strictly\s*not|should\s*not)\s+(share|disclose|give|tell|forward|enter)\b|\bbank\s*never\s*asks?\b|\bkisi\s*ko\s*(na\s*dein|mat\s*batao|share\s*na\s*karein)\b|(साझा|शेयर|बताएं|दें|दे)\s*ना\s*करें|कभी\s*(साझा|शेयर)\s*न\s*करें|किसी\s*को\s*न\s*दें|बैंक\s*कभी\s*नहीं\s*मांगता',
-            text_lower
-        ))
         
         # Clean text by removing protective disclaimers
         clean_text = re.sub(r'\b(do\s*not|never|don\'?t|strictly\s*not|should\s*not)\s+(share|disclose|give|tell|forward|enter)\b', '', text_lower)
         clean_text = re.sub(r'\bbank\s*never\s*asks?\b', '', clean_text)
+        clean_text = re.sub(r'\b(no\s*comparta|nunca\s*comparta|ne\s*partagez\s*pas|ne\s*communiquez\s*jamais|non\s*condividere|non\s*comunicare\s*mai)\b.*?(op[eé]ration|transacci[oó]n|transaction|conferma)?', '', clean_text)
         clean_text = re.sub(r'(साझा|शेयर|बताएं|दें|दे)\s*ना\s*करें|कभी\s*(साझा|शेयर)\s*न\s*करें|किसी\s*को\s*न\s*दें|बैंक\s*कभी\s*नहीं\s*मांगता', '', clean_text)
         
         has_extraction_intent = bool(re.search(
-            r'\b(ask(ed|ing)?|provide|share|send|give|tell|forward|enter|submit|input|confirm|verify|update|disclose|batao|batado|bata\s*do|bataiye(ga)?|bataye|boliye(ga)?|bolie|bolna|dijie|dijiye(ga)?|dijiye\s*na|batao\s*na|dedo|de\s*do|de\s*de|dena|do|bhejo|bhej\s*do|bhejiye|likho|likhiye|daalo|daaliye|need|require|demanding?|what\s+is|please|chahiye|mang\s*rahe|mang\s*raha|mangta|share\s*karo|send\s*karo|forward\s*karo|enter\s*karo)\b|बताएं|बताओ|बताइए|दीजिए|दें|दो|देना|भेजें|भेजो|भेजिए|शेयर\s*करें|शेयर\s*करो|सेंड\s*करें|फॉरवर्ड\s*करें|डालें|दर्ज\s*करें|लिखें|पुष्टि\s*करें|सत्यापित\s*करें|चाहिए|मांग\s*रहे|मांग\s*रहा',
+            r'\b(ask(ed|ing)?|provide|share|send|give|tell|forward|enter|submit|input|confirm|verify|update|disclose|batao|batado|bata\s*do|bataiye(ga)?|bataye|boliye(ga)?|bolie|bolna|dijie|dijiye(ga)?|dijiye\s*na|batao\s*na|dedo|de\s*do|de\s*de|dena|do|bhejo|bhej\s*do|bhejiye|likho|likhiye|daalo|daaliye|need|require|demanding?|what\s+is|please|chahiye|mang\s*rahe|mang\s*raha|mangta|share\s*karo|send\s*karo|forward\s*karo|enter\s*karo|ingrese|ingresar|introduzca|proporcione|comparta|envíe|confirme|confirmar|fournir|fournissez|partager|partagez|envoyer|envoyez|entrer|entrez|saisir|saisissez|confirmer|confirmez|valider|validez|fornire|fornisci|condividere|inviare|invia|inserire|inserisci|digitare|digita|confermare|conferma|verificare)\b|बताएं|बताओ|बताइए|दीजिए|दें|दो|देना|भेजें|भेजो|भेजिए|शेयर\s*करें|शेयर\s*करो|सेंड\s*करें|फॉरवर्ड\s*करें|डालें|दर्ज\s*करें|लिखें|पुष्टि\s*करें|सत्यापित\s*करें|चाहिए|मांग\s*रहे|मांग\s*रहा',
             clean_text
         ))
 
         # Direct contextual OTP extraction: "mobile pe aya hua otp", "message mein aya otp", etc.
         has_contextual_arrival = bool(re.search(
-            r'(mobile|phone|message|sms|whatsapp|मैसेज|संदेश|फोन|मोबाइल)\s*(par|pe|pei|mein|me|पर|में)?\s*(aaya|aya|aaye|आया|प्राप्त)\s*(hua)?\s*(otp|pin|कोड|ओटीपी|पिन)',
+            r'(mobile|phone|message|sms|whatsapp|मैसेज|संदेश|फोन|मोबाइल|mensaje|código)\s*(par|pe|pei|mein|me|de|del|di)?\s*(aaya|aya|aaye|llegado|reçu|arrivato|आया|प्राप्त)\s*(hua)?\s*(otp|pin|कोड|ओटीपी|पिन)',
             clean_text
         ))
         
@@ -88,11 +90,11 @@ def evaluate_heuristics(text: str) -> Dict[str, Any]:
     # 3. DIGITAL ARREST & AUTHORITY IMPERSONATION (BNSS 2023)
     # -------------------------------------------------------------
     has_authority = bool(re.search(
-        r'\b(cbi|central\s*bureau|police|crime\s*branch|narcotics|ncb|customs|enforcement\s*directorate|\bed\b|nia|trai|rbi|supreme\s*court|interpol|cyber\s*cell|inspector|thanedaar|daroga|adhikari)\b|सीबीआई|पुलिस|क्राइम\s*ब्रांच|नारकोटिक्स|कस्टम्स|ईडी|प्रवर्तन\s*निदेशालय|साइबर\s*सेल|अदालत|सुप्रीम\s*कोर्ट|थानेदार|दरोगा|इंस्पेक्टर|अधिकारी',
+        r'\b(cbi|central\s*bureau|police|crime\s*branch|narcotics|ncb|customs|enforcement\s*directorate|\bed\b|nia|trai|rbi|supreme\s*court|interpol|cyber\s*cell|inspector|thanedaar|daroga|adhikari|policía|guardia\s*civil|aduana|juzgado|police\s*nationale|gendarmerie|douane|tribunal|polizia|carabinieri|dogana|guardia\s*di\s*finanza)\b|सीबीआई|पुलिस|क्राइम\s*ब्रांच|नारकोटिक्स|कस्टम्स|ईडी|प्रवर्तन\s*निदेशालय|साइबर\s*सेल|अदालत|सुप्रीम\s*कोर्ट|थानेदार|दरोगा|इंस्पेक्टर|अधिकारी',
         text_lower
     ))
     has_coercion = bool(re.search(
-        r'\b(digital\s*arrest|arrest\s*warrant|non-bailable|money\s*laundering|seized|parcel|contraband|mdma|drugs|charas|ganja|illegal\s*courier|fedex|dhl|escrow|court\s*notice|giraftaar|giraftari|jail|case\s*darj|police\s*karyawahi)\b|डिजिटल\s*अरेस्ट|डिजिटल\s*गिरफ्तारी|गिरफ्तार|गिरफ्तारी|वारंट|जेल|मुकदमा|केस\s*दर्ज|एफआईआर|ड्रग्स|नशीले\s*पदार्थ|मनी\s*लॉन्ड्रिंग|गैर-जमानती|पार्सल\s*जब्त|वीडियो\s*कॉल',
+        r'\b(digital\s*arrest|arrest\s*warrant|non-bailable|money\s*laundering|seized|parcel|contraband|mdma|drugs|charas|ganja|illegal\s*courier|fedex|dhl|escrow|court\s*notice|giraftaar|giraftari|jail|case\s*darj|police\s*karyawahi|orden\s*de\s*arresto|orden\s*judicial|detención|delito|mandat\s*d\'arrêt|poursuites\s*judiciaires|mandato\s*di\s*cattura|azione\s*legale|reato)\b|डिजिटल\s*अरेस्ट|डिजिटल\s*गिरफ्तारी|गिरफ्तार|गिरफ्तारी|वारंट|जेल|मुकदमा|केस\s*दर्ज|एफआईआर|ड्रग्स|नशीले\s*पदार्थ|मनी\s*लॉन्ड्रिंग|गैर-जमानती|पार्सल\s*जब्त|वीडियो\s*कॉल',
         text_lower
     ))
     
@@ -105,9 +107,11 @@ def evaluate_heuristics(text: str) -> Dict[str, Any]:
         matched_categories.append("IMPERSONATION")
         urgency_hits += 2
     elif has_authority:
-        badges.append("Government/Authority Spoofing")
-        matched_categories.append("IMPERSONATION")
-        urgency_hits += 1
+        is_customs_alone = bool(re.search(r'\b(aduana|douane|dogana|customs)\b', text_lower)) and not bool(re.search(r'\b(cbi|police|inspector|daroga|policía|carabinieri|fbi|arrest|warrant)\b', text_lower))
+        if not is_customs_alone or bool(re.search(r'\b(fee|tax|taxe|tassa|spese|frais|retenu|trattenuto|pago|pay|payer|hold|penalty|amende)\b', text_lower)):
+            badges.append("Government/Authority Spoofing")
+            matched_categories.append("IMPERSONATION")
+            urgency_hits += 1
 
     # -------------------------------------------------------------
     # 4. ESSENTIAL UTILITY / ELECTRICITY BLACKOUT THREAT
@@ -130,11 +134,11 @@ def evaluate_heuristics(text: str) -> Dict[str, Any]:
     # 5. BANKING & KYC SUSPENSION / REWARD EXPIRATION
     # -------------------------------------------------------------
     has_bank = bool(re.search(
-        r'\b(sbi|yono|hdfc|icici|axis|pnb|kotak|bank|khata|bank\s*khata|khate|netbanking|credit\s*card|debit\s*card|atm\s*card|sim\s*card|telecom|airtel|jio)\b|बैंक|खाता|खाते|नेटबैंकिंग|क्रेडिट\s*कार्ड|डेबिट\s*कार्ड|एटीएम|सिम\s*कार्ड',
+        r'\b(sbi|yono|hdfc|icici|axis|pnb|kotak|bank|khata|bank\s*khata|khate|netbanking|credit\s*card|debit\s*card|atm\s*card|sim\s*card|telecom|airtel|jio|banco|cuenta\s*bancaria|tarjeta|banque|compte\s*bancaire|carte\s*bancaire|carte\s*vitale|ameli|banca|conto\s*corrente|conto\s*bancario|poste\s*italiane)\b|बैंक|खाता|खाते|नेटबैंकिंग|क्रेडिट\s*कार्ड|डेबिट\s*कार्ड|एटीएम|सिम\s*कार्ड',
         text_lower
     ))
     has_suspension = bool(re.search(
-        r'\b(blocked|suspended|deactivated|freeze|hold|kyc\s*expired|update\s*pan|verify\s*pan|deactivation\s*in|band\s*ho\s*jayega|band\s*kar\s*diya|rok\s*diya)\b|बंद\s*कर\s*दिया|ब्लॉक|सस्पेंड|फ्रीज|होल्ड|रोक\s*दिया',
+        r'\b(blocked|suspended|deactivated|freeze|hold|kyc\s*expired|update\s*pan|verify\s*pan|deactivation\s*in|band\s*ho\s*jayega|band\s*kar\s*diya|rok\s*diya|bloquead[ao]s?|suspendid[ao]s?|restringid[ao]s?|desactivad[ao]s?|inmovilizad[ao]s?|bloqu[eé](?:e)?s?|suspendu(?:e)?s?|d[eé]sactiv[eé](?:e)?s?|restreint(?:e)?s?|bloccat[ao]s?|sospes[ao]s?|disattivat[ao]s?|limitat[ao]s?)\b|बंद\s*कर\s*दिया|ब्लॉक|सस्पेंड|फ्रीज|होल्ड|रोक\s*दिया',
         text_lower
     ))
     has_generic_kyc = bool(re.search(
@@ -325,6 +329,7 @@ def evaluate_heuristics(text: str) -> Dict[str, Any]:
 
     # -------------------------------------------------------------
     # 12B. FAKE COURIER / DELIVERY FEE EXTORTION
+    # Supports English, Hinglish, Devanagari Hindi, Spanish, French, and Italian
     # -------------------------------------------------------------
     # Exclude authentic food orders, grocery receipts, and e-commerce delivery confirmations
     is_legit_receipt = bool(re.search(
@@ -332,9 +337,9 @@ def evaluate_heuristics(text: str) -> Dict[str, Any]:
         text_lower
     ))
     
-    has_courier = bool(re.search(r'\b(courier|parcel|consignment|india\s*post|fedex|dhl|bluedart|dtdc)\b|पार्सल|कूरियर|कंसाइनमेंट|डिलीवरी', text_lower))
+    has_courier = bool(re.search(r'\b(courier|parcel|consignment|india\s*post|fedex|dhl|bluedart|dtdc|paquete|envío|entrega|aduana|correos|colis|livraison|douane|la\s*poste|chronopost|pacco|spedizione|consegna|dogana|poste)\b|पार्सल|कूरियर|कंसाइनमेंट|डिलीवरी', text_lower))
     has_courier_extortion = bool(re.search(
-        r'\b(customs\s*(fee|duty|clearance|penalty|hold)|clearance\s*fee|unregistered\s*(shipment|parcel)|(parcel|consignment|package)\s*(on\s*hold|held|seized)|(pay|transfer)\s*.*(release|customs|delivery\s*fee\s*to\s*receive)|hold\s*par|address\s*galat|unfreeze\s*karne|delivery\s*charges)\b|होल्ड\s*पर|शुल्क|कस्टम्स|रोका\s*गया',
+        r'\b(customs\s*(fee|duty|clearance|penalty|hold)|clearance\s*fee|unregistered\s*(shipment|parcel)|(parcel|consignment|package)\s*(on\s*hold|held|seized)|(pay|transfer)\s*.*(release|customs|delivery\s*fee\s*to\s*receive)|hold\s*par|address\s*galat|unfreeze\s*karne|delivery\s*charges|retenido|bloqueado|en\s*espera|gastos\s*de\s*envío|pago\s*de\s*tasas|entrega\s*fallida|costes\s*aduaneros|retenu|en\s*attente|frais\s*de\s*livraison|frais\s*de\s*douane|échec\s*de\s*livraison|in\s*giacenza|trattenuto|spese\s*di\s*spedizione|oneri\s*doganali|mancata\s*consegna)\b|होल्ड\s*पर|शुल्क|कस्टम्स|रोका\s*गया',
         text_lower
     ))
     
@@ -345,9 +350,17 @@ def evaluate_heuristics(text: str) -> Dict[str, Any]:
 
     # -------------------------------------------------------------
     # 13. HINGLISH & REGIONAL MULTILINGUAL COERCION
+    # Supports Hindi, Hinglish, Spanish, French, and Italian Urgency
     # -------------------------------------------------------------
-    if re.search(r'\b(turant|aaj\s*raat|kaat\s*diya\s*jayega|band\s*ho\s*jayega|police\s*karyawahi|police\s*ghar\s*aayegi|giraftaar|jail\s*jana|kanooni\s*karyawahi|court\s*mein\s*pesh|warna\s*nuksan|case\s*darj|fir\s*darj|chalaan|jurmana)\b|तुरंत|आज\s*रात|काट\s*दी\s*जाएगी|काट\s*दिया\s*जाएगा|बंद\s*हो\s*जाएगा|पुलिस\s*कार्रवाई|पुलिस\s*आएगी|गिरफ्तार|जेल\s*जाना|कानूनी\s*कार्रवाई|कोर्ट\s*में\s*पेश|वरना\s*नुकसान|वरना|केस\s*दर्ज|एफआईआर\s*दर्ज|चालान|जुर्माना', text_lower):
-        badges.append("Regional Hinglish / Multilingual Coercion")
+    has_coercive_threat = bool(re.search(
+        r'\b(turant|aaj\s*raat|kaat\s*diya\s*jayega|band\s*ho\s*jayega|police\s*karyawahi|police\s*ghar\s*aayegi|giraftaar|jail\s*jana|kanooni\s*karyawahi|court\s*mein\s*pesh|warna\s*nuksan|case\s*darj|fir\s*darj|chalaan|jurmana|último\s*aviso|multa|plazo\s*expirado|evitar\s*sanción|dernier\s*rappel|amende|délai\s*dépassé|pénalité|ultimo\s*avviso|scadenza\s*imminente|sanzione)\b|तुरंत|आज\s*रात|काट\s*दी\s*जाएगी|काट\s*दिया\s*जाएगा|बंद\s*हो\s*जाएगा|पुलिस\s*कार्रवाई|पुलिस\s*आएगी|गिरफ्तार|जेल\s*जाना|कानूनी\s*कार्रवाई|कोर्ट\s*में\s*पेश|वरना\s*नुकसान|वरना|केस\s*दर्ज|एफआईआर\s*दर्ज|चालान|जुर्माना',
+        text_lower
+    ))
+    has_urgency_word = bool(re.search(r'\b(urgent|urgente)\b', text_lower))
+    has_supporting_evidence = len(matched_categories) > 0 or has_negative_warning or bool(re.search(r'\b(pay|call|transfer|click|account|link|bill|power|disconnection|payer|pagar)\b', text_lower))
+
+    if has_coercive_threat or (has_urgency_word and has_supporting_evidence):
+        badges.append("Regional Multilingual Coercion / Intimidation")
         matched_categories.append("HINGLISH_COERCION")
         urgency_hits += 1
 

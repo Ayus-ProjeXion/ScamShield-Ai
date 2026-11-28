@@ -108,3 +108,23 @@ class HealthResponse(BaseModel):
     circuit_breaker_status: Optional[str] = "CLOSED_NORMAL"
     database_connected: bool
     timestamp: str
+
+# ============================================================================
+# 5. HYBRID AI COPILOT SCHEMAS
+# ============================================================================
+
+class CopilotChatMessage(BaseModel):
+    role: str = Field(..., description="'user', 'assistant', or 'system'")
+    content: str = Field(..., description="Message content")
+
+class CopilotChatRequest(BaseModel):
+    message: str = Field(..., min_length=1, max_length=2000, description="User's query about the current scan")
+    scan_context: Optional[Dict[str, Any]] = Field(default_factory=dict, description="Current scan result payload to ground the response")
+    history: Optional[List[CopilotChatMessage]] = Field(default_factory=list, description="Recent conversation turns")
+
+class CopilotChatResponse(BaseModel):
+    reply: str
+    suggested_chips: List[str] = []
+    engine_used: str
+    latency_ms: float
+    timestamp: str

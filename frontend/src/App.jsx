@@ -2,12 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { Navbar } from './components/Navbar';
 import { ThreatScanner } from './components/ThreatScanner';
 import { ThreatHUD } from './components/ThreatHUD';
+import { ShieldModeCard } from './components/ShieldModeCard';
+import { LiveInterceptorBanner } from './components/LiveInterceptorBanner';
+import { OnboardingModal } from './components/OnboardingModal';
+import { FloatingCopilot } from './components/FloatingCopilot';
 import { LiveScamCarousel } from './components/LiveScamCarousel';
 import { IncidentModal } from './components/IncidentModal';
 import { ReportModal } from './components/ReportModal';
+import { WhatsAppShieldModal } from './components/WhatsAppShieldModal';
 import { CheckCircle } from 'lucide-react';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 
 export default function App() {
   // Theme state: dark (60% Midnight Black #0C0C0C) or light (60% Soothing Warm Sand #ECEAE5)
@@ -40,27 +45,101 @@ export default function App() {
   const [selectedNewsScam, setSelectedNewsScam] = useState(null);
   const [isReportModalOpen, setIsReportModalOpen] = useState(false);
 
+  // Universal Shield Mode & Onboarding Modal states
+  const [isShieldMode, setIsShieldMode] = useState(false);
+  const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
+  const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState(false);
+
+  useEffect(() => {
+    const hideWelcome = localStorage.getItem('scamshield_hide_welcome');
+    if (!hideWelcome) {
+      setIsOnboardingOpen(true);
+    }
+
+    // Handle Native Mobile PWA Web Share Target (Zero-Install WhatsApp / SMS sharing)
+    try {
+      const searchParams = new URLSearchParams(window.location.search);
+      if (searchParams.get('mode') === 'shield') {
+        setIsShieldMode(true);
+      }
+
+      const sharedTitle = searchParams.get('title') || '';
+      const sharedTextBody = searchParams.get('text') || '';
+      const sharedUrl = searchParams.get('url') || '';
+      const sharedText = [sharedTitle, sharedTextBody, sharedUrl].filter(Boolean).join(' ').trim();
+      if (sharedText && sharedText.length >= 6) {
+        const clean = sharedText;
+        setInputText(clean);
+        setActiveTab('text');
+        // On mobile text share, default to high-clarity Universal Shield Mode
+        setIsShieldMode(true);
+        window.history.replaceState({}, document.title, window.location.pathname);
+        setTimeout(() => {
+          handleScan(clean, 'text');
+        }, 100);
+        showToast('📱 Message shared from WhatsApp/SMS. Analyzing threat...');
+      }
+    } catch (e) {
+      // Silent pass
+    }
+  }, []);
+
   const showToast = (msg) => {
     setToastMessage(msg);
     setTimeout(() => setToastMessage(''), 3500);
   };
 
+  const handleSelectOnboardingOption = (optionKey) => {
+    if (optionKey === 'shield') {
+      setIsShieldMode(true);
+      showToast('Switched to Universal Shield Mode');
+    } else if (optionKey === 'screenshot') {
+      setActiveTab('image');
+      showToast('Client-Side Screenshot OCR Ready');
+    } else {
+      setActiveTab(optionKey);
+      if (optionKey === 'text') showToast('SMS / WhatsApp Verification Mode Ready');
+      else if (optionKey === 'email') showToast('Email Phishing Scanner Ready');
+      else if (optionKey === 'audio') showToast('Voice Call / Audio Scanner Ready');
+    }
+  };
+
+  const handleTriggerDirectScan = async (text) => {
+    if (typeof text !== 'string' || !text.trim()) return;
+    setInputText(text);
+    setActiveTab('text');
+    await handleScan(text, 'text');
+  };
+
   // Perform Multi-Modal Threat Scan
-  const handleScan = async () => {
-    if (!inputText.trim() && !audioFile) return;
+  const handleScan = async (overrideText = null, overrideTab = null, overrideFile = undefined) => {
+    const targetText = (typeof overrideText === 'string' && overrideText.trim().length > 0)
+      ? overrideText
+      : (typeof inputText === 'string' ? inputText : '');
+    const targetTab = (typeof overrideTab === 'string' && overrideTab.trim().length > 0)
+      ? overrideTab
+      : activeTab;
+    const targetFile = (overrideFile !== undefined) ? overrideFile : audioFile;
+
+    if (!targetText.trim() && !targetFile) return;
+
+    if (isLoading) {
+      showToast('⏳ Scan already in progress. Please wait a moment...');
+      return;
+    }
 
     setIsLoading(true);
     const startTime = performance.now();
 
     // 0. Instant Case ID Quick-Lookup Feature:
     // If input is an official Case ID (#D3E2569B... or UUID), query database audit ledger directly
-    const trimmedInput = inputText.trim();
-    const isCaseIdLookup = activeTab === 'text' && (
+    const trimmedInput = targetText.trim();
+    const isCaseIdLookup = targetTab === 'text' && (
       trimmedInput.startsWith('#') ||
       (trimmedInput.length >= 8 && /^[a-f0-9-]{8,}$/i.test(trimmedInput) && !trimmedInput.includes(' '))
     );
 
-    if (isCaseIdLookup && !audioFile) {
+    if (isCaseIdLookup && !targetFile) {
       try {
         const cleanLookupId = encodeURIComponent(trimmedInput);
         const lookupResponse = await fetch(`${API_BASE_URL}/api/v1/scan/${cleanLookupId}`);
@@ -112,20 +191,20 @@ export default function App() {
       let bodyData;
       let headers = {};
 
-      if (activeTab === 'email') {
+      if (targetTab === 'email') {
         endpoint = `${API_BASE_URL}/api/v1/scan/email`;
-        bodyData = JSON.stringify({ email_text: inputText, raw_email: inputText });
+        bodyData = JSON.stringify({ email_text: targetText, raw_email: targetText });
         headers['Content-Type'] = 'application/json';
-      } else if (activeTab === 'audio' && audioFile) {
+      } else if (targetTab === 'audio' && targetFile) {
         endpoint = `${API_BASE_URL}/api/v1/scan/audio`;
         const formData = new FormData();
-        formData.append('file', audioFile);
+        formData.append('file', targetFile);
         bodyData = formData;
       } else {
         endpoint = `${API_BASE_URL}/api/v1/scan/text`;
         bodyData = JSON.stringify({
-          text: inputText,
-          channel: activeTab === 'audio' ? 'VOICE' : (activeTab === 'email' ? 'EMAIL' : (activeTab === 'image' ? 'SCREENSHOT' : 'SMS'))
+          text: targetText,
+          channel: targetTab === 'audio' ? 'VOICE' : (targetTab === 'email' ? 'EMAIL' : (targetTab === 'image' ? 'SCREENSHOT' : 'SMS'))
         });
         headers['Content-Type'] = 'application/json';
       }
@@ -142,6 +221,15 @@ export default function App() {
 
       const data = await response.json();
       const elapsed = (performance.now() - startTime).toFixed(1);
+
+      // Handle Anti-Spam / Rate-Limit Cooldown
+      // CRITICAL: Never overwrite an existing threat scan with 0% / SAFE when throttled!
+      if (data.rate_limited || data.threat_level === 'RATE_LIMITED') {
+        const waitMsg = data.recommended_actions?.[0] || '⏳ Anti-spam buffer active: Please wait a second before scanning again.';
+        showToast(waitMsg);
+        setIsLoading(false);
+        return;
+      }
 
       // Auto-populate audio call transcript in the input box so the user can inspect the transcribed speech
       if (activeTab === 'audio' && (data.audio_meta?.transcribed_text || data.text_preview)) {
@@ -172,7 +260,7 @@ export default function App() {
         verdict: data.threat_level || data.verdict || (data.is_scam ? 'CRITICAL' : 'SAFE'),
         confidence: computedConfidence,
         latencyMs: elapsed,
-        badges: (activeTab === 'image' && !(data.badges || []).some(b => b.includes('Screenshot')))
+        badges: (targetTab === 'image' && !(data.badges || []).some(b => b.includes('Screenshot')))
           ? ['Screenshot OCR Verified (Zero-Knowledge)', ...(data.badges || [])]
           : (data.badges || []),
         explanation: resolvedExplanation,
@@ -186,12 +274,12 @@ export default function App() {
       const elapsed = (performance.now() - startTime).toFixed(1);
 
       // If this was an audio scan without text or server failed unexpectedly, do not fabricate a fake SAFE result
-      if (activeTab === 'audio' && !inputText.trim()) {
+      if (targetTab === 'audio' && !targetText.trim()) {
         showToast(`Audio analysis failed: ${err.message || 'Server offline'}. Please check backend connection and retry.`);
         return;
       }
 
-      const textLower = (inputText || '').toLowerCase().trim();
+      const textLower = (targetText || '').toLowerCase().trim();
       if (!textLower) {
         showToast(`Scan request failed: ${err.message || 'Network error'}. Please retry.`);
         return;
@@ -247,7 +335,7 @@ Date/Time: ${new Date().toLocaleString()}
 
 Incident Summary:
 Suspicious extortive communication intercepted with threat level (${detectedScore}%).
-Flagged Content: "${inputText.substring(0, 140)}..."
+Flagged Content: "${targetText.substring(0, 140)}..."
 
 Forensic Badges: ${detectedBadges.join(', ')}
 
@@ -302,12 +390,25 @@ Please take immediate action under Indian Cyber Crime Prevention guidelines.`
       <Navbar 
         isDark={isDark} 
         onToggleTheme={toggleTheme} 
-        onOpenReportModal={() => setIsReportModalOpen(true)} 
+        onOpenReportModal={() => setIsReportModalOpen(true)}
+        isShieldMode={isShieldMode}
+        onToggleShieldMode={() => setIsShieldMode(!isShieldMode)}
+        onOpenOnboarding={() => setIsOnboardingOpen(true)}
+        onOpenWhatsAppModal={() => setIsWhatsAppModalOpen(true)}
       />
 
       {/* Main Content Area */}
-      <main className="relative z-10 flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-6 pb-12 space-y-8">
+      <main className="relative z-10 flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-4 pb-12 space-y-6">
         
+        {/* Real-Time WhatsApp & SMS Notification Interceptor Simulation */}
+        <LiveInterceptorBanner
+          onTriggerScan={handleTriggerDirectScan}
+          onOpenReport={(sender, text) => {
+            setIsReportModalOpen(true);
+          }}
+          isDark={isDark}
+        />
+
         {/* Toast Notification */}
         {toastMessage && (
           <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-xl border text-xs font-mono shadow-2xl animate-bounce ${
@@ -393,13 +494,22 @@ Please take immediate action under Indian Cyber Crime Prevention guidelines.`
             />
           </div>
 
-          {/* Right Column: Real-Time Threat Forensics HUD (5 cols) */}
+          {/* Right Column: Real-Time Threat Forensics HUD or Universal Shield Mode (5 cols) */}
           <div className="lg:col-span-5">
-            <ThreatHUD
-              result={scanResult}
-              onCopyComplaint={handleCopyComplaint}
-              isDark={isDark}
-            />
+            {isShieldMode ? (
+              <ShieldModeCard
+                result={scanResult}
+                onSwitchToForensic={() => setIsShieldMode(false)}
+                isDark={isDark}
+              />
+            ) : (
+              <ThreatHUD
+                result={scanResult}
+                onCopyComplaint={handleCopyComplaint}
+                onSwitchToShieldMode={() => setIsShieldMode(true)}
+                isDark={isDark}
+              />
+            )}
           </div>
         </div>
 
@@ -421,6 +531,20 @@ Please take immediate action under Indian Cyber Crime Prevention guidelines.`
         </p>
       </footer>
 
+      {/* Floating AI Threat Copilot */}
+      <FloatingCopilot
+        scanResult={scanResult}
+        isDark={isDark}
+      />
+
+      {/* Onboarding Mode Selection Modal */}
+      <OnboardingModal
+        isOpen={isOnboardingOpen}
+        onClose={() => setIsOnboardingOpen(false)}
+        onSelectOption={handleSelectOnboardingOption}
+        isDark={isDark}
+      />
+
       {/* Detail Dossier Modal */}
       <IncidentModal
         scam={selectedNewsScam}
@@ -434,6 +558,13 @@ Please take immediate action under Indian Cyber Crime Prevention guidelines.`
         isOpen={isReportModalOpen}
         onClose={() => setIsReportModalOpen(false)}
         onSubmitReport={handleSubmitReport}
+        isDark={isDark}
+      />
+
+      {/* WhatsApp Cyber Shield Real Verification Modal */}
+      <WhatsAppShieldModal
+        isOpen={isWhatsAppModalOpen}
+        onClose={() => setIsWhatsAppModalOpen(false)}
         isDark={isDark}
       />
     </div>

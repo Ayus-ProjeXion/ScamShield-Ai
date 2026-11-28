@@ -1,0 +1,46 @@
+{
+  "name": "∀VITR AI — Cyber-Fraud Threat Intelligence",
+  "short_name": "∀VITR AI",
+  "description": "Real-time AI protecting citizens against Digital Arrest, fake police warrants, and electricity KYC scams.",
+  "start_url": "/?source=pwa",
+  "scope": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0C0C0C",
+  "theme_color": "#FF6F32",
+  "categories": ["security", "utilities", "productivity"],
+  "icons": [
+    {
+      "src": "/favicon.svg",
+      "sizes": "192x192 512x512",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ],
+  "share_target": {
+    "action": "/?shared=true",
+    "method": "GET",
+    "enctype": "application/x-www-form-urlencoded",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  },
+  "shortcuts": [
+    {
+      "name": "Scan Message",
+      "short_name": "Scan",
+      "description": "Scan suspicious SMS or WhatsApp message",
+      "url": "/?mode=scan",
+      "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
+    },
+    {
+      "name": "Universal Shield Mode",
+      "short_name": "Shield Mode",
+      "description": "High-clarity senior & family protection view",
+      "url": "/?mode=shield",
+      "icons": [{ "src": "/favicon.svg", "sizes": "any" }]
+    }
+  ]
+}

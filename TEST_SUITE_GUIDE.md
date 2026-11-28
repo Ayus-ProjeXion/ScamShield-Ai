@@ -44,6 +44,12 @@ Comprehensive reference guide for all **4 sample test folders** across **threat 
 | `16_critical_96pct_hindi_bank_kyc_freeze.txt` | **95.0%** | `CRITICAL` | Devanagari Hindi bank KYC freeze ("खाता और डेबिट कार्ड ब्लॉक, तुरंत पैन लिंक करें"). |
 | `17_safe_02pct_hindi_bank_debit_alert.txt` | **1.0%** | `SAFE` | Devanagari Hindi legitimate bank transaction alert ("खाते से ₹450 डेबिट किए गए"). |
 | `18_safe_02pct_hinglish_casual_meeting.txt` | **0.1%** | `SAFE` | Everyday casual Hinglish meet-up planning chat. |
+| `19_critical_96pct_spanish_aduana_otp_scam.txt` | **96.0%** | `CRITICAL` | Spanish customs parcel hold OTP scam ("Su paquete está retenido en la aduana... OTP"). |
+| `20_safe_02pct_spanish_bank_debit_alert.txt` | **1.5%** | `SAFE` | Spanish legitimate bank debit alert ("ha sido debitado... saldo disponible"). |
+| `21_critical_96pct_french_douane_colis_scam.txt` | **96.0%** | `CRITICAL` | French customs parcel hold code scam ("Votre colis est retenu à la douane... code de sécurité"). |
+| `22_safe_02pct_french_bank_debit_alert.txt` | **0.5%** | `SAFE` | French legitimate bank debit alert ("a été débité... solde disponible"). |
+| `23_critical_96pct_italian_dogana_pacco_scam.txt` | **96.0%** | `CRITICAL` | Italian customs parcel hold OTP scam ("Il tuo pacco è stato bloccato in dogana... OTP"). |
+| `24_safe_02pct_italian_bank_debit_alert.txt` | **2.0%** | `SAFE` | Italian legitimate bank debit alert ("è stato addebitato... saldo disponibile"). |
 
 ---
 
@@ -126,5 +132,21 @@ curl -X POST "http://localhost:8000/api/v1/scan/audio" \
   -F "file=@test_audio/10_critical_96pct_bijli_blackout_apk_extortion.wav"
 ```
 
+### Via WhatsApp Bot Webhook & Simulator:
+```bash
+# 1. WhatsApp Onboarding / Help Handshake
+curl -X POST "http://localhost:8000/api/v1/webhook/whatsapp" \
+  -d "Body=help&From=whatsapp:+919119301930"
+
+# 2. WhatsApp Forwarded Scam Interception (Returns TwiML XML with 1930 Helpline)
+curl -X POST "http://localhost:8000/api/v1/webhook/whatsapp" \
+  -d "Body=URGENT: Your Bijli bill was not updated. Power will be disconnected tonight at 9:30 PM call 9876543210&From=whatsapp:+919119301930"
+
+# 3. Interactive Simulator (JSON format)
+curl -X POST "http://localhost:8000/api/v1/webhook/whatsapp/simulate" \
+  -H "Content-Type: application/json" \
+  -d '{"message": "CBI NOTICE: Your Aadhaar linked to drugs courier. You are in Digital Arrest.", "sender": "+91 91193 01930"}'
+```
+
 ### Via Frontend UI:
-Simply drag-and-drop or copy-paste any file content directly into the **Threat Analysis Console**!
+Simply drag-and-drop or copy-paste any file content directly into the **Threat Analysis Console**, or open **`[💬 WhatsApp Shield]`** in the top navigation bar!

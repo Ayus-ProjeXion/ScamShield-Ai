@@ -11,7 +11,7 @@ import {
   FileText
 } from 'lucide-react';
 
-export function ThreatHUD({ result, onCopyComplaint, isDark }) {
+export function ThreatHUD({ result, onCopyComplaint, onSwitchToShieldMode, isDark }) {
   const [copiedHash, setCopiedHash] = useState(false);
   const [copiedComplaint, setCopiedComplaint] = useState(false);
 
@@ -124,14 +124,29 @@ export function ThreatHUD({ result, onCopyComplaint, isDark }) {
             Threat Forensics Result
           </h3>
         </div>
-        <span className={`text-xs font-mono font-bold px-2.5 py-0.5 rounded-full border ${isCritical
-          ? 'bg-[#FF6F32]/10 text-[#FF6F32] border-[#FF6F32]/30'
-          : isSuspicious
-            ? 'bg-amber-500/10 text-amber-500 border-amber-500/30'
-            : 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30'
-          }`}>
-          {verdict}
-        </span>
+        <div className="flex items-center gap-2">
+          {onSwitchToShieldMode && (
+            <button
+              type="button"
+              onClick={onSwitchToShieldMode}
+              className={`text-[11px] font-mono px-2.5 py-0.5 rounded-lg border flex items-center gap-1 transition-colors ${
+                isDark ? 'border-zinc-700 text-zinc-300 hover:bg-zinc-800' : 'border-zinc-300 text-zinc-700 hover:bg-zinc-200'
+              }`}
+              title="Switch to High-Clarity Shield View"
+            >
+              <ShieldCheck className="w-3 h-3 text-emerald-500" />
+              <span>Shield Mode</span>
+            </button>
+          )}
+          <span className={`text-xs font-mono font-bold px-2.5 py-0.5 rounded-full border ${isCritical
+            ? 'bg-[#FF6F32]/10 text-[#FF6F32] border-[#FF6F32]/30'
+            : isSuspicious
+              ? 'bg-amber-500/10 text-amber-500 border-amber-500/30'
+              : 'bg-emerald-500/10 text-emerald-500 border-emerald-500/30'
+            }`}>
+            {verdict}
+          </span>
+        </div>
       </div>
 
       {/* Speedometer Circle */}

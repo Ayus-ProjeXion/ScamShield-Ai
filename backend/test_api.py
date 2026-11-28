@@ -158,6 +158,64 @@ Body: Dear Customer, verify your PAN immediately at http://sbi-unblock.xyz to av
         f"Status: {r.status_code} (Properly Rejected Invalid Payload)"
     )
 
+    # 13. Copilot Chat - Why Flagged
+    r = client.post("/api/v1/copilot/chat", json={
+        "message": "Why is this message flagged as 96% scam?",
+        "scan_context": res_scam
+    })
+    c_res = r.json()
+    check(
+        "AI Copilot Endpoint - Threat Explanation (POST /api/v1/copilot/chat)",
+        r.status_code == 200 and ("critical" in c_res.get("reply", "").lower() or "scam" in c_res.get("reply", "").lower()) and len(c_res.get("suggested_chips", [])) > 0,
+        f"Engine: {c_res.get('engine_used')} | Latency: {c_res.get('latency_ms')} ms"
+    )
+
+    # 14. Copilot Chat - Legal Provisions Grounding
+    r = client.post("/api/v1/copilot/chat", json={
+        "message": "What legal action or IPC section can be filed for this?",
+        "scan_context": res_scam
+    })
+    c_law = r.json()
+    check(
+        "AI Copilot Endpoint - Legal & Evidence Grounding (POST /api/v1/copilot/chat)",
+        r.status_code == 200 and ("66D" in c_law.get("reply") or "BNS" in c_law.get("reply")),
+        f"Grounded Sections: IT Act 66D / BNS 318(4) confirmed in reply"
+    )
+
+    # 15. WhatsApp Bot Webhook - Greeting Handshake (TwiML XML)
+    r = client.post("/api/v1/webhook/whatsapp", data={
+        "Body": "hi",
+        "From": "whatsapp:+919876543210"
+    })
+    check(
+        "WhatsApp Bot Webhook: Greeting & Discovery (POST /api/v1/webhook/whatsapp)",
+        r.status_code == 200 and "<Response><Message>" in r.text and "1930" in r.text,
+        f"Response Type: {r.headers.get('content-type')} | TwiML generated successfully"
+    )
+
+    # 16. WhatsApp Bot Webhook - Forwarded Scam Message Analysis (TwiML XML)
+    r = client.post("/api/v1/webhook/whatsapp", data={
+        "Body": "URGENT: Your Bijli bill was not updated. Power supply disconnected at 9:30 PM call 9876543210 or install MahaVitaran.apk",
+        "From": "whatsapp:+919876543210"
+    })
+    check(
+        "WhatsApp Bot Webhook: Scam Forwarding Interception (POST /api/v1/webhook/whatsapp)",
+        r.status_code == 200 and "CRITICAL" in r.text and "1930" in r.text and "MHA GOVT OF INDIA" in r.text,
+        f"Status: {r.status_code} | High-risk threat card & 1930 Cyber helpline returned"
+    )
+
+    # 17. WhatsApp Simulator Endpoint (JSON for Web UI & Mobile Preview)
+    r = client.post("/api/v1/webhook/whatsapp/simulate", json={
+        "message": "CENTRAL BUREAU OF INVESTIGATION NOTICE: You are under DIGITAL ARREST. Transfer funds or arrest warrant issued.",
+        "sender": "+91 91234 56789"
+    })
+    sim_data = r.json()
+    check(
+        "WhatsApp Bot Interactive Simulator (POST /api/v1/webhook/whatsapp/simulate)",
+        r.status_code == 200 and sim_data.get("is_scam") is True and sim_data.get("quick_dial") == "1930",
+        f"Risk: {sim_data.get('risk_score')}% | Formatted Reply Length: {len(sim_data.get('whatsapp_formatted_reply', ''))} chars"
+    )
+
     print("\n" + "=" * 80)
     print(f"📊 BACKEND API TEST SUMMARY: {passed}/{total} Tests Passed ({int((passed/total)*100)}% Success Rate)")
     print("=" * 80)

@@ -92,3 +92,9 @@ To ensure **absolute determinism, zero hallucinations, sub-5ms inference, and gu
 ### FR-09: Crowdsourced Telemetry Feed
 * Community reporting mechanism stored in Supabase `community_reports` to warn users of ongoing regional scam calls and malicious numbers.
 * RLS policies constrain client submissions to `status = 'PENDING'` to prevent feed poisoning.
+
+### FR-10: WhatsApp Cyber Shield (Zero-Download Verification Gateway)
+* Direct message forwarding to verified ∀VITR AI WhatsApp Helpline (`+91 91193 01930`).
+* Real-time automated reply with threat breakdown, risk percentage, and 1-tap **1930 Cyber Crime Helpline** linkage.
+* Twilio TwiML and Meta Graph API compatible webhook endpoint (`/api/v1/webhook/whatsapp`).
+* 0 MB download footprint for 500 million citizens across all devices.

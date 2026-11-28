@@ -206,6 +206,9 @@ export function ThreatScanner({
   const handlePresetClick = (presetText) => {
     setAudioFile(null);
     setInputText(presetText);
+    if (onScan) {
+      onScan(presetText, activeTab, null);
+    }
   };
 
   const loadSampleAudio = async (filename, label) => {
@@ -619,7 +622,7 @@ export function ThreatScanner({
       {/* Primary Scan Button (10% Accent Orange) */}
       <button
         type="button"
-        onClick={onScan}
+        onClick={() => onScan()}
         disabled={isLoading || isOcrProcessing || (!inputText.trim() && !audioFile)}
         className={`w-full py-3.5 px-6 rounded-xl font-bold text-sm tracking-wide flex items-center justify-center gap-2 transition-all ${
           isLoading || isOcrProcessing || (!inputText.trim() && !audioFile)
