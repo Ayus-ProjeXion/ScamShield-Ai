@@ -13,6 +13,28 @@ import {
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 
+async function fetchCopilotApi(endpoint, options = {}) {
+  // 1. Try relative / configured URL first (handles Vite proxy, same-origin, LAN)
+  try {
+    const res = await fetch(`${API_BASE_URL}${endpoint}`, options);
+    if (res.ok) return res;
+  } catch (e) {
+    // Relative call network failure
+  }
+
+  // 2. If running on localhost and relative failed, try direct backend port 8000
+  if (typeof window !== 'undefined' && (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1')) {
+    try {
+      const res = await fetch(`http://127.0.0.1:8000${endpoint}`, options);
+      if (res.ok) return res;
+    } catch (e) {
+      // Direct localhost fallback failed
+    }
+  }
+
+  throw new Error(`Copilot endpoint ${endpoint} unreachable`);
+}
+
 function formatEngineLabel(engine) {
   if (!engine || engine.startsWith('offline')) return 'Offline Forensic Engine';
   if (engine.includes('groq')) {
@@ -44,13 +66,11 @@ export function FloatingCopilot({ scanResult, isDark }) {
     let isMounted = true;
     const fetchStatus = async () => {
       try {
-        const res = await fetch(`${API_BASE_URL}/api/v1/copilot/status`);
-        if (res.ok) {
-          const data = await res.json();
-          if (isMounted) {
-            setEngineUsed(data.active_engine || 'groq:qwen/qwen3.8-27b');
-            setIsOnline(data.status === 'online');
-          }
+        const res = await fetchCopilotApi('/api/v1/copilot/status');
+        const data = await res.json();
+        if (isMounted) {
+          setEngineUsed(data.active_engine || 'groq:qwen/qwen3.8-27b');
+          setIsOnline(data.status === 'online');
         }
       } catch (err) {
         if (isMounted) {
@@ -116,7 +136,7 @@ export function FloatingCopilot({ scanResult, isDark }) {
         text_preview: scanResult.textPreview || ''
       } : {};
 
-      const response = await fetch(`${API_BASE_URL}/api/v1/copilot/chat`, {
+      const response = await fetchCopilotApi('/api/v1/copilot/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
@@ -126,22 +146,18 @@ export function FloatingCopilot({ scanResult, isDark }) {
         })
       });
 
-      if (response.ok) {
-        const data = await response.json();
-        const used = data.engine_used || 'offline:deterministic-forensic';
-        setEngineUsed(used);
-        setIsOnline(!used.startsWith('offline'));
-        setMessages(prev => [
-          ...prev,
-          {
-            role: 'assistant',
-            content: data.reply,
-            chips: data.suggested_chips || []
-          }
-        ]);
-      } else {
-        throw new Error('Copilot response error');
-      }
+      const data = await response.json();
+      const used = data.engine_used || 'offline:deterministic-forensic';
+      setEngineUsed(used);
+      setIsOnline(!used.startsWith('offline'));
+      setMessages(prev => [
+        ...prev,
+        {
+          role: 'assistant',
+          content: data.reply,
+          chips: data.suggested_chips || []
+        }
+      ]);
     } catch (err) {
       console.warn('Copilot call fallback:', err);
       setEngineUsed('offline:deterministic-forensic');
