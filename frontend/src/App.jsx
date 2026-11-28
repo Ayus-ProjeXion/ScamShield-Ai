@@ -3,13 +3,12 @@ import { Navbar } from './components/Navbar';
 import { ThreatScanner } from './components/ThreatScanner';
 import { ThreatHUD } from './components/ThreatHUD';
 import { ShieldModeCard } from './components/ShieldModeCard';
-import { LiveInterceptorBanner } from './components/LiveInterceptorBanner';
 import { OnboardingModal } from './components/OnboardingModal';
 import { FloatingCopilot } from './components/FloatingCopilot';
 import { LiveScamCarousel } from './components/LiveScamCarousel';
 import { IncidentModal } from './components/IncidentModal';
 import { ReportModal } from './components/ReportModal';
-import { WhatsAppShieldModal } from './components/WhatsAppShieldModal';
+import { DownloadCompanionModal } from './components/DownloadCompanionModal';
 import { CheckCircle } from 'lucide-react';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
@@ -48,7 +47,7 @@ export default function App() {
   // Universal Shield Mode & Onboarding Modal states
   const [isShieldMode, setIsShieldMode] = useState(false);
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
-  const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState(false);
+  const [isCompanionModalOpen, setIsCompanionModalOpen] = useState(false);
 
   useEffect(() => {
     const hideWelcome = localStorage.getItem('scamshield_hide_welcome');
@@ -394,21 +393,12 @@ Please take immediate action under Indian Cyber Crime Prevention guidelines.`
         isShieldMode={isShieldMode}
         onToggleShieldMode={() => setIsShieldMode(!isShieldMode)}
         onOpenOnboarding={() => setIsOnboardingOpen(true)}
-        onOpenWhatsAppModal={() => setIsWhatsAppModalOpen(true)}
+        onOpenDownloadCompanion={() => setIsCompanionModalOpen(true)}
       />
 
       {/* Main Content Area */}
       <main className="relative z-10 flex-1 max-w-7xl mx-auto w-full px-4 sm:px-6 lg:px-8 pt-4 pb-12 space-y-6">
         
-        {/* Real-Time WhatsApp & SMS Notification Interceptor Simulation */}
-        <LiveInterceptorBanner
-          onTriggerScan={handleTriggerDirectScan}
-          onOpenReport={(sender, text) => {
-            setIsReportModalOpen(true);
-          }}
-          isDark={isDark}
-        />
-
         {/* Toast Notification */}
         {toastMessage && (
           <div className={`fixed bottom-6 right-6 z-50 flex items-center gap-2 px-4 py-3 rounded-xl border text-xs font-mono shadow-2xl animate-bounce ${
@@ -561,10 +551,10 @@ Please take immediate action under Indian Cyber Crime Prevention guidelines.`
         isDark={isDark}
       />
 
-      {/* WhatsApp Cyber Shield Modal */}
-      <WhatsAppShieldModal
-        isOpen={isWhatsAppModalOpen}
-        onClose={() => setIsWhatsAppModalOpen(false)}
+      {/* Real-Time Background Companion Download Modal */}
+      <DownloadCompanionModal
+        isOpen={isCompanionModalOpen}
+        onClose={() => setIsCompanionModalOpen(false)}
         isDark={isDark}
       />
     </div>

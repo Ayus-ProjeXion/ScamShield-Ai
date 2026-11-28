@@ -1,5 +1,5 @@
 import React from 'react';
-import { Sun, Moon, PhoneCall, PlusCircle, Shield, Sparkles, MessageSquare } from 'lucide-react';
+import { Sun, Moon, PhoneCall, PlusCircle, Shield, Sparkles, Download } from 'lucide-react';
 
 export function Navbar({
   isDark,
@@ -8,7 +8,7 @@ export function Navbar({
   isShieldMode,
   onToggleShieldMode,
   onOpenOnboarding,
-  onOpenWhatsAppModal
+  onOpenDownloadCompanion
 }) {
   return (
     <header className={`sticky top-0 z-40 w-full border-b backdrop-blur-md transition-colors duration-200 ${isDark
@@ -82,18 +82,18 @@ export function Navbar({
             <span>Modes</span>
           </button>
 
-          {/* WhatsApp Cyber Shield */}
+          {/* Real-Time Background Companion Download */}
           <button
-            onClick={onOpenWhatsAppModal}
+            onClick={onOpenDownloadCompanion}
             className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-mono font-medium transition-all ${isDark
-              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20'
-              : 'bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100'
+              ? 'bg-orange-500/10 border-orange-500/30 text-orange-400 hover:bg-orange-500/20'
+              : 'bg-orange-50 border-orange-200 text-orange-700 hover:bg-orange-100'
               }`}
-            title="Verify suspicious WhatsApp messages & forwards"
+            title="Download Real-Time Windows & Android Companion"
             type="button"
           >
-            <MessageSquare className="w-3.5 h-3.5 text-emerald-500" />
-            <span>WhatsApp Shield</span>
+            <Download className="w-3.5 h-3.5 text-orange-500" />
+            <span>Get Companion</span>
           </button>
 
           {/* Shield Mode Toggle */}
