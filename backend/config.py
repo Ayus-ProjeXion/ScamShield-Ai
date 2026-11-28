@@ -27,9 +27,6 @@ class Settings:
     SCAN_COOLDOWN_SECONDS: float = 1.0
     MAX_SCANS_PER_MINUTE: int = 30
     
-    # WhatsApp Shield Number (National 1930 Cyber Defense)
-    WHATSAPP_BOT_NUMBER: str = os.getenv("WHATSAPP_BOT_NUMBER", "+91 91193 01930")
-    
     # Hybrid AI Copilot Settings
     GROQ_API_KEY: Optional[str] = os.getenv("GROQ_API_KEY")
     GEMINI_API_KEY: Optional[str] = os.getenv("GEMINI_API_KEY") or os.getenv("GOOGLE_API_KEY")

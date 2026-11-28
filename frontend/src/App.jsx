@@ -9,7 +9,6 @@ import { FloatingCopilot } from './components/FloatingCopilot';
 import { LiveScamCarousel } from './components/LiveScamCarousel';
 import { IncidentModal } from './components/IncidentModal';
 import { ReportModal } from './components/ReportModal';
-import { WhatsAppShieldModal } from './components/WhatsAppShieldModal';
 import { CheckCircle } from 'lucide-react';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
@@ -48,7 +47,6 @@ export default function App() {
   // Universal Shield Mode & Onboarding Modal states
   const [isShieldMode, setIsShieldMode] = useState(false);
   const [isOnboardingOpen, setIsOnboardingOpen] = useState(false);
-  const [isWhatsAppModalOpen, setIsWhatsAppModalOpen] = useState(false);
 
   useEffect(() => {
     const hideWelcome = localStorage.getItem('scamshield_hide_welcome');
@@ -394,7 +392,6 @@ Please take immediate action under Indian Cyber Crime Prevention guidelines.`
         isShieldMode={isShieldMode}
         onToggleShieldMode={() => setIsShieldMode(!isShieldMode)}
         onOpenOnboarding={() => setIsOnboardingOpen(true)}
-        onOpenWhatsAppModal={() => setIsWhatsAppModalOpen(true)}
       />
 
       {/* Main Content Area */}
@@ -561,12 +558,6 @@ Please take immediate action under Indian Cyber Crime Prevention guidelines.`
         isDark={isDark}
       />
 
-      {/* WhatsApp Cyber Shield Real Verification Modal */}
-      <WhatsAppShieldModal
-        isOpen={isWhatsAppModalOpen}
-        onClose={() => setIsWhatsAppModalOpen(false)}
-        isDark={isDark}
-      />
     </div>
   );
 }

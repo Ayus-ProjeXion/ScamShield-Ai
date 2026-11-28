@@ -110,12 +110,6 @@
 3. **Zero Data Leakage:** The raw screenshot is **never sent to the cloud or server**, guaranteeing 100% compliance with India's **DPDP Act 2023**.
 4. Extracted text is fed to `POST /api/v1/scan/text` for instantaneous threat classification.
 
-### Modality 5: WhatsApp Cyber Shield (Zero-Download Webhook)
-1. User forwards any suspicious message directly to the official ∀VITR AI WhatsApp Helpline (`+91 91193 01930`).
-2. Gateway routes payload to `POST /api/v1/webhook/whatsapp` (Twilio TwiML / Meta Cloud API).
-3. The Dual-Core Evaluation Engine analyzes heuristics, Hinglish coercion, and scam patterns in $< 500\text{ ms}$.
-4. Returns an instant, high-contrast WhatsApp Markdown card with threat categories, clear citizen advice, and 1-tap **1930 Cyber Crime Helpline** linkage.
-
 ---
 
 ## 3. Dual-Core Threat Evaluation Engine

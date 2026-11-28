@@ -7,7 +7,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
 from backend.config import settings
-from backend.routes import scan, report, feed, health, copilot, whatsapp
+from backend.routes import scan, report, feed, health, copilot
 from ai.detector import ScamDetector
 
 # Configure structured logging
@@ -69,7 +69,6 @@ app.include_router(scan.router, prefix=settings.API_V1_PREFIX)
 app.include_router(report.router, prefix=settings.API_V1_PREFIX)
 app.include_router(feed.router, prefix=settings.API_V1_PREFIX)
 app.include_router(copilot.router, prefix=settings.API_V1_PREFIX)
-app.include_router(whatsapp.router, prefix=settings.API_V1_PREFIX)
 
 @app.get("/", tags=["Root"])
 async def root():
@@ -84,9 +83,7 @@ async def root():
             "scan_email": f"{settings.API_V1_PREFIX}/scan/email",
             "scan_audio": f"{settings.API_V1_PREFIX}/scan/audio",
             "submit_report": f"{settings.API_V1_PREFIX}/report",
-            "threat_feed": f"{settings.API_V1_PREFIX}/feed",
-            "whatsapp_webhook": f"{settings.API_V1_PREFIX}/webhook/whatsapp",
-            "whatsapp_simulate": f"{settings.API_V1_PREFIX}/webhook/whatsapp/simulate"
+            "threat_feed": f"{settings.API_V1_PREFIX}/feed"
         }
     }
 

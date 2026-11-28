@@ -86,11 +86,10 @@ export function Navbar({
           {/* WhatsApp Cyber Shield */}
           <button
             onClick={onOpenWhatsAppModal || onOpenMobileDemo}
-            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-mono font-medium transition-all ${
-              isDark
-                ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20'
-                : 'bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100'
-            }`}
+            className={`flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl border text-xs font-mono font-medium transition-all ${isDark
+              ? 'bg-emerald-500/10 border-emerald-500/30 text-emerald-400 hover:bg-emerald-500/20'
+              : 'bg-emerald-50 border-emerald-200 text-emerald-700 hover:bg-emerald-100'
+              }`}
             title="Verify WhatsApp & SMS scams 24/7 without downloading any app"
             type="button"
           >
